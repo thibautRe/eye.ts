@@ -2,10 +2,18 @@
   "name": "2024-thibaut.re",
   "module": "index.ts",
   "type": "module",
-  "workspaces": ["packages/*"],
+  "workspaces": [
+    "packages/*",
+    "services/*"
+  ],
   "private": true,
   "scripts": {
+    "start": "bun run --filter '*' start",
     "codegen": "bun run --filter '*' codegen",
     "migrate": "bun run --filter db-migrations migrate"
+  },
+  "prettier": {
+    "semi": false,
+    "trailingComma": "all"
   }
 }

@@ -1,9 +1,0 @@
-{
-  "name": "db-schema",
-  "scripts": {
-    "codegen": "bun --bun pg-schema --directory src/__generated__"
-  },
-  "dependencies": {
-    "@databases/pg-schema-cli": "^4.4.0"
-  }
-}

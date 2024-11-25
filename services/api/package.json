@@ -1,0 +1,11 @@
+{
+  "name": "api",
+  "type": "module",
+  "module": "src/index.ts",
+  "scripts": {
+    "start": "bun --hot src/index.ts"
+  },
+  "dependencies": {
+    "db": "workspace:*"
+  }
+}
