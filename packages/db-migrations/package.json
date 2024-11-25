@@ -1,0 +1,10 @@
+{
+  "name": "db-migrations",
+  "private": true,
+  "scripts": {
+    "migrate": "bun --bun pg-migrations apply --directory src"
+  },
+  "dependencies": {
+    "@databases/pg-migrations": "^5.0.3"
+  }
+}
