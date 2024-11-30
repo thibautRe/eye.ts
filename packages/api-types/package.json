@@ -1,0 +1,8 @@
+{
+  "name": "api-types",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "dependencies": {
+    "core": "workspace:*"
+  }
+}
