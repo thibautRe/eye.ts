@@ -28,24 +28,25 @@ CREATE TABLE pictures (
     original_file_name TEXT NOT NULL,
     original_width INT NOT NULL,
     original_height INT NOT NULL,
+    original_s3_key TEXT NOT NULL,
     blurhash TEXT NOT NULL,
     alt TEXT NOT NULL,
 
     shot_by_user_id INT NULL REFERENCES users(id),
     shot_by_camera_body_id INT NULL REFERENCES camera_bodies(id),
     shot_by_camera_lens_id INT NULL REFERENCES camera_lenses(id),
+    shot_at TIMESTAMP NULL,
 
     exif JSONB NULL,
 
-    shot_at TIMESTAMP NULL,
     uploaded_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-
 CREATE TABLE picture_sizes (
-    id SERIAL NOT NULL PRIMARY KEY,
     picture_id INT NOT NULL REFERENCES pictures(id),
-    file_path TEXT NOT NULL,
+    s3_key TEXT NOT NULL,
     height INT NOT NULL,
-    width INT NOT NULL
+    width INT NOT NULL,
+
+    UNIQUE(picture_id, height, width)
 );

@@ -3,9 +3,15 @@
   "type": "module",
   "module": "src/index.ts",
   "scripts": {
-    "start": "bun --hot src/index.ts"
+    "dev": "bun --hot src/index.ts",
+    "start": "bun src/index.ts"
   },
   "dependencies": {
-    "db": "workspace:*"
+    "@aws-sdk/client-s3": "^3.701.0",
+    "blurhash": "^2.0.5",
+    "core": "workspace:*",
+    "db": "workspace:*",
+    "image-size": "^1.1.1",
+    "sharp": "^0.33.5"
   }
 }

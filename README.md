@@ -1,15 +1,9 @@
 # 2024-thibaut.re
 
-To install dependencies:
+## Getting started
 
 ```bash
 bun install
+bun run dev-api
+bun run dev-frontend # in another terminal
 ```
-
-To run:
-
-```bash
-bun run index.ts
-```
-
-This project was created using `bun init` in bun v1.1.36. [Bun](https://bun.sh) is a fast all-in-one JavaScript runtime.
