@@ -1,9 +1,11 @@
 import db, { picture_sizes, pictures } from "db"
 import imageSize from "image-size"
 import sharp from "sharp"
-import { storePictureS3 } from "../../s3Client"
+import { putS3Picture } from "../../s3Client"
 
 import { encode as blurhashEncode } from "blurhash"
+import type { PictureId } from "core"
+import { getPictureDataInExif } from "./exif"
 
 const processSize = async ({
   arrayBuffer,
@@ -14,7 +16,7 @@ const processSize = async ({
   arrayBuffer: ArrayBuffer
   key: string
   width: number
-  id: number
+  id: PictureId
 }) => {
   const resizer = sharp(arrayBuffer).resize(width)
   const { data, info } = await resizer
@@ -22,7 +24,11 @@ const processSize = async ({
     .jpeg()
     .toBuffer({ resolveWithObject: true })
   const s3Key = `${key}-${width}`
-  await storePictureS3(`${key}-${width}`, data)
+  await putS3Picture({
+    Key: `${key}-${width}`,
+    Body: data,
+    Metadata: { pictureType: "ORIGINAL" },
+  })
   await picture_sizes(db).insert({
     height: info.height,
     width: info.width,
@@ -37,11 +43,17 @@ export const ingestPicture = async (file: File) => {
   const arrayBuffer = await file.arrayBuffer()
   const s3key = Bun.randomUUIDv7("base64")
 
+  const dataInExif = await getPictureDataInExif(arrayBuffer)
+
   const size = imageSize(new Uint8Array(arrayBuffer))
   if (!size || !size.width || !size.height)
     throw new Error("No image size detected")
 
-  await storePictureS3(s3key, Buffer.from(arrayBuffer))
+  await putS3Picture({
+    Key: s3key,
+    Body: Buffer.from(arrayBuffer),
+    Metadata: { pictureType: "RESIZED", width: size.width.toString() },
+  })
   const [picture] = await pictures(db).insert({
     alt: "",
     original_height: size.height,
@@ -50,6 +62,7 @@ export const ingestPicture = async (file: File) => {
     original_file_name: file.name,
     blurhash: "",
     name: file.name,
+    ...dataInExif,
   })
 
   const [getPixels] = await Promise.all([

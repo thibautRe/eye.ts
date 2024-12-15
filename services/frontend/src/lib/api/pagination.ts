@@ -1,13 +1,5 @@
+import { type PaginatedApi } from "api-types"
 import { get_json, makeCachedGet, withParams } from "./utils"
-
-export interface PaginatedApi<T> {
-  items: T[]
-  info: {
-    nextPage: number | null
-    totalCount: number
-    totalPages: number
-  }
-}
 
 export interface PaginatedLoaderProps {
   readonly page: number

@@ -1,12 +1,16 @@
-type PreMiddleware<TContext> = (args: {
+export type PreMiddleware<TContext> = (args: {
   request: Request
   context: TContext
 }) => void | TContext | Promise<TContext>
-type PostMiddleware<TContext> = (args: {
+export type PostMiddleware<TContext> = (args: {
   request: Request
   response: Response
   context: TContext
 }) => void | Promise<Response> | Response
+export type RouterRun<TContext> = (args: {
+  context: TContext
+  request: Request
+}) => Promise<Response> | Response
 
 class Router<TContext> {
   private _premiddlewares: PreMiddleware<TContext>[] = []
@@ -22,13 +26,7 @@ class Router<TContext> {
     this._postmiddlewares.push(postMiddleware)
     return this
   }
-  run(
-    run: (args: {
-      context: TContext
-      request: Request
-    }) => Promise<Response> | Response,
-    initContext: TContext,
-  ) {
+  run(run: RouterRun<TContext>, initContext: TContext) {
     return async (request: Request): Promise<Response> => {
       let context = initContext
       for (const preMid of this._premiddlewares) {

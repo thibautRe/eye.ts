@@ -1,7 +1,7 @@
 import {
   PutObjectCommand,
   S3Client,
-  PutObjectCommandInput,
+  type PutObjectCommandInput,
 } from "@aws-sdk/client-s3"
 
 declare module "bun" {
@@ -23,17 +23,23 @@ const client = new S3Client({
   region: Bun.env.S3_REGION,
 })
 
-export const storePictureS3 = async (
-  key: string,
-  body: PutObjectCommandInput["Body"],
-) => {
-  client.send(
-    new PutObjectCommand({
-      Bucket: Bun.env.S3_BUCKET,
-      Key: key,
-      Body: body,
-      ACL: "public-read",
-      ContentType: "image/jpeg",
-    }),
-  )
+const endpointUrl = new URL(Bun.env.S3_ENDPOINT)
+endpointUrl.hostname = `${Bun.env.S3_BUCKET}.${endpointUrl.hostname}`
+const PUBLIC_S3_ENDPOINT = endpointUrl.toString()
+export const getPublicEndpoint = (Key: string) => `${PUBLIC_S3_ENDPOINT}${Key}`
+
+type PutS3Input = Omit<PutObjectCommandInput, "Bucket">
+export const putS3 = async (input: PutS3Input) =>
+  client.send(new PutObjectCommand({ Bucket: Bun.env.S3_BUCKET, ...input }))
+
+type S3PictureMetadata =
+  | { pictureType: "ORIGINAL" }
+  | { pictureType: "RESIZED"; width: string }
+type PutS3PictureInput = Omit<
+  PutS3Input,
+  "ACL" | "ContentType" | "Metadata"
+> & {
+  Metadata: S3PictureMetadata
 }
+export const putS3Picture = async (input: PutS3PictureInput) =>
+  putS3({ ACL: "public-read", ContentType: "image/jpeg", ...input })

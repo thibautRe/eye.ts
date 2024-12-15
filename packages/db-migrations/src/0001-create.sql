@@ -14,12 +14,12 @@ CREATE TABLE users (
 
 CREATE TABLE camera_bodies (
     id SERIAL NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE camera_lenses (
     id SERIAL NOT NULL PRIMARY KEY,
-    name TEXT NOT NULL
+    name TEXT NOT NULL UNIQUE
 );
 
 CREATE TABLE pictures (
@@ -50,3 +50,7 @@ CREATE TABLE picture_sizes (
 
     UNIQUE(picture_id, height, width)
 );
+
+
+INSERT INTO camera_bodies (name) VALUES ("ILCE-7RM3A");
+INSERT INTO camera_lenses (name) VALUES ("FE 24-105mm F4 G OSS");
