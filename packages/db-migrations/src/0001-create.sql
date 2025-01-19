@@ -52,5 +52,5 @@ CREATE TABLE picture_sizes (
 );
 
 
-INSERT INTO camera_bodies (name) VALUES ("ILCE-7RM3A");
-INSERT INTO camera_lenses (name) VALUES ("FE 24-105mm F4 G OSS");
+INSERT INTO camera_bodies (name) VALUES ('ILCE-7RM3A');
+INSERT INTO camera_lenses (name) VALUES ('FE 24-105mm F4 G OSS'), ('SAMYANG AF 135mm F1.8');

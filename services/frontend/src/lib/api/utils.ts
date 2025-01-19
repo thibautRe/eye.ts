@@ -1,4 +1,3 @@
-import { HttpError } from "$lib/errors"
 import { PUBLIC_API_URL } from "$env/static/public"
 import { browser } from "$app/environment"
 import { apiClientHeaders } from "./client"

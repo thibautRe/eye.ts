@@ -6,7 +6,7 @@ export interface PaginatedLoaderProps {
 }
 
 export type PaginatedApiLoader<T, P> = (
-  loaderProps: PaginatedLoaderProps,
+  loaderProps?: PaginatedLoaderProps,
   extraProps?: P,
 ) => Promise<PaginatedApi<T>>
 
@@ -38,7 +38,7 @@ export const makeCachedPaginatedApi = <
   }
 }
 
-export const mapPaginated =
+const mapPaginated =
   <T>(mapper: (item: T) => T) =>
   (r: PaginatedApi<T>): PaginatedApi<T> => {
     return { ...r, items: r.items.map((i) => mapper(i)) }

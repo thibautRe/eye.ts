@@ -11,7 +11,7 @@ export const apiUploadFiles = async (filelist: FileList) => {
   }
 }
 
-export const apiGetPictures = makeCachedPaginatedApi(
+export const apiGetPictures = makeCachedPaginatedApi<PictureApi>(
   routes.PICTURE_LIST.pathname,
 )
 export const apiGetPicture = (id: PictureId) =>

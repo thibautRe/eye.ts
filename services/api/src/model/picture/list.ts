@@ -1,12 +1,5 @@
-import db, { pictures, sql, type SQLQuery } from "db"
-
-const paginate = async (query: SQLQuery, limit: number, offset: number) => {
-  const res = await db.query(sql`
-    SELECT *, COUNT(*) OVER () FROM (
-      ${query}
-    ) t LIMIT ${limit} OFFSET ${offset};
-   `)
-}
+import db, { pictures, type Pictures } from "db"
+import { paginateBySize } from "../../utils/paginate"
 
 export const listPictures = async ({
   pageSize = 10,
@@ -14,12 +7,9 @@ export const listPictures = async ({
 }: {
   pageSize: number
   pageNumber: number
-}) => {
-  const paginated = await paginate(
+}) =>
+  await paginateBySize<Pictures>(
     pictures(db).find().orderByDesc("shot_at").toSql(),
     pageSize,
-    pageNumber * pageSize,
+    pageNumber,
   )
-
-  console.log(paginated)
-}

@@ -9,6 +9,7 @@
       "alt" | "srcset" | "src" | "width" | "height" | "loading"
     > {
     pic: PictureApi
+    sizes: string
   }
   const { pic, style: styleProps, ...rest }: PictureProps = $props()
   const srcset = pic.sizes.map((s) => `${s.url} ${s.width}w`).join(",")
@@ -36,5 +37,6 @@
     position: relative;
     height: 100%;
     width: 100%;
+    object-fit: contain;
   }
 </style>

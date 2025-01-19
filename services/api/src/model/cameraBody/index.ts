@@ -1,4 +1,4 @@
-import db, { camera_bodies, type CameraBodies } from "db"
+import db, { camera_bodies, q, type CameraBodies } from "db"
 
 const cacheByName = new Map<string, Promise<CameraBodies | null>>()
 const cacheById = new Map<CameraBodies["id"], Promise<CameraBodies>>()
@@ -24,4 +24,30 @@ export const getCameraBodyById = async (
   const promise = camera_bodies(db).findOneRequired({ id })
   cacheById.set(id, promise)
   return await promise
+}
+
+export const getCameraBodyByIds = async (...ids: CameraBodies["id"][]) => {
+  const bodies: Promise<CameraBodies>[] = []
+  const missingIds = new Set<CameraBodies["id"]>()
+  for (const id of ids) {
+    if (cacheById.has(id)) {
+      bodies.push(cacheById.get(id)!)
+      continue
+    }
+    missingIds.add(id)
+  }
+
+  const missingBodies = async () => {
+    const bodies = await camera_bodies(db)
+      .find({ id: q.anyOf(missingIds) })
+      .all()
+    // add to cache
+    for (const body of bodies) {
+      cacheById.set(body.id, Promise.resolve(body))
+    }
+    return bodies
+  }
+
+  const [m, ...b] = await Promise.all([missingBodies(), ...bodies])
+  return [...m, ...b]
 }

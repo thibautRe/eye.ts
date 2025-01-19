@@ -1,4 +1,4 @@
-import db, { camera_lenses, type CameraLenses } from "db"
+import db, { camera_lenses, q, type CameraLenses } from "db"
 
 const cacheByName = new Map<string, Promise<CameraLenses | null>>()
 const cacheById = new Map<CameraLenses["id"], Promise<CameraLenses>>()
@@ -24,4 +24,30 @@ export const getCameraLensById = async (
   const promise = camera_lenses(db).findOneRequired({ id })
   cacheById.set(id, promise)
   return await promise
+}
+
+export const getCameraLensByIds = async (...ids: CameraLenses["id"][]) => {
+  const lenses: Promise<CameraLenses>[] = []
+  const missingIds = new Set<CameraLenses["id"]>()
+  for (const id of ids) {
+    if (cacheById.has(id)) {
+      lenses.push(cacheById.get(id)!)
+      continue
+    }
+    missingIds.add(id)
+  }
+
+  const missing = async () => {
+    const lenses = await camera_lenses(db)
+      .find({ id: q.anyOf(missingIds) })
+      .all()
+    // add to cache
+    for (const i of lenses) {
+      cacheById.set(i.id, Promise.resolve(i))
+    }
+    return lenses
+  }
+
+  const [m, ...l] = await Promise.all([missing(), ...lenses])
+  return [...m, ...l]
 }

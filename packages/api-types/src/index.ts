@@ -82,7 +82,6 @@ export interface PaginatedApi<T> {
   items: T[]
   info: {
     nextPage: number | null
-    totalCount: number
-    totalPages: number
+    count: number
   }
 }

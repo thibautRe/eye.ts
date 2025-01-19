@@ -1,6 +1,6 @@
 import { randomInt } from "crypto"
 import { createRouter, type RouterRun } from "./router"
-import type { ID } from "core"
+import { isNotNull, type ID } from "core"
 import {
   type ApiRouteArgs,
   type ApiRouteKey,
@@ -8,7 +8,6 @@ import {
   type CameraBodyApi,
   type CameraLensApi,
   type PictureApi,
-  type PictureExifApi,
   routes,
 } from "api-types"
 import { ingestPicture } from "./model/picture/ingest"
@@ -18,10 +17,11 @@ import db, {
   picture_sizes,
   type Pictures,
   pictures,
+  q,
 } from "db"
 import { listPictures } from "./model/picture/list"
-import { getCameraBodyById } from "./model/cameraBody"
-import { getCameraLensById } from "./model/cameraLens"
+import { getCameraBodyByIds } from "./model/cameraBody"
+import { getCameraLensByIds } from "./model/cameraLens"
 import { getPublicEndpoint } from "./s3Client"
 
 declare module "bun" {
@@ -71,7 +71,7 @@ const buildHandlers =
   }
 
 const runHandlers = buildHandlers({
-  PICTURE_UPLOAD: async ({ request, context }) => {
+  PICTURE_UPLOAD: async ({ request }) => {
     const formData = await request.formData()
     // @ts-expect-error
     const file: File = formData.get("file")
@@ -82,11 +82,16 @@ const runHandlers = buildHandlers({
     return await toPictureApi(await pictures(db).findOneRequired({ id }))
   },
   PICTURE_LIST: async ({ url }) => {
-    const paginated = await listPictures({
-      pageNumber: parseInt(url.searchParams.get("pageNumber")) || 0,
-      pageSize: 15,
+    const pageNumber = parseInt(url.searchParams.get("page") ?? "") || 0
+    const pageSize = 20
+    const { content, count, hasMore } = await listPictures({
+      pageNumber,
+      pageSize,
     })
-    return null
+    return {
+      info: { count, nextPage: hasMore ? pageNumber + 1 : null },
+      items: await toPictureApis(content),
+    }
   },
 })
 
@@ -102,33 +107,51 @@ const toCameraBodyApi = (dbCameraBody: CameraBodies): CameraBodyApi => {
   }
 }
 
-const toPictureApi = async (dbPic: Pictures): Promise<PictureApi> => {
-  const [sizes, cameraBody, cameraLens] = await Promise.all([
-    await picture_sizes(db).find({ picture_id: dbPic.id }).all(),
-    dbPic.shot_by_camera_body_id
-      ? getCameraBodyById(dbPic.shot_by_camera_body_id)
-      : null,
-    dbPic.shot_by_camera_lens_id
-      ? getCameraLensById(dbPic.shot_by_camera_lens_id)
-      : null,
+const toPictureApi = async (dbPic: Pictures): Promise<PictureApi> =>
+  (await toPictureApis([dbPic]))[0]
+
+const toPictureApis = async (dbPics: Pictures[]): Promise<PictureApi[]> => {
+  const [sizes, bodies, lenses] = await Promise.all([
+    picture_sizes(db)
+      .find({ picture_id: q.anyOf(dbPics.map((p) => p.id)) })
+      .all(),
+    getCameraBodyByIds(
+      ...dbPics.map((p) => p.shot_by_camera_body_id).filter(isNotNull),
+    ),
+    getCameraLensByIds(
+      ...dbPics.map((p) => p.shot_by_camera_lens_id).filter(isNotNull),
+    ),
   ])
-  return {
-    id: dbPic.id,
-    alt: dbPic.alt,
-    blurhash: dbPic.blurhash,
-    height: dbPic.original_height,
-    width: dbPic.original_width,
-    originalUrl: getPublicEndpoint(dbPic.original_s3_key),
-    cameraBody: cameraBody ? toCameraBodyApi(cameraBody) : null,
-    cameraLens: cameraLens ? toCameraLensApi(cameraLens) : null,
-    exif: dbPic.exif,
-    shotAt: dbPic.shot_at,
-    sizes: sizes.map((s) => ({
-      height: s.height,
-      width: s.width,
-      url: getPublicEndpoint(s.s3_key),
-    })),
-  }
+
+  const bodiesById = new Map(bodies.map((b) => [b.id, b]))
+  const lensesById = new Map(lenses.map((l) => [l.id, l]))
+  return dbPics.map((dbPic) => {
+    const body = dbPic.shot_by_camera_body_id
+      ? bodiesById.get(dbPic.shot_by_camera_body_id)
+      : null
+    const lens = dbPic.shot_by_camera_lens_id
+      ? lensesById.get(dbPic.shot_by_camera_lens_id)
+      : null
+    return {
+      id: dbPic.id,
+      alt: dbPic.alt,
+      blurhash: dbPic.blurhash,
+      height: dbPic.original_height,
+      width: dbPic.original_width,
+      originalUrl: getPublicEndpoint(dbPic.original_s3_key),
+      cameraBody: body ? toCameraBodyApi(body) : null,
+      cameraLens: lens ? toCameraLensApi(lens) : null,
+      exif: dbPic.exif,
+      shotAt: dbPic.shot_at?.toString() ?? null,
+      sizes: sizes
+        .filter((s) => s.picture_id.toString() === dbPic.id.toString())
+        .map((s) => ({
+          height: s.height,
+          width: s.width,
+          url: getPublicEndpoint(s.s3_key),
+        })),
+    }
+  })
 }
 
 type RequestId = ID<"request">
@@ -151,7 +174,7 @@ const router = createRouter<Context>()
     context.log(`<-- ${request.url} (${response.status}) ${ellapsedMs}ms`)
   })
   .run(runHandlers, {
-    requestId: -1 as RequestId,
+    requestId: "-1" as RequestId,
     requestStart: new Date(),
     log: () => {
       throw new Error("No context set")

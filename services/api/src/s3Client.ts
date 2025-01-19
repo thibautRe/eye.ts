@@ -26,7 +26,8 @@ const client = new S3Client({
 const endpointUrl = new URL(Bun.env.S3_ENDPOINT)
 endpointUrl.hostname = `${Bun.env.S3_BUCKET}.${endpointUrl.hostname}`
 const PUBLIC_S3_ENDPOINT = endpointUrl.toString()
-export const getPublicEndpoint = (Key: string) => `${PUBLIC_S3_ENDPOINT}${Key}`
+export const getPublicEndpoint = (Key: string) =>
+  `${PUBLIC_S3_ENDPOINT}${encodeURIComponent(Key)}`
 
 type PutS3Input = Omit<PutObjectCommandInput, "Bucket">
 export const putS3 = async (input: PutS3Input) =>
