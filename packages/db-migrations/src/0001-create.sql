@@ -3,6 +3,32 @@ DROP TABLE IF EXISTS pictures;
 DROP TABLE IF EXISTS camera_bodies;
 DROP TABLE IF EXISTS camera_lenses;
 DROP TABLE IF EXISTS users;
+DROP TABLE IF EXISTS category_parents;
+DROP TABLE IF EXISTS category_leaves;
+
+DROP TYPE IF EXISTS category_leaf_type;
+
+CREATE TYPE category_leaf_type AS ENUM('picture', 'person', 'event', 'location');
+
+CREATE TABLE category_leaves (
+    id BIGSERIAL NOT NULL PRIMARY KEY,
+    slug TEXT NULL,
+    name JSONB NOT NULL, -- i18n text
+    type category_leaf_type NULL,
+    exif_tags TEXT[] NOT NULL DEFAULT '{}'
+);
+CREATE UNIQUE INDEX category_leaf_slug_lower ON category_leaves(lower(slug)) WHERE slug IS NOT NULL;
+INSERT INTO category_leaves (id, slug, name) VALUES 
+    (1, 'all', '{"en": "all"}'), 
+    (2, 'Persons_by_name', '{"en": "Persons by name"}');
+
+CREATE TABLE category_parents (
+    child_id  BIGINT NOT NULL REFERENCES category_leaves(id),
+    parent_id BIGINT NOT NULL REFERENCES category_leaves(id),
+
+    CONSTRAINT different CHECK (child_id <> parent_id),
+    PRIMARY KEY(child_id, parent_id)
+);
 
 CREATE TABLE users (
     id SERIAL NOT NULL PRIMARY KEY,
@@ -24,7 +50,8 @@ CREATE TABLE camera_lenses (
 
 CREATE TABLE pictures (
     id BIGSERIAL NOT NULL PRIMARY KEY,
-    name TEXT NULL,
+    category_leaf_id BIGINT NOT NULL REFERENCES category_leaves(id),
+
     original_file_name TEXT NOT NULL,
     original_width INT NOT NULL,
     original_height INT NOT NULL,

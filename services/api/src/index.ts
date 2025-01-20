@@ -1,6 +1,6 @@
 import { randomInt } from "crypto"
 import { createRouter, type RouterRun } from "./router"
-import { isNotNull, type ID } from "core"
+import { isNotNull, translate, type ID } from "core"
 import {
   type ApiRouteArgs,
   type ApiRouteKey,
@@ -14,6 +14,8 @@ import { ingestPicture } from "./model/picture/ingest"
 import db, {
   type CameraBodies,
   type CameraLenses,
+  type CategoryLeaves,
+  category_leaves,
   picture_sizes,
   type Pictures,
   pictures,
@@ -23,6 +25,7 @@ import { listPictures } from "./model/picture/list"
 import { getCameraBodyByIds } from "./model/cameraBody"
 import { getCameraLensByIds } from "./model/cameraLens"
 import { getPublicEndpoint } from "./s3Client"
+import type { CategoryUntypedApi } from "api-types/src/category"
 
 declare module "bun" {
   interface Env {
@@ -71,6 +74,13 @@ const buildHandlers =
   }
 
 const runHandlers = buildHandlers({
+  CATEGORY: async ({ args: { slug } }) => {
+    return await toCategoryApi(
+      await category_leaves(db).findOneRequired({
+        slug: slug.trim().toLowerCase(),
+      }),
+    )
+  },
   PICTURE_UPLOAD: async ({ request }) => {
     const formData = await request.formData()
     // @ts-expect-error
@@ -152,6 +162,21 @@ const toPictureApis = async (dbPics: Pictures[]): Promise<PictureApi[]> => {
         })),
     }
   })
+}
+
+const toCategoryApi = async (
+  category: CategoryLeaves,
+): Promise<CategoryUntypedApi> => {
+  if (!category.slug) {
+    throw Object.assign(new Error("Category does not have slug"), { category })
+  }
+  return {
+    type: undefined,
+    slug: category.slug,
+    name: translate(category.name, "en"),
+    directChildren: [], // todo
+    directParents: [], // todo
+  }
 }
 
 type RequestId = ID<"request">

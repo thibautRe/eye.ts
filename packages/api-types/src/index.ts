@@ -1,8 +1,10 @@
 import { type PictureId } from "core"
+import type { CategoryUntypedApi } from "./category"
 
 type ApiMethod = "GET" | "POST"
 
 export type ApiRoutes =
+  | { key: "CATEGORY"; args: { slug: string }; response: CategoryUntypedApi }
   | { key: "PICTURE_UPLOAD"; response: PictureApi }
   | { key: "PICTURE_LIST"; response: PaginatedApi<PictureApi> }
   | { key: "PICTURE"; args: { id: PictureId }; response: PictureApi }
@@ -35,6 +37,14 @@ type RoutePath<K extends ApiRouteKey> = ApiRoute<K> extends {
   : { method: ApiMethod; pathname: string }
 
 export const routes: { [key in ApiRouteKey]: RoutePath<key> } = {
+  CATEGORY: {
+    method: "GET",
+    stringify: ({ slug }) => `/categories/${slug}`,
+    parse: (pathname) => {
+      const res = /^\/categories\/([^\/]*)$/.exec(pathname)
+      return res ? { ok: true, args: { slug: res[1] } } : { ok: false }
+    },
+  },
   PICTURE_UPLOAD: { pathname: `/picture/upload`, method: "POST" },
   PICTURE_LIST: { pathname: `/pictures`, method: "GET" },
   PICTURE: {

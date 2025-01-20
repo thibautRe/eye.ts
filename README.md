@@ -10,6 +10,14 @@ bun run dev-frontend
 bun run dev-svelte
 ```
 
+### Useful scripts
+
+Run migration:
+
+```sh
+bun run migrate
+```
+
 ## Todo
 
 ### Infra

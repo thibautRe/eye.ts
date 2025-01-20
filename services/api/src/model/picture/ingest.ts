@@ -1,4 +1,4 @@
-import db, { picture_sizes, pictures } from "db"
+import db, { category_leaves, picture_sizes, pictures } from "db"
 import imageSize from "image-size"
 import sharp from "sharp"
 import { putS3Picture } from "../../s3Client"
@@ -54,14 +54,18 @@ export const ingestPicture = async (file: File) => {
     Body: Buffer.from(arrayBuffer),
     Metadata: { pictureType: "RESIZED", width: size.width.toString() },
   })
+  const [category] = await category_leaves(db).insert({
+    name: { en: file.name },
+    type: "picture",
+  })
   const [picture] = await pictures(db).insert({
+    category_leaf_id: category.id,
     alt: "",
     original_height: size.height,
     original_width: size.width,
     original_s3_key: s3key,
     original_file_name: file.name,
     blurhash: "",
-    name: file.name,
     ...dataInExif,
   })
 
