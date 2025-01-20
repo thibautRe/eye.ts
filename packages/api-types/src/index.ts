@@ -1,6 +1,8 @@
 import { type PictureId } from "core"
 import type { CategoryUntypedApi } from "./category"
 
+export * from "./category"
+
 type ApiMethod = "GET" | "POST"
 
 export type ApiRoutes =

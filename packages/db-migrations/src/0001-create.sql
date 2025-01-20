@@ -18,9 +18,6 @@ CREATE TABLE category_leaves (
     exif_tags TEXT[] NOT NULL DEFAULT '{}'
 );
 CREATE UNIQUE INDEX category_leaf_slug_lower ON category_leaves(lower(slug)) WHERE slug IS NOT NULL;
-INSERT INTO category_leaves (id, slug, name) VALUES 
-    (1, 'all', '{"en": "all"}'), 
-    (2, 'Persons_by_name', '{"en": "Persons by name"}');
 
 CREATE TABLE category_parents (
     child_id  BIGINT NOT NULL REFERENCES category_leaves(id),
@@ -50,7 +47,7 @@ CREATE TABLE camera_lenses (
 
 CREATE TABLE pictures (
     id BIGSERIAL NOT NULL PRIMARY KEY,
-    category_leaf_id BIGINT NOT NULL REFERENCES category_leaves(id),
+    category_leaf_id BIGINT NOT NULL REFERENCES category_leaves(id) UNIQUE,
 
     original_file_name TEXT NOT NULL,
     original_width INT NOT NULL,
@@ -70,7 +67,7 @@ CREATE TABLE pictures (
 );
 
 CREATE TABLE picture_sizes (
-    picture_id INT NOT NULL REFERENCES pictures(id),
+    picture_id BIGINT NOT NULL REFERENCES pictures(id),
     s3_key TEXT NOT NULL,
     height INT NOT NULL,
     width INT NOT NULL,
@@ -81,3 +78,15 @@ CREATE TABLE picture_sizes (
 
 INSERT INTO camera_bodies (name) VALUES ('ILCE-7RM3A');
 INSERT INTO camera_lenses (name) VALUES ('FE 24-105mm F4 G OSS'), ('SAMYANG AF 135mm F1.8');
+
+INSERT INTO category_leaves (id, slug, name, type, exif_tags) VALUES 
+    (1, 'all', '{"en": "all"}', NULL, '{}'), 
+    (2, 'Persons_by_name', '{"en": "Persons by name"}', NULL, '{}'),
+    (3, 'Atlas', '{"en": "Atlas"}', 'person', '{"People/Atlas"}');
+ALTER SEQUENCE category_leaves_id_seq RESTART 4;
+
+INSERT INTO category_parents (child_id, parent_id) VALUES
+    (2, 1),
+    (3, 2);
+
+

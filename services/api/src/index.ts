@@ -1,12 +1,13 @@
 import { randomInt } from "crypto"
 import { createRouter, type RouterRun } from "./router"
-import { isNotNull, translate, type ID } from "core"
+import { translate, type ID } from "core"
 import {
   type ApiRouteArgs,
   type ApiRouteKey,
   type ApiRouteResponse,
   type CameraBodyApi,
   type CameraLensApi,
+  type CategoryUntypedApi,
   type PictureApi,
   routes,
 } from "api-types"
@@ -15,17 +16,15 @@ import db, {
   type CameraBodies,
   type CameraLenses,
   type CategoryLeaves,
-  category_leaves,
-  picture_sizes,
   type Pictures,
+  category_leaves,
   pictures,
-  q,
 } from "db"
 import { listPictures } from "./model/picture/list"
-import { getCameraBodyByIds } from "./model/cameraBody"
-import { getCameraLensByIds } from "./model/cameraLens"
+import { getCameraBodyById } from "./model/cameraBody"
+import { getCameraLensById } from "./model/cameraLens"
+import { getPictureSizesForPictureId } from "./model/picture/sizes"
 import { getPublicEndpoint } from "./s3Client"
-import type { CategoryUntypedApi } from "api-types/src/category"
 
 declare module "bun" {
   interface Env {
@@ -106,63 +105,39 @@ const runHandlers = buildHandlers({
 })
 
 const toCameraLensApi = (dbCameraLens: CameraLenses): CameraLensApi => {
-  return {
-    name: dbCameraLens.name,
-  }
+  return { name: dbCameraLens.name }
 }
 
 const toCameraBodyApi = (dbCameraBody: CameraBodies): CameraBodyApi => {
+  return { name: dbCameraBody.name }
+}
+
+const toPictureApi = async (dbPic: Pictures): Promise<PictureApi> => {
   return {
-    name: dbCameraBody.name,
+    id: dbPic.id,
+    alt: dbPic.alt,
+    blurhash: dbPic.blurhash,
+    height: dbPic.original_height,
+    width: dbPic.original_width,
+    originalUrl: getPublicEndpoint(dbPic.original_s3_key),
+    cameraBody: dbPic.shot_by_camera_body_id
+      ? toCameraBodyApi(await getCameraBodyById(dbPic.shot_by_camera_body_id))
+      : null,
+    cameraLens: dbPic.shot_by_camera_lens_id
+      ? toCameraLensApi(await getCameraLensById(dbPic.shot_by_camera_lens_id))
+      : null,
+    exif: dbPic.exif,
+    shotAt: dbPic.shot_at?.toString() ?? null,
+    sizes: (await getPictureSizesForPictureId(dbPic.id)).map((s) => ({
+      height: s.height,
+      width: s.width,
+      url: getPublicEndpoint(s.s3_key),
+    })),
   }
 }
 
-const toPictureApi = async (dbPic: Pictures): Promise<PictureApi> =>
-  (await toPictureApis([dbPic]))[0]
-
-const toPictureApis = async (dbPics: Pictures[]): Promise<PictureApi[]> => {
-  const [sizes, bodies, lenses] = await Promise.all([
-    picture_sizes(db)
-      .find({ picture_id: q.anyOf(dbPics.map((p) => p.id)) })
-      .all(),
-    getCameraBodyByIds(
-      ...dbPics.map((p) => p.shot_by_camera_body_id).filter(isNotNull),
-    ),
-    getCameraLensByIds(
-      ...dbPics.map((p) => p.shot_by_camera_lens_id).filter(isNotNull),
-    ),
-  ])
-
-  const bodiesById = new Map(bodies.map((b) => [b.id, b]))
-  const lensesById = new Map(lenses.map((l) => [l.id, l]))
-  return dbPics.map((dbPic) => {
-    const body = dbPic.shot_by_camera_body_id
-      ? bodiesById.get(dbPic.shot_by_camera_body_id)
-      : null
-    const lens = dbPic.shot_by_camera_lens_id
-      ? lensesById.get(dbPic.shot_by_camera_lens_id)
-      : null
-    return {
-      id: dbPic.id,
-      alt: dbPic.alt,
-      blurhash: dbPic.blurhash,
-      height: dbPic.original_height,
-      width: dbPic.original_width,
-      originalUrl: getPublicEndpoint(dbPic.original_s3_key),
-      cameraBody: body ? toCameraBodyApi(body) : null,
-      cameraLens: lens ? toCameraLensApi(lens) : null,
-      exif: dbPic.exif,
-      shotAt: dbPic.shot_at?.toString() ?? null,
-      sizes: sizes
-        .filter((s) => s.picture_id.toString() === dbPic.id.toString())
-        .map((s) => ({
-          height: s.height,
-          width: s.width,
-          url: getPublicEndpoint(s.s3_key),
-        })),
-    }
-  })
-}
+const toPictureApis = async (dbPics: Pictures[]) =>
+  await Promise.all(dbPics.map(toPictureApi))
 
 const toCategoryApi = async (
   category: CategoryLeaves,

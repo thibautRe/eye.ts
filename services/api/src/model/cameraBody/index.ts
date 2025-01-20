@@ -1,53 +1,23 @@
+import { batch, dedupeAsync } from "@databases/dataloader"
 import db, { camera_bodies, q, type CameraBodies } from "db"
+import createCache from "../../utils/createCache"
 
-const cacheByName = new Map<string, Promise<CameraBodies | null>>()
-const cacheById = new Map<CameraBodies["id"], Promise<CameraBodies>>()
+export const getCameraBodyByName = dedupeAsync<string, CameraBodies | null>(
+  async (name) => (name ? await camera_bodies(db).findOne({ name }) : null),
+)
 
-export const getCameraBodyByName = async (
-  name: string,
-): Promise<CameraBodies | null> => {
-  if (!name) return null
-  if (cacheByName.has(name)) return await cacheByName.get(name)!
-  const promise = (async () => {
-    const body = await camera_bodies(db).findOne({ name })
-    if (!body) cacheByName.delete(name)
-    return body
-  })()
-  cacheByName.set(name, promise)
-  return await promise
-}
-
-export const getCameraBodyById = async (
-  id: CameraBodies["id"],
-): Promise<CameraBodies> => {
-  if (cacheById.has(id)) return await cacheById.get(id)!
-  const promise = camera_bodies(db).findOneRequired({ id })
-  cacheById.set(id, promise)
-  return await promise
-}
-
-export const getCameraBodyByIds = async (...ids: CameraBodies["id"][]) => {
-  const bodies: Promise<CameraBodies>[] = []
-  const missingIds = new Set<CameraBodies["id"]>()
-  for (const id of ids) {
-    if (cacheById.has(id)) {
-      bodies.push(cacheById.get(id)!)
-      continue
-    }
-    missingIds.add(id)
-  }
-
-  const missingBodies = async () => {
+export const getCameraBodyById = dedupeAsync<CameraBodies["id"], CameraBodies>(
+  batch<CameraBodies["id"], CameraBodies>(async (ids) => {
     const bodies = await camera_bodies(db)
-      .find({ id: q.anyOf(missingIds) })
+      .find({ id: q.anyOf(ids) })
       .all()
-    // add to cache
-    for (const body of bodies) {
-      cacheById.set(body.id, Promise.resolve(body))
+    const bodiesById = new Map(bodies.map((b) => [b.id, b]))
+    return {
+      get: (id) => {
+        if (bodiesById.has(id)) return bodiesById.get(id)!
+        throw Object.assign(new Error("Cannot find body"), { id })
+      },
     }
-    return bodies
-  }
-
-  const [m, ...b] = await Promise.all([missingBodies(), ...bodies])
-  return [...m, ...b]
-}
+  }),
+  { cache: createCache({ name: "CameraBodiesById" }) },
+)
