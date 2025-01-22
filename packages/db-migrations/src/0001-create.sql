@@ -15,9 +15,10 @@ CREATE TABLE category_leaves (
     slug TEXT NULL,
     name JSONB NOT NULL, -- i18n text
     type category_leaf_type NULL,
-    exif_tags TEXT[] NOT NULL DEFAULT '{}'
+    exif_tag TEXT NULL
 );
 CREATE UNIQUE INDEX category_leaf_slug_lower ON category_leaves(lower(slug)) WHERE slug IS NOT NULL;
+CREATE UNIQUE INDEX category_leaf_exif_tag_lower ON category_leaves(lower(exif_tag)) WHERE exif_tag IS NOT NULL;
 
 CREATE TABLE category_parents (
     child_id  BIGINT NOT NULL REFERENCES category_leaves(id),
@@ -79,10 +80,10 @@ CREATE TABLE picture_sizes (
 INSERT INTO camera_bodies (name) VALUES ('ILCE-7RM3A');
 INSERT INTO camera_lenses (name) VALUES ('FE 24-105mm F4 G OSS'), ('SAMYANG AF 135mm F1.8');
 
-INSERT INTO category_leaves (id, slug, name, type, exif_tags) VALUES 
-    (1, 'all', '{"en": "all"}', NULL, '{}'), 
-    (2, 'Persons_by_name', '{"en": "Persons by name"}', NULL, '{}'),
-    (3, 'Atlas', '{"en": "Atlas"}', 'person', '{"People/Atlas"}');
+INSERT INTO category_leaves (id, slug, name, type, exif_tag) VALUES 
+    (1, 'all', '{"en": "all"}', NULL, NULL),
+    (2, 'Persons_by_name', '{"en": "Persons by name"}', NULL, NULL),
+    (3, 'Atlas', '{"en": "Atlas"}', 'person', 'People/Atlas');
 ALTER SEQUENCE category_leaves_id_seq RESTART 4;
 
 INSERT INTO category_parents (child_id, parent_id) VALUES

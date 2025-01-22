@@ -1,4 +1,9 @@
-import db, { category_leaves, picture_sizes, pictures } from "db"
+import db, {
+  category_leaves,
+  category_parents,
+  picture_sizes,
+  pictures,
+} from "db"
 import imageSize from "image-size"
 import sharp from "sharp"
 import { putS3Picture } from "../../s3Client"
@@ -6,6 +11,7 @@ import { putS3Picture } from "../../s3Client"
 import { encode as blurhashEncode } from "blurhash"
 import type { PictureId } from "core"
 import { getPictureDataInExif } from "./exif"
+import { getCategoryLeavesIdByXmpTag } from "../category"
 
 const processSize = async ({
   arrayBuffer,
@@ -43,7 +49,7 @@ export const ingestPicture = async (file: File) => {
   const arrayBuffer = await file.arrayBuffer()
   const s3key = Bun.randomUUIDv7("base64")
 
-  const dataInExif = await getPictureDataInExif(arrayBuffer)
+  const { pictureData, xmpTags } = await getPictureDataInExif(arrayBuffer)
 
   const size = imageSize(new Uint8Array(arrayBuffer))
   if (!size || !size.width || !size.height)
@@ -58,6 +64,15 @@ export const ingestPicture = async (file: File) => {
     name: { en: file.name },
     type: "picture",
   })
+
+  // auto-add parents based on XMP tags
+  const parentCats = await getCategoryLeavesIdByXmpTag(xmpTags)
+  await category_parents(db).insert(
+    ...parentCats.map((parentId) => ({
+      child_id: category.id,
+      parent_id: parentId,
+    })),
+  )
   const [picture] = await pictures(db).insert({
     category_leaf_id: category.id,
     alt: "",
@@ -66,7 +81,7 @@ export const ingestPicture = async (file: File) => {
     original_s3_key: s3key,
     original_file_name: file.name,
     blurhash: "",
-    ...dataInExif,
+    ...pictureData,
   })
 
   const [getPixels] = await Promise.all([
