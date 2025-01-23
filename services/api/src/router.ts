@@ -1,3 +1,5 @@
+import { asyncLocalStorage, makeStorage } from "backend-logs"
+
 export type PreMiddleware<TContext> = (args: {
   request: Request
   context: TContext
@@ -28,19 +30,21 @@ class Router<TContext> {
   }
   run(run: RouterRun<TContext>, initContext: TContext) {
     return async (request: Request): Promise<Response> => {
-      let context = initContext
-      for (const preMid of this._premiddlewares) {
-        const ret = await Promise.resolve(preMid({ request, context }))
-        if (ret) context = ret
-      }
-      let response = await run({ context, request })
-      for (const postMid of this._postmiddlewares) {
-        const ret = await Promise.resolve(
-          postMid({ request, response, context }),
-        )
-        if (ret) response = ret
-      }
-      return response
+      return asyncLocalStorage.run(makeStorage(), async () => {
+        let context = initContext
+        for (const preMid of this._premiddlewares) {
+          const ret = await Promise.resolve(preMid({ request, context }))
+          if (ret) context = ret
+        }
+        let response = await run({ context, request })
+        for (const postMid of this._postmiddlewares) {
+          const ret = await Promise.resolve(
+            postMid({ request, response, context }),
+          )
+          if (ret) response = ret
+        }
+        return response
+      })
     }
   }
 }

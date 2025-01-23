@@ -1,0 +1,8 @@
+{
+  "name": "backend-logs",
+  "main": "src/index.ts",
+  "module": "src/index.ts",
+  "dependencies": {
+    "core": "workspace:*"
+  }
+}

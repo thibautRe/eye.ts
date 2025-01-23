@@ -72,6 +72,7 @@ export interface PictureApi {
   cameraLens: CameraLensApi | null
   exif: PictureExifApi
   sizes: PictureSizeApi[]
+  parentCategories: { name: string; slug: string }[]
 }
 
 export interface PictureExifApi {}

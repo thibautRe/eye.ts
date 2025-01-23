@@ -1,6 +1,12 @@
 import { batch, dedupeAsync } from "@databases/dataloader"
-import db, { category_leaves, q, type CategoryLeaves } from "db"
+import db, {
+  category_leaves,
+  category_parents,
+  q,
+  type CategoryLeaves,
+} from "db"
 import createCache from "../../utils/createCache"
+import { isNotNull } from "core"
 
 export const getCategoryLeavesByXmpTag = dedupeAsync(
   batch<string, CategoryLeaves[]>(async (xmpTags) => {
@@ -23,3 +29,25 @@ export const getCategoryLeavesIdByXmpTag = async (xmpTags: string[]) => {
   ).flat(1)
   return [...new Set(leaves.map((l) => l.id))]
 }
+
+export const getDirectParentCategories = batch<
+  CategoryLeaves["id"],
+  CategoryLeaves[]
+>(async (childIds) => {
+  const parents = await category_parents(db)
+    .find({ child_id: q.anyOf(childIds) })
+    .all()
+  const leaves = await category_leaves(db)
+    .find({ id: q.anyOf(parents.map((p) => p.parent_id)) })
+    .all()
+
+  const parentsMap = Map.groupBy(parents, (p) => p.child_id)
+  const leavesMap = new Map(leaves.map((l) => [l.id, l]))
+  return {
+    get: (childId) =>
+      parentsMap
+        .get(childId)
+        ?.map((p) => leavesMap.get(p.parent_id) ?? null)
+        .filter(isNotNull) ?? [],
+  }
+})

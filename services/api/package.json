@@ -12,6 +12,7 @@
     "@databases/dataloader": "^1.1.0",
     "api-types": "workspace:*",
     "blurhash": "^2.0.5",
+    "backend-logs": "workspace:*",
     "core": "workspace:*",
     "db": "workspace:*",
     "exifr": "^7.1.3",

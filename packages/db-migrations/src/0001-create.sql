@@ -82,12 +82,6 @@ INSERT INTO camera_lenses (name) VALUES ('FE 24-105mm F4 G OSS'), ('SAMYANG AF 1
 
 INSERT INTO category_leaves (id, slug, name, type, exif_tag) VALUES 
     (1, 'all', '{"en": "all"}', NULL, NULL),
-    (2, 'Persons_by_name', '{"en": "Persons by name"}', NULL, NULL),
-    (3, 'Atlas', '{"en": "Atlas"}', 'person', 'People/Atlas');
-ALTER SEQUENCE category_leaves_id_seq RESTART 4;
-
-INSERT INTO category_parents (child_id, parent_id) VALUES
-    (2, 1),
-    (3, 2);
+ALTER SEQUENCE category_leaves_id_seq RESTART 2;
 
 

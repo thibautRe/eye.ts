@@ -1,6 +1,5 @@
-import { randomInt } from "crypto"
 import { createRouter, type RouterRun } from "./router"
-import { translate, type ID } from "core"
+import { asyncLocalStorage, log } from "backend-logs"
 import {
   type ApiRouteArgs,
   type ApiRouteKey,
@@ -25,6 +24,8 @@ import { getCameraBodyById } from "./model/cameraBody"
 import { getCameraLensById } from "./model/cameraLens"
 import { getPictureSizesForPictureId } from "./model/picture/sizes"
 import { getPublicEndpoint } from "./s3Client"
+import { getDirectParentCategories } from "./model/category"
+import { translate } from "core"
 
 declare module "bun" {
   interface Env {
@@ -133,6 +134,11 @@ const toPictureApi = async (dbPic: Pictures): Promise<PictureApi> => {
       width: s.width,
       url: getPublicEndpoint(s.s3_key),
     })),
+    parentCategories: (
+      await getDirectParentCategories(dbPic.category_leaf_id)
+    ).flatMap((l) =>
+      l.slug ? [{ name: translate(l.name, "en"), slug: l.slug }] : [],
+    ),
   }
 }
 
@@ -154,32 +160,24 @@ const toCategoryApi = async (
   }
 }
 
-type RequestId = ID<"request">
 interface Context {
-  requestId: RequestId
   requestStart: Date
-  log: (...content: any[]) => void
 }
 const router = createRouter<Context>()
   .withPreMiddleware(({ request }) => {
-    const requestId = `${randomInt(1e5)}`.padStart(5, "0") as RequestId
-    const log = (...content: any[]) =>
-      console.log(`[API] <${requestId}>`, ...content)
-
     log(`--> ${request.url}`)
-    return { requestId, requestStart: new Date(), log }
+    return { requestStart: new Date() }
   })
   .withPostMiddleware(({ request, response, context }) => {
     const ellapsedMs = Date.now() - context.requestStart.getTime()
-    context.log(`<-- ${request.url} (${response.status}) ${ellapsedMs}ms`)
+    const s = asyncLocalStorage.getStore()
+    log(
+      `<-- ${request.url} (${response.status})\t${ellapsedMs}ms\t${
+        s?.dbQueries ?? 0
+      } DB queries`,
+    )
   })
-  .run(runHandlers, {
-    requestId: "-1" as RequestId,
-    requestStart: new Date(),
-    log: () => {
-      throw new Error("No context set")
-    },
-  })
+  .run(runHandlers, { requestStart: new Date() })
 
 const server = Bun.serve({
   port: Bun.env.EYE_API_PORT ?? 3000,
@@ -187,4 +185,4 @@ const server = Bun.serve({
   fetch: router,
 })
 
-console.log(`[API]: Starting server on ${server.url}`)
+log(`Starting server on ${server.url}`)
