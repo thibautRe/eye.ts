@@ -102,8 +102,5 @@ export interface CategoryApi {
 
 export interface PaginatedApi<T> {
   items: T[]
-  info: {
-    nextPage: number | null
-    count: number
-  }
+  nextPage: number | null
 }

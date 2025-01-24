@@ -1,5 +1,4 @@
-import db, { pictures, type Pictures } from "db"
-import { paginateBySize } from "../../utils/paginate"
+import db, { paginateBySize, pictures } from "db"
 
 export const listPictures = async ({
   pageSize = 10,
@@ -8,8 +7,8 @@ export const listPictures = async ({
   pageSize: number
   pageNumber: number
 }) =>
-  await paginateBySize<Pictures>(
-    pictures(db).find().orderByDesc("shot_at").toSql(),
+  await paginateBySize(
+    pictures(db).find().orderByDesc("shot_at"),
     pageSize,
     pageNumber,
   )

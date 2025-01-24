@@ -113,12 +113,12 @@ const runHandlers = buildHandlers({
   PICTURE_LIST: async ({ url }) => {
     const pageNumber = parseInt(url.searchParams.get("page") ?? "") || 0
     const pageSize = 20
-    const { content, count, hasMore } = await listPictures({
+    const { content, hasMore } = await listPictures({
       pageNumber,
       pageSize,
     })
     return {
-      info: { count, nextPage: hasMore ? pageNumber + 1 : null },
+      nextPage: hasMore ? pageNumber + 1 : null,
       items: await toPictureApis(content),
     }
   },

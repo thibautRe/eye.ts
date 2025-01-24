@@ -25,7 +25,7 @@ export class PaginatedLoader<T, P = {}> {
     try {
       const res = await this.loader({ page: nextPage }, this.params)
       this.items = [...this.items, ...res.items]
-      this.nextPage = res.info.nextPage
+      this.nextPage = res.nextPage
     } catch (err) {
       console.error("Error while loading paginated endpoint")
       console.error(err)
