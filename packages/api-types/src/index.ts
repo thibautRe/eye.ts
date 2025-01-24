@@ -1,12 +1,10 @@
 import { type PictureId } from "core"
-import type { CategoryUntypedApi } from "./category"
-
-export * from "./category"
 
 type ApiMethod = "GET" | "POST"
 
 export type ApiRoutes =
-  | { key: "CATEGORY"; args: { slug: string }; response: CategoryUntypedApi }
+  | { key: "CATEGORY"; args: { slug: string }; response: CategoryApi }
+  | { key: "CATEGORY_CREATE"; response: CategoryApi }
   | { key: "PICTURE_UPLOAD"; response: PictureApi }
   | { key: "PICTURE_LIST"; response: PaginatedApi<PictureApi> }
   | { key: "PICTURE"; args: { id: PictureId }; response: PictureApi }
@@ -47,6 +45,7 @@ export const routes: { [key in ApiRouteKey]: RoutePath<key> } = {
       return res ? { ok: true, args: { slug: res[1] } } : { ok: false }
     },
   },
+  CATEGORY_CREATE: { method: "POST", pathname: `/categories/` },
   PICTURE_UPLOAD: { pathname: `/picture/upload`, method: "POST" },
   PICTURE_LIST: { pathname: `/pictures`, method: "GET" },
   PICTURE: {
@@ -72,7 +71,7 @@ export interface PictureApi {
   cameraLens: CameraLensApi | null
   exif: PictureExifApi
   sizes: PictureSizeApi[]
-  parentCategories: { name: string; slug: string }[]
+  directParents: LinkedCategoryApi[]
 }
 
 export interface PictureExifApi {}
@@ -89,6 +88,16 @@ export interface PictureSizeApi {
   width: number
   height: number
   url: string
+}
+
+export interface LinkedCategoryApi {
+  slug: string
+  name: string
+}
+export interface CategoryApi {
+  name: string
+  directParents: LinkedCategoryApi[]
+  directChildren: LinkedCategoryApi[]
 }
 
 export interface PaginatedApi<T> {

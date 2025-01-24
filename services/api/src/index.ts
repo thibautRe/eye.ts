@@ -6,7 +6,8 @@ import {
   type ApiRouteResponse,
   type CameraBodyApi,
   type CameraLensApi,
-  type CategoryUntypedApi,
+  type CategoryApi,
+  type LinkedCategoryApi,
   type PictureApi,
   routes,
 } from "api-types"
@@ -24,8 +25,11 @@ import { getCameraBodyById } from "./model/cameraBody"
 import { getCameraLensById } from "./model/cameraLens"
 import { getPictureSizesForPictureId } from "./model/picture/sizes"
 import { getPublicEndpoint } from "./s3Client"
-import { getDirectParentCategories } from "./model/category"
-import { translate } from "core"
+import {
+  getDirectChildrenCategories,
+  getDirectParentCategories,
+} from "./model/category"
+import { translate, type I18nContent } from "core"
 
 declare module "bun" {
   interface Env {
@@ -81,6 +85,21 @@ const runHandlers = buildHandlers({
       }),
     )
   },
+  CATEGORY_CREATE: async ({ request }) => {
+    const {
+      name,
+      slug,
+      exifTag,
+    }: { name: I18nContent; slug: string; exifTag: string } =
+      await request.json()
+    const [inserted] = await category_leaves(db).insert({
+      type: undefined,
+      name,
+      slug,
+      exif_tag: exifTag,
+    })
+    return await toCategoryApi(inserted)
+  },
   PICTURE_UPLOAD: async ({ request }) => {
     const formData = await request.formData()
     // @ts-expect-error
@@ -134,10 +153,8 @@ const toPictureApi = async (dbPic: Pictures): Promise<PictureApi> => {
       width: s.width,
       url: getPublicEndpoint(s.s3_key),
     })),
-    parentCategories: (
-      await getDirectParentCategories(dbPic.category_leaf_id)
-    ).flatMap((l) =>
-      l.slug ? [{ name: translate(l.name, "en"), slug: l.slug }] : [],
+    directParents: toLinkedCategoryApi(
+      await getDirectParentCategories(dbPic.category_leaf_id),
     ),
   }
 }
@@ -147,18 +164,24 @@ const toPictureApis = async (dbPics: Pictures[]) =>
 
 const toCategoryApi = async (
   category: CategoryLeaves,
-): Promise<CategoryUntypedApi> => {
-  if (!category.slug) {
-    throw Object.assign(new Error("Category does not have slug"), { category })
-  }
+): Promise<CategoryApi> => {
   return {
-    type: undefined,
-    slug: category.slug,
     name: translate(category.name, "en"),
-    directChildren: [], // todo
-    directParents: [], // todo
+    directChildren: toLinkedCategoryApi(
+      await getDirectChildrenCategories(category.id),
+    ),
+    directParents: toLinkedCategoryApi(
+      await getDirectParentCategories(category.id),
+    ),
   }
 }
+
+const toLinkedCategoryApi = (
+  categories: CategoryLeaves[],
+): LinkedCategoryApi[] =>
+  categories.flatMap((l) =>
+    l.slug ? [{ name: translate(l.name, "en"), slug: l.slug }] : [],
+  )
 
 interface Context {
   requestStart: Date

@@ -44,11 +44,15 @@ export const delete_http = async <T>(r: string, data?: T) =>
       body: JSON.stringify(data),
     }),
   )
-export const get_json = async <T = unknown>(r: string): Promise<T> =>
+export const get_json = async <T>(r: string): Promise<T> =>
   (await (await get(r)).json()) as T
-export const put_json = async <TData, T = unknown>(
+export const post_json = async <T, D = unknown>(
   r: string,
-  data?: TData,
+  data?: D,
+): Promise<T> => (await (await post(r, data)).json()) as T
+export const put_json = async <T, D = unknown>(
+  r: string,
+  data?: D,
 ): Promise<T> => (await (await put(r, data)).json()) as T
 
 export const makeCachedGet = <T>() => {

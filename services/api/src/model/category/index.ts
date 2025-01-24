@@ -51,3 +51,25 @@ export const getDirectParentCategories = batch<
         .filter(isNotNull) ?? [],
   }
 })
+
+export const getDirectChildrenCategories = batch<
+  CategoryLeaves["id"],
+  CategoryLeaves[]
+>(async (parentIds) => {
+  const parents = await category_parents(db)
+    .find({ parent_id: q.anyOf(parentIds) })
+    .all()
+  const leaves = await category_leaves(db)
+    .find({ id: q.anyOf(parents.map((p) => p.child_id)) })
+    .all()
+
+  const parentsMap = Map.groupBy(parents, (p) => p.parent_id)
+  const leavesMap = new Map(leaves.map((l) => [l.id, l]))
+  return {
+    get: (parentId) =>
+      parentsMap
+        .get(parentId)
+        ?.map((p) => leavesMap.get(p.child_id) ?? null)
+        .filter(isNotNull) ?? [],
+  }
+})

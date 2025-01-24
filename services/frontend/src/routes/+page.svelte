@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { apiUploadFiles } from "$lib/api"
 </script>
 
@@ -8,6 +8,17 @@
   multiple
   accept="*.jpg, *.jpeg"
   onchange={async (e) => {
-    if (e.target.files) await apiUploadFiles(e.target.files)
+    const files = (e.target as HTMLInputElement | null)?.files
+    if (files) await apiUploadFiles(files)
   }}
 />
+
+<h2>Links</h2>
+<ul>
+  <li>
+    <a href="/pictures/">Pictures</a>
+  </li>
+  <li>
+    <a href="/categories/">Categories</a>
+  </li>
+</ul>
