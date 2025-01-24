@@ -81,7 +81,7 @@ INSERT INTO camera_bodies (name) VALUES ('ILCE-7RM3A');
 INSERT INTO camera_lenses (name) VALUES ('FE 24-105mm F4 G OSS'), ('SAMYANG AF 135mm F1.8');
 
 INSERT INTO category_leaves (id, slug, name, type, exif_tag) VALUES 
-    (1, 'all', '{"en": "all"}', NULL, NULL),
+    (1, 'root', '{"en": "Root Category"}', NULL, NULL),
 ALTER SEQUENCE category_leaves_id_seq RESTART 2;
 
 

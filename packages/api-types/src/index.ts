@@ -5,6 +5,8 @@ type ApiMethod = "GET" | "POST"
 export type ApiRoutes =
   | { key: "CATEGORY"; args: { slug: string }; response: CategoryApi }
   | { key: "CATEGORY_CREATE"; response: CategoryApi }
+  | { key: "CATEGORY_LIST"; response: PaginatedApi<CategoryApi> }
+  /** --- */
   | { key: "PICTURE_UPLOAD"; response: PictureApi }
   | { key: "PICTURE_LIST"; response: PaginatedApi<PictureApi> }
   | { key: "PICTURE"; args: { id: PictureId }; response: PictureApi }
@@ -46,6 +48,7 @@ export const routes: { [key in ApiRouteKey]: RoutePath<key> } = {
     },
   },
   CATEGORY_CREATE: { method: "POST", pathname: `/categories/` },
+  CATEGORY_LIST: { method: "GET", pathname: "/categories/" },
   PICTURE_UPLOAD: { pathname: `/picture/upload`, method: "POST" },
   PICTURE_LIST: { pathname: `/pictures`, method: "GET" },
   PICTURE: {

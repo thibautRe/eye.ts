@@ -18,6 +18,7 @@ import db, {
   type CategoryLeaves,
   type Pictures,
   category_leaves,
+  paginateBySize,
   pictures,
 } from "db"
 import { listPictures } from "./model/picture/list"
@@ -100,6 +101,19 @@ const runHandlers = buildHandlers({
     })
     return await toCategoryApi(inserted)
   },
+  CATEGORY_LIST: async ({ url }) => {
+    const pageNumber = parseInt(url.searchParams.get("page") ?? "") || 0
+    const pageSize = 20
+    const { content, hasMore } = await paginateBySize(
+      category_leaves(db).find({ type: undefined }).orderByAsc("id"),
+      pageNumber,
+      pageSize,
+    )
+    return {
+      nextPage: hasMore ? pageNumber + 1 : null,
+      items: await toCategoryApis(content),
+    }
+  },
   PICTURE_UPLOAD: async ({ request }) => {
     const formData = await request.formData()
     // @ts-expect-error
@@ -175,6 +189,10 @@ const toCategoryApi = async (
     ),
   }
 }
+
+const toCategoryApis = async (
+  categories: CategoryLeaves[],
+): Promise<CategoryApi[]> => await Promise.all(categories.map(toCategoryApi))
 
 const toLinkedCategoryApi = (
   categories: CategoryLeaves[],
