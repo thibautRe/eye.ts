@@ -1,15 +1,11 @@
-import { createRouter, type RouterRun } from "./router"
+import { createRouter } from "./utils/router"
 import { asyncLocalStorage, log } from "backend-logs"
 import {
-  type ApiRouteArgs,
-  type ApiRouteKey,
-  type ApiRouteResponse,
   type CameraBodyApi,
   type CameraLensApi,
   type CategoryApi,
   type LinkedCategoryApi,
   type PictureApi,
-  routes,
 } from "api-types"
 import { ingestPicture } from "./model/picture/ingest"
 import db, {
@@ -18,7 +14,6 @@ import db, {
   type CategoryLeaves,
   type Pictures,
   category_leaves,
-  paginateBySize,
   pictures,
 } from "db"
 import { listPictures } from "./model/picture/list"
@@ -29,54 +24,10 @@ import { getPublicEndpoint } from "./s3Client"
 import {
   getDirectChildrenCategories,
   getDirectParentCategories,
+  listCategories,
 } from "./model/category"
 import { translate, type I18nContent } from "core"
-
-declare module "bun" {
-  interface Env {
-    EYE_API_PORT: string
-  }
-}
-
-const make404 = () => new Response("Not found", { status: 404 })
-
-type Handler<K extends ApiRouteKey> = (params: {
-  request: Request
-  url: URL
-  context: Context
-  args: ApiRouteArgs<K>
-}) => Promise<ApiRouteResponse<K>>
-const buildHandlers =
-  (handlers: {
-    [key in ApiRouteKey]: Handler<key>
-  }): RouterRun<Context> =>
-  async ({ request, context }) => {
-    const url = new URL(request.url)
-    for (const key of Object.keys(routes)) {
-      const route = routes[key as ApiRouteKey]
-      // @ts-expect-error
-      const handler: Handler<typeof key> = handlers[key]
-      if (route.method !== request.method) continue
-      if (typeof route.pathname === "undefined") {
-        const r = route.parse(url.pathname)
-        if (!r.ok) continue
-        const handlerRes = await handler({
-          // @ts-expect-error
-          args: r.args,
-          request,
-          context,
-          url,
-        })
-        return Response.json(handlerRes)
-      }
-      if (route.pathname === url.pathname) {
-        const handlerRes = await handler({ request, context, args: null, url })
-        return Response.json(handlerRes)
-      }
-      continue
-    }
-    return make404()
-  }
+import { buildHandlers, getPaginatedParams } from "./utils/buildHandlers"
 
 const runHandlers = buildHandlers({
   CATEGORY: async ({ args: { slug } }) => {
@@ -101,16 +52,11 @@ const runHandlers = buildHandlers({
     })
     return await toCategoryApi(inserted)
   },
-  CATEGORY_LIST: async ({ url }) => {
-    const pageNumber = parseInt(url.searchParams.get("page") ?? "") || 0
-    const pageSize = 20
-    const { content, hasMore } = await paginateBySize(
-      category_leaves(db).find({ type: undefined }).orderByAsc("id"),
-      pageNumber,
-      pageSize,
-    )
+  CATEGORY_LIST: async ({ searchParams }) => {
+    const p = getPaginatedParams(searchParams)
+    const { content, hasMore } = await listCategories(p)
     return {
-      nextPage: hasMore ? pageNumber + 1 : null,
+      nextPage: hasMore ? p.pageNumber + 1 : null,
       items: await toCategoryApis(content),
     }
   },
@@ -124,15 +70,11 @@ const runHandlers = buildHandlers({
   PICTURE: async ({ args: { id } }) => {
     return await toPictureApi(await pictures(db).findOneRequired({ id }))
   },
-  PICTURE_LIST: async ({ url }) => {
-    const pageNumber = parseInt(url.searchParams.get("page") ?? "") || 0
-    const pageSize = 20
-    const { content, hasMore } = await listPictures({
-      pageNumber,
-      pageSize,
-    })
+  PICTURE_LIST: async ({ searchParams }) => {
+    const p = getPaginatedParams(searchParams)
+    const { content, hasMore } = await listPictures(p)
     return {
-      nextPage: hasMore ? pageNumber + 1 : null,
+      nextPage: hasMore ? p.pageNumber + 1 : null,
       items: await toPictureApis(content),
     }
   },
@@ -201,25 +143,26 @@ const toLinkedCategoryApi = (
     l.slug ? [{ name: translate(l.name, "en"), slug: l.slug }] : [],
   )
 
-interface Context {
-  requestStart: Date
-}
-const router = createRouter<Context>()
+const router = createRouter()
   .withPreMiddleware(({ request }) => {
     log(`--> ${request.url}`)
-    return { requestStart: new Date() }
   })
-  .withPostMiddleware(({ request, response, context }) => {
-    const ellapsedMs = Date.now() - context.requestStart.getTime()
+  .withPostMiddleware(({ request, response }) => {
     const s = asyncLocalStorage.getStore()
+    const ellapsedMs = Date.now() - (s?.requestStart.getTime() ?? NaN)
     log(
       `<-- ${request.url} (${response.status})\t${ellapsedMs}ms\t${
         s?.dbQueries ?? 0
       } DB queries`,
     )
   })
-  .run(runHandlers, { requestStart: new Date() })
+  .run(runHandlers, null)
 
+declare module "bun" {
+  interface Env {
+    EYE_API_PORT: string
+  }
+}
 const server = Bun.serve({
   port: Bun.env.EYE_API_PORT ?? 3000,
   development: Bun.env.NODE_ENV !== "production",

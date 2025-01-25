@@ -2,8 +2,10 @@ import { batch, dedupeAsync } from "@databases/dataloader"
 import db, {
   category_leaves,
   category_parents,
+  paginate,
   q,
   type CategoryLeaves,
+  type PaginateOptions,
 } from "db"
 import createCache from "../../utils/createCache"
 import { isNotNull } from "core"
@@ -73,3 +75,10 @@ export const getDirectChildrenCategories = batch<
         .filter(isNotNull) ?? [],
   }
 })
+
+export const listCategories = async (p: PaginateOptions) => {
+  return await paginate(
+    category_leaves(db).find({ type: undefined }).orderByAsc("id"),
+    p,
+  )
+}

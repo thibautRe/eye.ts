@@ -1,14 +1,4 @@
-import db, { paginateBySize, pictures } from "db"
+import db, { paginate, pictures, type PaginateOptions } from "db"
 
-export const listPictures = async ({
-  pageSize = 10,
-  pageNumber = 0,
-}: {
-  pageSize: number
-  pageNumber: number
-}) =>
-  await paginateBySize(
-    pictures(db).find().orderByDesc("shot_at"),
-    pageSize,
-    pageNumber,
-  )
+export const listPictures = async (p: PaginateOptions) =>
+  await paginate(pictures(db).find().orderByDesc("shot_at"), p)

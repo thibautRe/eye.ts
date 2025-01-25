@@ -20,8 +20,11 @@ const paginateByLimitOffset = async <T = unknown>(
   }
 }
 
-export const paginateBySize = async <T = unknown>(
+export interface PaginateOptions {
+  pageSize: number
+  pageNumber: number
+}
+export const paginate = async <T = unknown>(
   query: PaginatableQuery<T>,
-  pageSize: number,
-  pageNumber: number,
+  { pageSize, pageNumber }: PaginateOptions,
 ) => paginateByLimitOffset<T>(query, pageSize, pageNumber * pageSize)

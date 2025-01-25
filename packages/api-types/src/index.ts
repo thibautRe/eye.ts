@@ -5,10 +5,18 @@ type ApiMethod = "GET" | "POST"
 export type ApiRoutes =
   | { key: "CATEGORY"; args: { slug: string }; response: CategoryApi }
   | { key: "CATEGORY_CREATE"; response: CategoryApi }
-  | { key: "CATEGORY_LIST"; response: PaginatedApi<CategoryApi> }
+  | {
+      key: "CATEGORY_LIST"
+      response: PaginatedApi<CategoryApi>
+      searchParams: PaginatedSearchParam
+    }
   /** --- */
   | { key: "PICTURE_UPLOAD"; response: PictureApi }
-  | { key: "PICTURE_LIST"; response: PaginatedApi<PictureApi> }
+  | {
+      key: "PICTURE_LIST"
+      response: PaginatedApi<PictureApi>
+      searchParams: PaginatedSearchParam
+    }
   | { key: "PICTURE"; args: { id: PictureId }; response: PictureApi }
 
 export type ApiRouteKey = ApiRoutes["key"]
@@ -24,6 +32,13 @@ export type ApiRouteResponse<K extends ApiRouteKey> = ApiRoute<K> extends {
 }
   ? R
   : null
+export type ApiRouteSearchParams<K extends ApiRouteKey> = ApiRoute<K> extends {
+  searchParams: infer S
+}
+  ? S extends string
+    ? S
+    : null
+  : null
 
 export interface ApiPathnameWithArgs<A> {
   method: ApiMethod
@@ -31,14 +46,18 @@ export interface ApiPathnameWithArgs<A> {
   stringify: (params: A) => string
   parse: (pathname: string) => { ok: true; args: A } | { ok: false }
 }
+export interface ApiPathnameWithoutArgs {
+  method: ApiMethod
+  pathname: string
+}
 
-type RoutePath<K extends ApiRouteKey> = ApiRoute<K> extends {
+type ApiPathname<K extends ApiRouteKey> = ApiRoute<K> extends {
   args: infer A
 }
   ? ApiPathnameWithArgs<A>
-  : { method: ApiMethod; pathname: string }
+  : ApiPathnameWithoutArgs
 
-export const routes: { [key in ApiRouteKey]: RoutePath<key> } = {
+export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
   CATEGORY: {
     method: "GET",
     stringify: ({ slug }) => `/categories/${slug}`,
@@ -107,3 +126,5 @@ export interface PaginatedApi<T> {
   items: T[]
   nextPage: number | null
 }
+
+export type PaginatedSearchParam = "page" | "size"
