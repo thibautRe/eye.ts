@@ -1,23 +1,29 @@
 import { type PictureId } from "core"
 
 type ApiMethod = "GET" | "POST"
+interface RouteOptions {
+  args?: unknown
+  searchParams?: unknown
+}
+type Route<K, R, O extends RouteOptions = {}> = {
+  key: K
+  response: R
+} & (O extends { args: infer A } ? { args: A } : {}) &
+  (O extends { searchParams: infer S } ? { searchParams: S } : {})
+type PaginatedRoute<K, R, O extends RouteOptions = {}> = Route<
+  K,
+  PaginatedApi<R>,
+  { searchParams: O["searchParams"] & PaginatedSearchParam }
+>
 
 export type ApiRoutes =
-  | { key: "CATEGORY"; args: { slug: string }; response: CategoryApi }
-  | { key: "CATEGORY_CREATE"; response: CategoryApi }
-  | {
-      key: "CATEGORY_LIST"
-      response: PaginatedApi<CategoryApi>
-      searchParams: PaginatedSearchParam
-    }
+  | Route<"CATEGORY", CategoryApi, { args: { slug: string } }>
+  | Route<"CATEGORY_CREATE", CategoryApi>
+  | PaginatedRoute<"CATEGORY_LIST", CategoryApi>
   /** --- */
-  | { key: "PICTURE_UPLOAD"; response: PictureApi }
-  | {
-      key: "PICTURE_LIST"
-      response: PaginatedApi<PictureApi>
-      searchParams: PaginatedSearchParam
-    }
-  | { key: "PICTURE"; args: { id: PictureId }; response: PictureApi }
+  | Route<"PICTURE_UPLOAD", PictureApi>
+  | Route<"PICTURE", PictureApi, { args: { id: PictureId } }>
+  | PaginatedRoute<"PICTURE_LIST", PictureApi>
 
 export type ApiRouteKey = ApiRoutes["key"]
 export type ApiRoute<K extends ApiRouteKey> = Extract<ApiRoutes, { key: K }>
