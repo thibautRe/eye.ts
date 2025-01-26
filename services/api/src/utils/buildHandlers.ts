@@ -10,6 +10,7 @@ import {
 } from "api-types"
 import type { RouterRun } from "./router"
 import type { PaginateOptions } from "db"
+import { log } from "backend-logs"
 
 const make404 = () => new Response("Not found", { status: 404 })
 
@@ -48,6 +49,8 @@ export const buildHandlers =
       if (route.method !== request.method) continue
       const res = getRoutePathnameArgs(route, url.pathname)
       if (!res) continue
+
+      log(`Handler ${k}`)
 
       const searchParams: SearchParams<ApiRouteKey> = {
         // @ts-expect-error

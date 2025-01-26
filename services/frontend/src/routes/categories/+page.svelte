@@ -1,7 +1,12 @@
 <script lang="ts">
   import { goto } from "$app/navigation"
-  import { apiCreateCategory } from "$lib/api"
+  import { apiCreateCategory, apiGetCategories } from "$lib/api"
+  import {
+    PaginatedLoader,
+    type SerializedPaginatedLoader,
+  } from "$lib/PaginatedLoader.svelte"
   import { makeCategoryUrl } from "$lib/urls"
+  import type { CategoryApi } from "api-types"
   import { slugify } from "core"
 
   const onsubmit = async (e: SubmitEvent) => {
@@ -15,6 +20,9 @@
     const cat = await apiCreateCategory({ name, slug })
     goto(makeCategoryUrl(cat.slug))
   }
+
+  let { data }: { data: SerializedPaginatedLoader<CategoryApi> } = $props()
+  const loader = new PaginatedLoader(apiGetCategories).fromSerialized(data)
 </script>
 
 <form {onsubmit}>
@@ -24,3 +32,15 @@
     <input id="catname" type="text" />
   </label>
 </form>
+
+<h2>All categories</h2>
+<ul>
+  {#each loader.items as category}
+    <li>
+      <a href={makeCategoryUrl(category.slug)}>{category.name}</a>
+    </li>
+  {/each}
+</ul>
+{#if loader.nextPage !== null}
+  <button onclick={loader.onLoadNext}>Load next</button>
+{/if}

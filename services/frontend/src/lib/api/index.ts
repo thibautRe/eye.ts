@@ -22,3 +22,6 @@ export const apiCreateCategory = (data: { slug: string; name: string }) =>
 
 export const apiGetCategory = (slug: string) =>
   get_json<CategoryApi>(routes.CATEGORY.stringify({ slug }))
+export const apiGetCategories = makeCachedPaginatedApi<CategoryApi>(
+  routes.CATEGORY_LIST.pathname,
+)

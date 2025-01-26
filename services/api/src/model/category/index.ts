@@ -111,7 +111,7 @@ export const listCategories = async (p: PaginateOptions) => {
   return await paginate<CategoryLeavesWithSlug>(
     // @ts-expect-error CategoryLeaves cannot be assigned to CategoryLeavesWithSlug
     category_leaves(db)
-      .find({ type: undefined, slug: q.not(null) })
+      .find({ slug: q.not(null) })
       .orderByAsc("id"),
     p,
   )

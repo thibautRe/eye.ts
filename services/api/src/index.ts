@@ -11,8 +11,8 @@ import { ingestPicture } from "./model/picture/ingest"
 import db, {
   type CameraBodies,
   type CameraLenses,
+  category_parents,
   type Pictures,
-  pictures,
 } from "db"
 import { listPictures } from "./model/picture/list"
 import { getCameraBodyById } from "./model/cameraBody"
@@ -29,6 +29,7 @@ import {
   type CategoryLeavesWithSlug,
 } from "./model/category"
 import { buildHandlers, getPaginatedParams } from "./utils/buildHandlers"
+import { getPictureById } from "./model/picture"
 
 const runHandlers = buildHandlers({
   CATEGORY: async ({ args: { slug } }) => {
@@ -45,7 +46,7 @@ const runHandlers = buildHandlers({
     )
   },
   CATEGORY_LIST: async ({ searchParams }) => {
-    const p = getPaginatedParams(searchParams)
+    const p = getPaginatedParams(searchParams, { defaultPageSize: 10 })
     const { content, hasMore } = await listCategories(p)
     return {
       nextPage: hasMore ? p.pageNumber + 1 : null,
@@ -60,7 +61,27 @@ const runHandlers = buildHandlers({
     return await toPictureApi(picture)
   },
   PICTURE: async ({ args: { id } }) => {
-    return await toPictureApi(await pictures(db).findOneRequired({ id }))
+    return await toPictureApi(await getPictureById(id))
+  },
+  PICTURE_CATEGORY_ADD: async ({ args: { id }, searchParams }) => {
+    const slug = searchParams.get("slug")
+    const picture = await getPictureById(id)
+    await category_parents(db).insert({
+      parent_id: (await getCategoryLeaveWithSlug(slug)).id,
+      child_id: picture.category_leaf_id,
+    })
+
+    return await toPictureApi(picture)
+  },
+  PICTURE_CATEGORY_DEL: async ({ args: { id }, searchParams }) => {
+    const slug = searchParams.get("slug")
+    const picture = await getPictureById(id)
+    await category_parents(db).delete({
+      parent_id: (await getCategoryLeaveWithSlug(slug)).id,
+      child_id: picture.category_leaf_id,
+    })
+
+    return await toPictureApi(picture)
   },
   PICTURE_LIST: async ({ searchParams }) => {
     const p = getPaginatedParams(searchParams)

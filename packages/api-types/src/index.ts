@@ -1,9 +1,9 @@
 import { type PictureId } from "core"
 
-type ApiMethod = "GET" | "POST"
+type ApiMethod = "GET" | "POST" | "PUT" | "DELETE"
 interface RouteOptions {
   args?: unknown
-  searchParams?: unknown
+  searchParams?: string
 }
 type Route<K, R, O extends RouteOptions = {}> = {
   key: K
@@ -23,6 +23,16 @@ export type ApiRoutes =
   /** --- */
   | Route<"PICTURE_UPLOAD", PictureApi>
   | Route<"PICTURE", PictureApi, { args: { id: PictureId } }>
+  | Route<
+      "PICTURE_CATEGORY_ADD",
+      PictureApi,
+      { args: { id: PictureId }; searchParams: "slug" }
+    >
+  | Route<
+      "PICTURE_CATEGORY_DEL",
+      PictureApi,
+      { args: { id: PictureId }; searchParams: "slug" }
+    >
   | PaginatedRoute<"PICTURE_LIST", PictureApi>
 
 export type ApiRouteKey = ApiRoutes["key"]
@@ -68,19 +78,38 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     method: "GET",
     stringify: ({ slug }) => `/categories/${slug}`,
     parse: (pathname) => {
-      const res = /^\/categories\/([^\/]*)$/.exec(pathname)
+      const res = /^\/categories\/([^\/]+)$/.exec(pathname)
       return res ? { ok: true, args: { slug: res[1] } } : { ok: false }
     },
   },
   CATEGORY_CREATE: { method: "POST", pathname: `/categories/` },
   CATEGORY_LIST: { method: "GET", pathname: "/categories/" },
+
   PICTURE_UPLOAD: { pathname: `/picture/upload`, method: "POST" },
   PICTURE_LIST: { pathname: `/pictures`, method: "GET" },
   PICTURE: {
     method: "GET",
     stringify: ({ id }) => `/pictures/${id}`,
     parse: (pathname) => {
-      const res = /^\/pictures\/(\d*)$/.exec(pathname)
+      const res = /^\/pictures\/(\d+)$/.exec(pathname)
+      if (!res) return { ok: false }
+      return { ok: true, args: { id: res[1] as PictureId } }
+    },
+  },
+  PICTURE_CATEGORY_ADD: {
+    method: "POST",
+    stringify: ({ id }) => `/pictures/${id}/category`,
+    parse: (pathname) => {
+      const res = /^\/pictures\/(\d+)\/category$/.exec(pathname)
+      if (!res) return { ok: false }
+      return { ok: true, args: { id: res[1] as PictureId } }
+    },
+  },
+  PICTURE_CATEGORY_DEL: {
+    method: "DELETE",
+    stringify: ({ id }) => `/pictures/${id}/category`,
+    parse: (pathname) => {
+      const res = /^\/pictures\/(\d+)\/category$/.exec(pathname)
       if (!res) return { ok: false }
       return { ok: true, args: { id: res[1] as PictureId } }
     },
