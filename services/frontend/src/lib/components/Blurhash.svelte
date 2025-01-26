@@ -1,4 +1,4 @@
-<script module>
+<script module lang="ts">
   import { decode } from "blurhash"
   const getData = (h: string, r: number) => new ImageData(decode(h, r, r), r, r)
 </script>

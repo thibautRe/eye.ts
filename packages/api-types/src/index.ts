@@ -118,6 +118,7 @@ export interface LinkedCategoryApi {
 }
 export interface CategoryApi {
   name: string
+  slug: string
   directParents: LinkedCategoryApi[]
   directChildren: LinkedCategoryApi[]
 }

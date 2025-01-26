@@ -11,9 +11,7 @@ import { ingestPicture } from "./model/picture/ingest"
 import db, {
   type CameraBodies,
   type CameraLenses,
-  type CategoryLeaves,
   type Pictures,
-  category_leaves,
   pictures,
 } from "db"
 import { listPictures } from "./model/picture/list"
@@ -22,35 +20,29 @@ import { getCameraLensById } from "./model/cameraLens"
 import { getPictureSizesForPictureId } from "./model/picture/sizes"
 import { getPublicEndpoint } from "./s3Client"
 import {
+  categoryLeaveHasSlug,
+  createCategoryLeaveWithSlug,
+  getCategoryLeaveWithSlug,
   getDirectChildrenCategories,
   getDirectParentCategories,
   listCategories,
+  type CategoryLeavesWithSlug,
 } from "./model/category"
-import { translate, type I18nContent } from "core"
 import { buildHandlers, getPaginatedParams } from "./utils/buildHandlers"
 
 const runHandlers = buildHandlers({
   CATEGORY: async ({ args: { slug } }) => {
-    return await toCategoryApi(
-      await category_leaves(db).findOneRequired({
-        slug: slug.trim().toLowerCase(),
-      }),
-    )
+    return await toCategoryApi(await getCategoryLeaveWithSlug(slug))
   },
   CATEGORY_CREATE: async ({ request }) => {
     const {
       name,
       slug,
       exifTag,
-    }: { name: I18nContent; slug: string; exifTag: string } =
-      await request.json()
-    const [inserted] = await category_leaves(db).insert({
-      type: undefined,
-      name,
-      slug,
-      exif_tag: exifTag,
-    })
-    return await toCategoryApi(inserted)
+    }: { name: string; slug: string; exifTag: string } = await request.json()
+    return await toCategoryApi(
+      await createCategoryLeaveWithSlug({ slug, name, exifTag }),
+    )
   },
   CATEGORY_LIST: async ({ searchParams }) => {
     const p = getPaginatedParams(searchParams)
@@ -119,12 +111,15 @@ const toPictureApis = async (dbPics: Pictures[]) =>
   await Promise.all(dbPics.map(toPictureApi))
 
 const toCategoryApi = async (
-  category: CategoryLeaves,
+  category: CategoryLeavesWithSlug,
 ): Promise<CategoryApi> => {
   return {
-    name: translate(category.name, "en"),
+    slug: category.slug,
+    name: category.name,
     directChildren: toLinkedCategoryApi(
-      await getDirectChildrenCategories(category.id),
+      (await getDirectChildrenCategories(category.id)).filter(
+        categoryLeaveHasSlug,
+      ),
     ),
     directParents: toLinkedCategoryApi(
       await getDirectParentCategories(category.id),
@@ -133,15 +128,13 @@ const toCategoryApi = async (
 }
 
 const toCategoryApis = async (
-  categories: CategoryLeaves[],
+  categories: CategoryLeavesWithSlug[],
 ): Promise<CategoryApi[]> => await Promise.all(categories.map(toCategoryApi))
 
 const toLinkedCategoryApi = (
-  categories: CategoryLeaves[],
+  categories: CategoryLeavesWithSlug[],
 ): LinkedCategoryApi[] =>
-  categories.flatMap((l) =>
-    l.slug ? [{ name: translate(l.name, "en"), slug: l.slug }] : [],
-  )
+  categories.map((l) => ({ name: l.name, slug: l.slug }))
 
 const router = createRouter()
   .withPreMiddleware(({ request }) => {

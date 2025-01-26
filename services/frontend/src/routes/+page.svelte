@@ -1,5 +1,6 @@
 <script lang="ts">
   import { apiUploadFiles } from "$lib/api"
+  import { makeCategoriesUrl, makePicturesUrl } from "$lib/urls"
 </script>
 
 <h1>Home</h1>
@@ -16,9 +17,9 @@
 <h2>Links</h2>
 <ul>
   <li>
-    <a href="/pictures/">Pictures</a>
+    <a href={makePicturesUrl()}>Pictures</a>
   </li>
   <li>
-    <a href="/categories/">Categories</a>
+    <a href={makeCategoriesUrl()}>Categories</a>
   </li>
 </ul>

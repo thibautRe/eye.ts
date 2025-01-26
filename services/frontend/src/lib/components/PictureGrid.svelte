@@ -1,13 +1,14 @@
 <script lang="ts">
   import type { PictureApi } from "api-types"
   import Picture from "./Picture.svelte"
+  import { makePictureUrl } from "$lib/urls"
 
   const { pics }: { pics: PictureApi[] } = $props()
 </script>
 
 <div class="wrapper">
   {#each pics as pic}
-    <a class="link" href={`/pictures/${pic.id}`}>
+    <a class="link" href={makePictureUrl(pic.id)}>
       <Picture {pic} sizes="23vw" />
     </a>
   {/each}

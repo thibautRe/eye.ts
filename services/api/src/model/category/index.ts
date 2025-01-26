@@ -10,6 +10,11 @@ import db, {
 import createCache from "../../utils/createCache"
 import { isNotNull } from "core"
 
+export type CategoryLeavesWithSlug = CategoryLeaves & { slug: string }
+export const categoryLeaveHasSlug = (
+  cat: CategoryLeaves,
+): cat is CategoryLeavesWithSlug => typeof cat.slug === "string"
+
 export const getCategoryLeavesByXmpTag = dedupeAsync(
   batch<string, CategoryLeaves[]>(async (xmpTags) => {
     const leaves = await category_leaves(db)
@@ -25,6 +30,31 @@ export const getCategoryLeavesByXmpTag = dedupeAsync(
   { cache: createCache({ name: "categoryLeavesByXmpTag" }) },
 )
 
+export const getCategoryLeaveWithSlug = async (
+  slug: string,
+): Promise<CategoryLeavesWithSlug> =>
+  (await category_leaves(db).findOneRequired({
+    slug: slug.trim().toLowerCase(),
+  })) as CategoryLeavesWithSlug
+
+export const createCategoryLeaveWithSlug = async ({
+  slug,
+  name,
+  exifTag,
+}: {
+  slug: string
+  name: string
+  exifTag: string
+}) =>
+  (
+    await category_leaves(db).insert({
+      type: undefined,
+      name,
+      slug,
+      exif_tag: exifTag,
+    })
+  )[0] as CategoryLeavesWithSlug
+
 export const getCategoryLeavesIdByXmpTag = async (xmpTags: string[]) => {
   const leaves = (
     await Promise.all(xmpTags.map(getCategoryLeavesByXmpTag))
@@ -34,14 +64,15 @@ export const getCategoryLeavesIdByXmpTag = async (xmpTags: string[]) => {
 
 export const getDirectParentCategories = batch<
   CategoryLeaves["id"],
-  CategoryLeaves[]
+  CategoryLeavesWithSlug[]
 >(async (childIds) => {
   const parents = await category_parents(db)
     .find({ child_id: q.anyOf(childIds) })
     .all()
-  const leaves = await category_leaves(db)
+  const leaves = (await category_leaves(db)
     .find({ id: q.anyOf(parents.map((p) => p.parent_id)) })
-    .all()
+    .andWhere({ slug: q.not(null) })
+    .all()) as CategoryLeavesWithSlug[]
 
   const parentsMap = Map.groupBy(parents, (p) => p.child_id)
   const leavesMap = new Map(leaves.map((l) => [l.id, l]))
@@ -77,8 +108,11 @@ export const getDirectChildrenCategories = batch<
 })
 
 export const listCategories = async (p: PaginateOptions) => {
-  return await paginate(
-    category_leaves(db).find({ type: undefined }).orderByAsc("id"),
+  return await paginate<CategoryLeavesWithSlug>(
+    // @ts-expect-error CategoryLeaves cannot be assigned to CategoryLeavesWithSlug
+    category_leaves(db)
+      .find({ type: undefined, slug: q.not(null) })
+      .orderByAsc("id"),
     p,
   )
 }

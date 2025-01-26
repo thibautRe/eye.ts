@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { makeCategoryUrl } from "$lib/urls"
   import type { CategoryApi } from "api-types"
 
   let { data: cat }: { data: CategoryApi } = $props()
@@ -10,7 +11,7 @@
 <ul>
   {#each cat.directParents as directParent}
     <li>
-      <a href={`/categories/${directParent.slug}`}>{directParent.name}</a>
+      <a href={makeCategoryUrl(directParent.slug)}>{directParent.name}</a>
     </li>
   {/each}
 </ul>
@@ -19,7 +20,7 @@
 <ul>
   {#each cat.directChildren as directChildren}
     <li>
-      <a href={`/categories/${directChildren.slug}`}>{directChildren.name}</a>
+      <a href={makeCategoryUrl(directChildren.slug)}>{directChildren.name}</a>
     </li>
   {/each}
 </ul>
