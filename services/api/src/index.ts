@@ -63,8 +63,8 @@ const runHandlers = buildHandlers({
   PICTURE: async ({ args: { id } }) => {
     return await toPictureApi(await getPictureById(id))
   },
-  PICTURE_CATEGORY_ADD: async ({ args: { id }, searchParams }) => {
-    const slug = searchParams.get("slug")
+  PICTURE_CATEGORY_ADD: async ({ args: { id }, json }) => {
+    const { slug } = await json()
     const picture = await getPictureById(id)
     await category_parents(db).insert({
       parent_id: (await getCategoryLeaveWithSlug(slug)).id,
@@ -73,8 +73,8 @@ const runHandlers = buildHandlers({
 
     return await toPictureApi(picture)
   },
-  PICTURE_CATEGORY_DEL: async ({ args: { id }, searchParams }) => {
-    const slug = searchParams.get("slug")
+  PICTURE_CATEGORY_DEL: async ({ args: { id }, json }) => {
+    const { slug } = await json()
     const picture = await getPictureById(id)
     await category_parents(db).delete({
       parent_id: (await getCategoryLeaveWithSlug(slug)).id,

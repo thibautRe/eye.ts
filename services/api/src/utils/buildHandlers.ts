@@ -7,6 +7,7 @@ import {
   type ApiRouteResponse,
   routes,
   type PaginatedSearchParam,
+  type ApiRouteJson,
 } from "api-types"
 import type { RouterRun } from "./router"
 import type { PaginateOptions } from "db"
@@ -36,6 +37,7 @@ type Handler<K extends ApiRouteKey, TContext> = (params: {
   context: TContext
   args: ApiRouteArgs<K>
   searchParams: SearchParams<ApiRouteSearchParams<K>>
+  json: () => Promise<ApiRouteJson<K>>
 }) => Promise<ApiRouteResponse<K>>
 export const buildHandlers =
   <TContext>(handlers: {
@@ -50,12 +52,13 @@ export const buildHandlers =
       const res = getRoutePathnameArgs(route, url.pathname)
       if (!res) continue
 
-      log(`Handler ${k}`)
+      log(`Matched handler: ${k}`)
 
-      const searchParams: SearchParams<ApiRouteKey> = {
-        // @ts-expect-error
-        get: (name) => url.searchParams.get(name),
-      }
+      // @ts-expect-error
+      const searchParams: SearchParams<ApiRouteSearchParams<ApiRouteKey>> =
+        url.searchParams
+      // @ts-expect-error
+      const json: Promise<ApiRouteJson<ApiRouteKey>> = request.json
 
       // @ts-expect-error Handler<"A"> | Handler<"B"> is not assignable to Handler<"A" | "B">
       const handler: Handler<ApiRouteKey> = handlers[key]
@@ -65,6 +68,7 @@ export const buildHandlers =
         args: res.args as ApiRouteArgs<ApiRouteKey>,
         url,
         searchParams,
+        json,
       })
       return Response.json(handlerRes)
     }

@@ -4,12 +4,15 @@ type ApiMethod = "GET" | "POST" | "PUT" | "DELETE"
 interface RouteOptions {
   args?: unknown
   searchParams?: string
+  json?: unknown
 }
 type Route<K, R, O extends RouteOptions = {}> = {
   key: K
   response: R
 } & (O extends { args: infer A } ? { args: A } : {}) &
-  (O extends { searchParams: infer S } ? { searchParams: S } : {})
+  (O extends { searchParams: infer S } ? { searchParams: S } : {}) &
+  (O extends { json: infer J } ? { json: J } : {})
+
 type PaginatedRoute<K, R, O extends RouteOptions = {}> = Route<
   K,
   PaginatedApi<R>,
@@ -26,12 +29,12 @@ export type ApiRoutes =
   | Route<
       "PICTURE_CATEGORY_ADD",
       PictureApi,
-      { args: { id: PictureId }; searchParams: "slug" }
+      { args: { id: PictureId }; json: { slug: string } }
     >
   | Route<
       "PICTURE_CATEGORY_DEL",
       PictureApi,
-      { args: { id: PictureId }; searchParams: "slug" }
+      { args: { id: PictureId }; json: { slug: string } }
     >
   | PaginatedRoute<"PICTURE_LIST", PictureApi>
 
@@ -55,6 +58,11 @@ export type ApiRouteSearchParams<K extends ApiRouteKey> = ApiRoute<K> extends {
     ? S
     : null
   : null
+export type ApiRouteJson<K extends ApiRouteKey> = ApiRoute<K> extends {
+  json: infer J
+}
+  ? J
+  : never
 
 export interface ApiPathnameWithArgs<A> {
   method: ApiMethod
