@@ -23,6 +23,16 @@ export type ApiRoutes =
   | Route<"CATEGORY", CategoryApi, { args: { slug: string } }>
   | Route<"CATEGORY_CREATE", CategoryApi>
   | PaginatedRoute<"CATEGORY_LIST", CategoryApi>
+  | Route<
+      "CATEGORY_PARENT_ADD",
+      CategoryApi,
+      { args: { slug: string }; json: { parentSlug: string } }
+    >
+  | Route<
+      "CATEGORY_PARENT_DEL",
+      CategoryApi,
+      { args: { slug: string }; json: { parentSlug: string } }
+    >
   /** --- */
   | Route<"PICTURE_UPLOAD", PictureApi>
   | Route<"PICTURE", PictureApi, { args: { id: PictureId } }>
@@ -92,6 +102,22 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
   },
   CATEGORY_CREATE: { method: "POST", pathname: `/categories/` },
   CATEGORY_LIST: { method: "GET", pathname: "/categories/" },
+  CATEGORY_PARENT_ADD: {
+    method: "POST",
+    stringify: ({ slug }) => `/categories/${slug}/parentCategory`,
+    parse: (pathname) => {
+      const res = /^\/categories\/([^\/]+)\/parentCategory$/.exec(pathname)
+      return res ? { ok: true, args: { slug: res[1] } } : { ok: false }
+    },
+  },
+  CATEGORY_PARENT_DEL: {
+    method: "DELETE",
+    stringify: ({ slug }) => `/categories/${slug}/parentCategory`,
+    parse: (pathname) => {
+      const res = /^\/categories\/([^\/]+)\/parentCategory$/.exec(pathname)
+      return res ? { ok: true, args: { slug: res[1] } } : { ok: false }
+    },
+  },
 
   PICTURE_UPLOAD: { pathname: `/picture/upload`, method: "POST" },
   PICTURE_LIST: { pathname: `/pictures`, method: "GET" },

@@ -58,7 +58,7 @@ export const buildHandlers =
       const searchParams: SearchParams<ApiRouteSearchParams<ApiRouteKey>> =
         url.searchParams
       // @ts-expect-error
-      const json: Promise<ApiRouteJson<ApiRouteKey>> = request.json
+      const json: Promise<ApiRouteJson<ApiRouteKey>> = () => request.json()
 
       // @ts-expect-error Handler<"A"> | Handler<"B"> is not assignable to Handler<"A" | "B">
       const handler: Handler<ApiRouteKey> = handlers[key]

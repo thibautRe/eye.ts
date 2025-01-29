@@ -1,8 +1,10 @@
 <script lang="ts">
+  import { apiCategoryParentAdd } from "$lib/api"
   import { makeCategoryUrl } from "$lib/urls"
   import type { CategoryApi } from "api-types"
 
   let { data: cat }: { data: CategoryApi } = $props()
+  let parentCatSlug = $state("")
 </script>
 
 <h1>Category {cat.name}</h1>
@@ -15,6 +17,20 @@
     </li>
   {/each}
 </ul>
+<form
+  onsubmit={async (e) => {
+    e.preventDefault()
+    const slug = parentCatSlug
+    parentCatSlug = ""
+    cat = await apiCategoryParentAdd({
+      childSlug: cat.slug,
+      parentSlug: slug,
+    })
+  }}
+>
+  <input type="text" bind:value={parentCatSlug} />
+  <button type="submit" disabled={!parentCatSlug}>+</button>
+</form>
 
 <h2>Children categories</h2>
 <ul>

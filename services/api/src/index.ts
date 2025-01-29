@@ -53,6 +53,30 @@ const runHandlers = buildHandlers({
       items: await toCategoryApis(content),
     }
   },
+  CATEGORY_PARENT_ADD: async ({ args: { slug }, json }) => {
+    const { parentSlug } = await json()
+    const [parent, child] = await Promise.all([
+      getCategoryLeaveWithSlug(parentSlug),
+      getCategoryLeaveWithSlug(slug),
+    ])
+    await category_parents(db).insert({
+      parent_id: parent.id,
+      child_id: child.id,
+    })
+    return await toCategoryApi(child)
+  },
+  CATEGORY_PARENT_DEL: async ({ args: { slug }, json }) => {
+    const { parentSlug } = await json()
+    const [parent, child] = await Promise.all([
+      getCategoryLeaveWithSlug(parentSlug),
+      getCategoryLeaveWithSlug(slug),
+    ])
+    await category_parents(db).delete({
+      parent_id: parent.id,
+      child_id: child.id,
+    })
+    return await toCategoryApi(child)
+  },
   PICTURE_UPLOAD: async ({ request }) => {
     const formData = await request.formData()
     // @ts-expect-error

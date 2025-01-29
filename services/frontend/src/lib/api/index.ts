@@ -25,3 +25,13 @@ export const apiGetCategory = (slug: string) =>
 export const apiGetCategories = makeCachedPaginatedApi<CategoryApi>(
   routes.CATEGORY_LIST.pathname,
 )
+export const apiCategoryParentAdd = (data: {
+  childSlug: string
+  parentSlug: string
+}) =>
+  post_json<CategoryApi>(
+    routes.CATEGORY_PARENT_ADD.stringify({ slug: data.childSlug }),
+    {
+      parentSlug: data.parentSlug,
+    },
+  )
