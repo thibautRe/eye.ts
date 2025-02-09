@@ -1,6 +1,6 @@
 import { type CategoryApi, type PictureApi, routes } from "api-types"
 import { makeCachedPaginatedApi } from "./pagination"
-import { get_json, post, post_json } from "./utils"
+import { delete_json, get_json, post, post_json } from "./utils"
 import { type PictureId } from "core"
 
 export const apiUploadFiles = async (filelist: FileList) => {
@@ -27,11 +27,24 @@ export const apiGetCategories = makeCachedPaginatedApi<CategoryApi>(
 )
 export const apiPictureParentAdd = (id: PictureId, slug: string) =>
   post_json<PictureApi>(routes.PICTURE_CATEGORY_ADD.stringify({ id }), { slug })
+export const apiPictureParentDel = (id: PictureId, slug: string) =>
+  delete_json<PictureApi>(routes.PICTURE_CATEGORY_DEL.stringify({ id }), {
+    slug,
+  })
 export const apiCategoryParentAdd = (data: {
   childSlug: string
   parentSlug: string
 }) =>
   post_json<CategoryApi>(
+    routes.CATEGORY_PARENT_ADD.stringify({ slug: data.childSlug }),
+    { parentSlug: data.parentSlug },
+  )
+
+export const apiCategoryParentDel = (data: {
+  childSlug: string
+  parentSlug: string
+}) =>
+  delete_json<CategoryApi>(
     routes.CATEGORY_PARENT_ADD.stringify({ slug: data.childSlug }),
     { parentSlug: data.parentSlug },
   )

@@ -54,6 +54,10 @@ export const put_json = async <T, D = unknown>(
   r: string,
   data?: D,
 ): Promise<T> => (await (await put(r, data)).json()) as T
+export const delete_json = async <T, D = unknown>(
+  r: string,
+  data?: D,
+): Promise<T> => (await (await delete_http(r, data)).json()) as T
 
 export const makeCachedGet = <T>() => {
   const cache = new Map<string, T>()

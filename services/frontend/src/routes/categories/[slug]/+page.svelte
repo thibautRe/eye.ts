@@ -1,31 +1,24 @@
 <script lang="ts">
-  import { apiCategoryParentAdd } from "$lib/api"
+  import { apiCategoryParentAdd, apiCategoryParentDel } from "$lib/api"
   import ParentCategories from "$lib/components/ParentCategories.svelte"
   import { makeCategoryUrl } from "$lib/urls"
   import type { CategoryApi } from "api-types"
 
   let { data: cat }: { data: CategoryApi } = $props()
-  let parentCatSlug = $state("")
 </script>
 
 <h1>Category {cat.name}</h1>
 
 <h2>Parent categories</h2>
-<ParentCategories parents={cat.directParents} />
-<form
-  onsubmit={async (e) => {
-    e.preventDefault()
-    const slug = parentCatSlug
-    parentCatSlug = ""
-    cat = await apiCategoryParentAdd({
-      childSlug: cat.slug,
-      parentSlug: slug,
-    })
+<ParentCategories
+  parents={cat.directParents}
+  onAdd={async (parentSlug) => {
+    cat = await apiCategoryParentAdd({ childSlug: cat.slug, parentSlug })
   }}
->
-  <input type="text" bind:value={parentCatSlug} />
-  <button type="submit" disabled={!parentCatSlug}>+</button>
-</form>
+  onDel={async (parentSlug) => {
+    cat = await apiCategoryParentDel({ childSlug: cat.slug, parentSlug })
+  }}
+/>
 
 <h2>Children categories</h2>
 <ul>
