@@ -1,5 +1,6 @@
 <script lang="ts">
   import { apiCategoryParentAdd } from "$lib/api"
+  import ParentCategories from "$lib/components/ParentCategories.svelte"
   import { makeCategoryUrl } from "$lib/urls"
   import type { CategoryApi } from "api-types"
 
@@ -10,13 +11,7 @@
 <h1>Category {cat.name}</h1>
 
 <h2>Parent categories</h2>
-<ul>
-  {#each cat.directParents as directParent}
-    <li>
-      <a href={makeCategoryUrl(directParent.slug)}>{directParent.name}</a>
-    </li>
-  {/each}
-</ul>
+<ParentCategories parents={cat.directParents} />
 <form
   onsubmit={async (e) => {
     e.preventDefault()
