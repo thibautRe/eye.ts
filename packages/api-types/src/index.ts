@@ -1,4 +1,4 @@
-import { type PictureId } from "core"
+import { type PictureId, type Slug } from "core"
 
 type ApiMethod = "GET" | "POST" | "PUT" | "DELETE"
 interface RouteOptions {
@@ -16,22 +16,30 @@ type Route<K, R, O extends RouteOptions = {}> = {
 type PaginatedRoute<K, R, O extends RouteOptions = {}> = Route<
   K,
   PaginatedApi<R>,
-  { searchParams: O["searchParams"] & PaginatedSearchParam }
+  {
+    searchParams: O["searchParams"] extends string
+      ? O["searchParams"] | PaginatedSearchParam
+      : PaginatedSearchParam
+  }
 >
 
 export type ApiRoutes =
-  | Route<"CATEGORY", CategoryApi, { args: { slug: string } }>
-  | Route<"CATEGORY_CREATE", CategoryApi>
+  | Route<"CATEGORY", CategoryApi, { args: { slug: Slug } }>
+  | Route<
+      "CATEGORY_CREATE",
+      CategoryApi,
+      { json: { slug: string; name: string; exifTag: string } }
+    >
   | PaginatedRoute<"CATEGORY_LIST", CategoryApi>
   | Route<
       "CATEGORY_PARENT_ADD",
       CategoryApi,
-      { args: { slug: string }; json: { parentSlug: string } }
+      { args: { slug: Slug }; json: { parentSlug: Slug } }
     >
   | Route<
       "CATEGORY_PARENT_DEL",
       CategoryApi,
-      { args: { slug: string }; json: { parentSlug: string } }
+      { args: { slug: Slug }; json: { parentSlug: Slug } }
     >
   /** --- */
   | Route<"PICTURE_UPLOAD", PictureApi>
@@ -39,14 +47,14 @@ export type ApiRoutes =
   | Route<
       "PICTURE_CATEGORY_ADD",
       PictureApi,
-      { args: { id: PictureId }; json: { slug: string } }
+      { args: { id: PictureId }; json: { slug: Slug } }
     >
   | Route<
       "PICTURE_CATEGORY_DEL",
       PictureApi,
-      { args: { id: PictureId }; json: { slug: string } }
+      { args: { id: PictureId }; json: { slug: Slug } }
     >
-  | PaginatedRoute<"PICTURE_LIST", PictureApi>
+  | PaginatedRoute<"PICTURE_LIST", PictureApi, { searchParams: "parent" }>
 
 export type ApiRouteKey = ApiRoutes["key"]
 export type ApiRoute<K extends ApiRouteKey> = Extract<ApiRoutes, { key: K }>
@@ -97,7 +105,7 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     stringify: ({ slug }) => `/categories/${slug}`,
     parse: (pathname) => {
       const res = /^\/categories\/([^\/]+)$/.exec(pathname)
-      return res ? { ok: true, args: { slug: res[1] } } : { ok: false }
+      return res ? { ok: true, args: { slug: res[1] as Slug } } : { ok: false }
     },
   },
   CATEGORY_CREATE: { method: "POST", pathname: `/categories/` },
@@ -107,7 +115,7 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     stringify: ({ slug }) => `/categories/${slug}/parentCategory`,
     parse: (pathname) => {
       const res = /^\/categories\/([^\/]+)\/parentCategory$/.exec(pathname)
-      return res ? { ok: true, args: { slug: res[1] } } : { ok: false }
+      return res ? { ok: true, args: { slug: res[1] as Slug } } : { ok: false }
     },
   },
   CATEGORY_PARENT_DEL: {
@@ -115,7 +123,7 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     stringify: ({ slug }) => `/categories/${slug}/parentCategory`,
     parse: (pathname) => {
       const res = /^\/categories\/([^\/]+)\/parentCategory$/.exec(pathname)
-      return res ? { ok: true, args: { slug: res[1] } } : { ok: false }
+      return res ? { ok: true, args: { slug: res[1] as Slug } } : { ok: false }
     },
   },
 
@@ -182,12 +190,12 @@ export interface PictureSizeApi {
 }
 
 export interface LinkedCategoryApi {
-  slug: string
+  slug: Slug
   name: string
 }
 export interface CategoryApi {
   name: string
-  slug: string
+  slug: Slug
   directParents: LinkedCategoryApi[]
   directChildren: LinkedCategoryApi[]
 }

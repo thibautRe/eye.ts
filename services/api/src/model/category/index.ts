@@ -8,7 +8,7 @@ import db, {
   type PaginateOptions,
 } from "db"
 import createCache from "../../utils/createCache"
-import { isNotNull } from "core"
+import { isNotNull, slugify, type Slug } from "core"
 
 export type CategoryLeavesWithSlug = CategoryLeaves & { slug: string }
 export const categoryLeaveHasSlug = (
@@ -31,10 +31,10 @@ export const getCategoryLeavesByXmpTag = dedupeAsync(
 )
 
 export const getCategoryLeaveWithSlug = async (
-  slug: string,
+  slug: Slug,
 ): Promise<CategoryLeavesWithSlug> =>
   (await category_leaves(db).findOneRequired({
-    slug: slug.trim().toLowerCase(),
+    slug,
   })) as CategoryLeavesWithSlug
 
 export const createCategoryLeaveWithSlug = async ({
@@ -50,7 +50,7 @@ export const createCategoryLeaveWithSlug = async ({
     await category_leaves(db).insert({
       type: undefined,
       name,
-      slug,
+      slug: slugify(slug),
       exif_tag: exifTag,
     })
   )[0] as CategoryLeavesWithSlug

@@ -35,12 +35,8 @@ const runHandlers = buildHandlers({
   CATEGORY: async ({ args: { slug } }) => {
     return await toCategoryApi(await getCategoryLeaveWithSlug(slug))
   },
-  CATEGORY_CREATE: async ({ request }) => {
-    const {
-      name,
-      slug,
-      exifTag,
-    }: { name: string; slug: string; exifTag: string } = await request.json()
+  CATEGORY_CREATE: async ({ json }) => {
+    const { name, slug, exifTag } = await json()
     return await toCategoryApi(
       await createCategoryLeaveWithSlug({ slug, name, exifTag }),
     )
@@ -109,7 +105,9 @@ const runHandlers = buildHandlers({
   },
   PICTURE_LIST: async ({ searchParams }) => {
     const p = getPaginatedParams(searchParams)
-    const { content, hasMore } = await listPictures(p)
+    const { content, hasMore } = await listPictures(p, {
+      parent: searchParams.get("parent"),
+    })
     return {
       nextPage: hasMore ? p.pageNumber + 1 : null,
       items: await toPictureApis(content),

@@ -12,8 +12,10 @@
     sizes: string
   }
   const { pic, style: styleProps, ...rest }: PictureProps = $props()
-  const srcset = pic.sizes.map((s) => `${s.url} ${s.width}w`).join(",")
-  const { alt, width, height } = pic
+  const srcset = $derived(
+    pic.sizes.map((s) => `${s.url} ${s.width}w`).join(","),
+  )
+  const { alt, width, height } = $derived(pic)
 </script>
 
 <div class="wrapper" style="aspect-ratio: {width / height};">

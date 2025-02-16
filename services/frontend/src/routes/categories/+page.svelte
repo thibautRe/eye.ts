@@ -7,7 +7,6 @@
   } from "$lib/PaginatedLoader.svelte"
   import { makeCategoryUrl } from "$lib/urls"
   import type { CategoryApi } from "api-types"
-  import { slugify } from "core"
 
   const onsubmit = async (e: SubmitEvent) => {
     e.preventDefault()
@@ -16,8 +15,7 @@
     )?.querySelector<HTMLInputElement>("input#catname")
     if (!input) throw new Error("Cannot find input")
     const name = input.value
-    const slug = slugify(name)
-    const cat = await apiCreateCategory({ name, slug })
+    const cat = await apiCreateCategory({ name, slug: name })
     goto(makeCategoryUrl(cat.slug))
   }
 

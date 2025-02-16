@@ -72,13 +72,9 @@ export const makeCachedGet = <T>() => {
   ] as const
 }
 
-export const withParams = <
-  T extends Record<string, string | number | boolean | undefined>,
->(
-  r: string,
-  params: T,
-) => {
-  // @ts-expect-error Record<string,number> is not assignable to URLSearchParams
+type URLSearchParamsLike = Record<string, string | number | boolean | undefined>
+export const withParams = (r: string, params: URLSearchParamsLike) => {
+  // @ts-expect-error URLSearchParamsLike is not assignable to URLSearchParams
   const sp = new URLSearchParams(params).toString()
   return sp ? `${r}?${sp}` : r
 }

@@ -1,11 +1,12 @@
 <script lang="ts">
   import { makeCategoryUrl } from "$lib/urls"
   import type { LinkedCategoryApi } from "api-types"
+  import { slugify, type Slug } from "core"
 
   const props: {
     parents: LinkedCategoryApi[]
-    onAdd: (slug: string) => Promise<void>
-    onDel: (slug: string) => Promise<void>
+    onAdd: (slug: Slug) => Promise<void>
+    onDel: (slug: Slug) => Promise<void>
   } = $props()
   let parentCatSlug = $state("")
 </script>
@@ -21,7 +22,7 @@
 <form
   onsubmit={async (e) => {
     e.preventDefault()
-    await props.onAdd(parentCatSlug)
+    await props.onAdd(slugify(parentCatSlug))
     parentCatSlug = ""
   }}
 >

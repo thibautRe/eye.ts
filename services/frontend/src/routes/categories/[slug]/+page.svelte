@@ -1,10 +1,26 @@
 <script lang="ts">
-  import { apiCategoryParentAdd, apiCategoryParentDel } from "$lib/api"
+  import {
+    apiCategoryParentAdd,
+    apiCategoryParentDel,
+    apiGetPictures,
+  } from "$lib/api"
+  import PaginatedPictureGrid from "$lib/components/PaginatedPictureGrid.svelte"
   import ParentCategories from "$lib/components/ParentCategories.svelte"
+  import { PaginatedLoader } from "$lib/PaginatedLoader.svelte"
   import { makeCategoryUrl } from "$lib/urls"
-  import type { CategoryApi } from "api-types"
+  import type { CategoryPageData } from "./+page"
 
-  let { data: cat }: { data: CategoryApi } = $props()
+  let { data }: { data: CategoryPageData } = $props()
+
+  const cat = $derived(data.category)
+  const loader = $derived(
+    new PaginatedLoader((p) =>
+      apiGetPictures(p, { parent: cat.slug }),
+    ).fromSerialized(data.pictures),
+  )
+  const updateCat = (category: typeof data.category) => {
+    data = { ...data, category }
+  }
 </script>
 
 <h1>Category {cat.name}</h1>
@@ -13,10 +29,20 @@
 <ParentCategories
   parents={cat.directParents}
   onAdd={async (parentSlug) => {
-    cat = await apiCategoryParentAdd({ childSlug: cat.slug, parentSlug })
+    updateCat(
+      await apiCategoryParentAdd({
+        childSlug: cat.slug,
+        parentSlug,
+      }),
+    )
   }}
   onDel={async (parentSlug) => {
-    cat = await apiCategoryParentDel({ childSlug: cat.slug, parentSlug })
+    updateCat(
+      await apiCategoryParentDel({
+        childSlug: cat.slug,
+        parentSlug,
+      }),
+    )
   }}
 />
 
@@ -28,3 +54,5 @@
     </li>
   {/each}
 </ul>
+
+<PaginatedPictureGrid {loader} />

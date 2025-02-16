@@ -1,7 +1,7 @@
 import { type CategoryApi, type PictureApi, routes } from "api-types"
 import { makeCachedPaginatedApi } from "./pagination"
 import { delete_json, get_json, post, post_json } from "./utils"
-import { type PictureId } from "core"
+import { type PictureId, type Slug } from "core"
 
 export const apiUploadFiles = async (filelist: FileList) => {
   for (const file of filelist) {
@@ -11,29 +11,30 @@ export const apiUploadFiles = async (filelist: FileList) => {
   }
 }
 
-export const apiGetPictures = makeCachedPaginatedApi<PictureApi>(
-  routes.PICTURE_LIST.pathname,
-)
+export const apiGetPictures = makeCachedPaginatedApi<
+  PictureApi,
+  { parent?: Slug }
+>(routes.PICTURE_LIST.pathname)
 export const apiGetPicture = (id: PictureId) =>
   get_json<PictureApi>(routes.PICTURE.stringify({ id }))
 
 export const apiCreateCategory = (data: { slug: string; name: string }) =>
   post_json<CategoryApi>(routes.CATEGORY_CREATE.pathname, data)
 
-export const apiGetCategory = (slug: string) =>
+export const apiGetCategory = (slug: Slug) =>
   get_json<CategoryApi>(routes.CATEGORY.stringify({ slug }))
 export const apiGetCategories = makeCachedPaginatedApi<CategoryApi>(
   routes.CATEGORY_LIST.pathname,
 )
-export const apiPictureParentAdd = (id: PictureId, slug: string) =>
+export const apiPictureParentAdd = (id: PictureId, slug: Slug) =>
   post_json<PictureApi>(routes.PICTURE_CATEGORY_ADD.stringify({ id }), { slug })
-export const apiPictureParentDel = (id: PictureId, slug: string) =>
+export const apiPictureParentDel = (id: PictureId, slug: Slug) =>
   delete_json<PictureApi>(routes.PICTURE_CATEGORY_DEL.stringify({ id }), {
     slug,
   })
 export const apiCategoryParentAdd = (data: {
-  childSlug: string
-  parentSlug: string
+  childSlug: Slug
+  parentSlug: Slug
 }) =>
   post_json<CategoryApi>(
     routes.CATEGORY_PARENT_ADD.stringify({ slug: data.childSlug }),
@@ -41,8 +42,8 @@ export const apiCategoryParentAdd = (data: {
   )
 
 export const apiCategoryParentDel = (data: {
-  childSlug: string
-  parentSlug: string
+  childSlug: Slug
+  parentSlug: Slug
 }) =>
   delete_json<CategoryApi>(
     routes.CATEGORY_PARENT_ADD.stringify({ slug: data.childSlug }),

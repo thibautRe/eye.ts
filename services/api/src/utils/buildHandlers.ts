@@ -28,7 +28,7 @@ const getRoutePathnameArgs = (
 }
 
 type SearchParams<T> = {
-  get: (param: T) => string
+  get: (param: T) => string | null
 }
 
 type Handler<K extends ApiRouteKey, TContext> = (params: {
@@ -82,9 +82,9 @@ export const getPaginatedParams = (
     defaultPageSize = 50,
   }: { maxPageSize?: number; defaultPageSize?: number } = {},
 ): PaginateOptions => {
-  const pageNumber = parseInt(params.get("page")) || 0
+  const pageNumber = parseInt(params.get("page") ?? "0") || 0
   const pageSize = Math.min(
-    parseInt(params.get("size")) || defaultPageSize,
+    parseInt(params.get("size") ?? "0") || defaultPageSize,
     maxPageSize,
   )
   return { pageNumber, pageSize }
