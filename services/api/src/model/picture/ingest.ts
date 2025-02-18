@@ -9,7 +9,7 @@ import sharp from "sharp"
 import { putS3Picture } from "../../s3Client"
 
 import { encode as blurhashEncode } from "blurhash"
-import type { PictureId } from "core"
+import { parseRating, type PictureId } from "core"
 import { getPictureDataInExif } from "./exif"
 import { getCategoryLeavesIdByXmpTag } from "../category"
 
@@ -61,7 +61,7 @@ export const ingestPicture = async (file: File) => {
     Metadata: { pictureType: "RESIZED", width: size.width.toString() },
   })
   const [category] = await category_leaves(db).insert({
-    name: { en: file.name },
+    name: file.name,
     type: "picture",
   })
 
@@ -81,6 +81,10 @@ export const ingestPicture = async (file: File) => {
     original_s3_key: s3key,
     original_file_name: file.name,
     blurhash: "",
+    version: 1,
+    rating: parseRating(
+      pictureData.exif["rating"] || pictureData.exif["Rating"],
+    ),
     ...pictureData,
   })
 
