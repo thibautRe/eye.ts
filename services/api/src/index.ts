@@ -43,7 +43,9 @@ const runHandlers = buildHandlers({
   },
   CATEGORY_LIST: async ({ searchParams }) => {
     const p = getPaginatedParams(searchParams, { defaultPageSize: 10 })
-    const { content, hasMore } = await listCategories(p)
+    const { content, hasMore } = await listCategories(p, {
+      orphan: searchParams.get("orphan") === "true",
+    })
     return {
       nextPage: hasMore ? p.pageNumber + 1 : null,
       items: await toCategoryApis(content),

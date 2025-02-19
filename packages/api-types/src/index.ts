@@ -30,7 +30,7 @@ export type ApiRoutes =
       CategoryApi,
       { json: { slug: string; name: string; exifTag: string } }
     >
-  | PaginatedRoute<"CATEGORY_LIST", CategoryApi>
+  | PaginatedRoute<"CATEGORY_LIST", CategoryApi, { searchParams: "orphan" }>
   | Route<
       "CATEGORY_PARENT_ADD",
       CategoryApi,

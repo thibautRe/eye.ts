@@ -107,11 +107,17 @@ export const getDirectChildrenCategories = batch<
   }
 })
 
-export const listCategories = async (p: PaginateOptions) => {
+export const listCategories = async (
+  p: PaginateOptions,
+  { orphan }: { orphan: boolean },
+) => {
   return await paginate<CategoryLeavesWithSlug>(
     // @ts-expect-error CategoryLeaves cannot be assigned to CategoryLeavesWithSlug
     category_leaves(db)
-      .find({ slug: q.not(null) })
+      .find({
+        slug: q.not(null),
+        ...(orphan ? { id: q.not(category_parents.key("child_id")) } : {}),
+      })
       .orderByAsc("id"),
     p,
   )

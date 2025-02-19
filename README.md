@@ -23,7 +23,7 @@ bun run migrate
 ### Infra
 
 - [x] Dataloader, batch, cache (cameraBodies, cameraLens model files, toPictureApi)
-- [ ] Frontend paginated loader
+- [x] Frontend paginated loader
 - [ ] Exif typings
 - [ ] Improve mapping of ApiResponse/Parameters in frontend
 
@@ -33,4 +33,8 @@ bun run migrate
 - [ ] General styling
 - [ ] Camera Bodies, Camera Lenses pages
 - [x] Categories
+  - [ ] Edit auto-exif
+  - [ ] All pictures in top cat
+  - [ ] Filter pictures by dates
+  - [ ] Filter categories by orphan
 - [ ] Download as zip
