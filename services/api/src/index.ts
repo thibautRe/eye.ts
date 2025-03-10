@@ -26,6 +26,7 @@ import {
   getDirectChildrenCategories,
   getDirectParentCategories,
   listCategories,
+  updateCategoryLeaveWithSlug,
   type CategoryLeavesWithSlug,
 } from "./model/category"
 import { buildHandlers, getPaginatedParams } from "./utils/buildHandlers"
@@ -34,6 +35,12 @@ import { getPictureById } from "./model/picture"
 const runHandlers = buildHandlers({
   CATEGORY: async ({ args: { slug } }) => {
     return await toCategoryApi(await getCategoryLeaveWithSlug(slug))
+  },
+  CATEGORY_UPDATE: async ({ args: { slug }, json }) => {
+    const { name, exifTag } = await json()
+    return await toCategoryApi(
+      await updateCategoryLeaveWithSlug({ slug, name, exifTag }),
+    )
   },
   CATEGORY_CREATE: async ({ json }) => {
     const { name, slug, exifTag } = await json()
@@ -157,20 +164,19 @@ const toPictureApis = async (dbPics: Pictures[]) =>
 
 const toCategoryApi = async (
   category: CategoryLeavesWithSlug,
-): Promise<CategoryApi> => {
-  return {
-    slug: category.slug,
-    name: category.name,
-    directChildren: toLinkedCategoryApi(
-      (await getDirectChildrenCategories(category.id)).filter(
-        categoryLeaveHasSlug,
-      ),
+): Promise<CategoryApi> => ({
+  slug: category.slug,
+  exifTag: category.exif_tag,
+  name: category.name,
+  directChildren: toLinkedCategoryApi(
+    (await getDirectChildrenCategories(category.id)).filter(
+      categoryLeaveHasSlug,
     ),
-    directParents: toLinkedCategoryApi(
-      await getDirectParentCategories(category.id),
-    ),
-  }
-}
+  ),
+  directParents: toLinkedCategoryApi(
+    await getDirectParentCategories(category.id),
+  ),
+})
 
 const toCategoryApis = async (
   categories: CategoryLeavesWithSlug[],

@@ -44,7 +44,7 @@ export const createCategoryLeaveWithSlug = async ({
 }: {
   slug: string
   name: string
-  exifTag: string
+  exifTag: string | null
 }) =>
   (
     await category_leaves(db).insert({
@@ -54,6 +54,22 @@ export const createCategoryLeaveWithSlug = async ({
       exif_tag: exifTag,
     })
   )[0] as CategoryLeavesWithSlug
+
+export const updateCategoryLeaveWithSlug = async ({
+  slug,
+  name,
+  exifTag,
+}: {
+  slug: string
+  name: string
+  exifTag: string | null
+}) => {
+  const [updated] = await category_leaves(db).update(
+    { slug: slugify(slug) },
+    { name, exif_tag: exifTag },
+  )
+  return updated as CategoryLeavesWithSlug
+}
 
 export const getCategoryLeavesIdByXmpTag = async (xmpTags: string[]) => {
   const leaves = (

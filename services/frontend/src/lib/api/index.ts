@@ -20,6 +20,15 @@ export const apiGetPicture = (id: PictureId) =>
 
 export const apiCreateCategory = (data: { slug: string; name: string }) =>
   post_json<CategoryApi>(routes.CATEGORY_CREATE.pathname, data)
+export const apiUpdateCategory = (data: {
+  slug: Slug
+  name: string
+  exifTag: string | null
+}) =>
+  post_json<CategoryApi>(routes.CATEGORY_UPDATE.stringify(data), {
+    name: data.name,
+    exifTag: data.exifTag,
+  })
 
 export const apiGetCategory = (slug: Slug) =>
   get_json<CategoryApi>(routes.CATEGORY.stringify({ slug }))

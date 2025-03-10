@@ -26,6 +26,11 @@ type PaginatedRoute<K, R, O extends RouteOptions = {}> = Route<
 export type ApiRoutes =
   | Route<"CATEGORY", CategoryApi, { args: { slug: Slug } }>
   | Route<
+      "CATEGORY_UPDATE",
+      CategoryApi,
+      { args: { slug: Slug }; json: { name: string; exifTag: string | null } }
+    >
+  | Route<
       "CATEGORY_CREATE",
       CategoryApi,
       { json: { slug: string; name: string; exifTag: string } }
@@ -102,6 +107,14 @@ type ApiPathname<K extends ApiRouteKey> = ApiRoute<K> extends {
 export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
   CATEGORY: {
     method: "GET",
+    stringify: ({ slug }) => `/categories/${slug}`,
+    parse: (pathname) => {
+      const res = /^\/categories\/([^\/]+)$/.exec(pathname)
+      return res ? { ok: true, args: { slug: res[1] as Slug } } : { ok: false }
+    },
+  },
+  CATEGORY_UPDATE: {
+    method: "POST",
     stringify: ({ slug }) => `/categories/${slug}`,
     parse: (pathname) => {
       const res = /^\/categories\/([^\/]+)$/.exec(pathname)
@@ -196,6 +209,7 @@ export interface LinkedCategoryApi {
 export interface CategoryApi {
   name: string
   slug: Slug
+  exifTag: string | null
   directParents: LinkedCategoryApi[]
   directChildren: LinkedCategoryApi[]
 }

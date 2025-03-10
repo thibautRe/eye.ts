@@ -7,7 +7,7 @@
   import PaginatedPictureGrid from "$lib/components/PaginatedPictureGrid.svelte"
   import ParentCategories from "$lib/components/ParentCategories.svelte"
   import { PaginatedLoader } from "$lib/PaginatedLoader.svelte"
-  import { makeCategoryUrl } from "$lib/urls"
+  import { makeCategoryEditUrl, makeCategoryUrl } from "$lib/urls"
   import type { CategoryPageData } from "./+page"
 
   let { data }: { data: CategoryPageData } = $props()
@@ -23,9 +23,13 @@
   }
 </script>
 
-<h1>Category {cat.name}</h1>
+<div>
+  <h1>Category {cat.name}</h1>
+  <a href={makeCategoryEditUrl(cat.slug)}>Edit</a>
+</div>
 
 <h2>Parent categories</h2>
+
 <ParentCategories
   parents={cat.directParents}
   onAdd={async (parentSlug) => {
