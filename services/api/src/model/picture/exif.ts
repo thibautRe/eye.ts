@@ -29,14 +29,14 @@ export const getPictureDataInExif = async (
       shot_by_camera_lens_id: cameraLens?.id ?? null,
       exif,
     },
-    xmpTags: getXmpTags(exif.subject),
+    xmpTags: getXmpTags(exif.TagsList),
   }
 }
 
-const getXmpTags = (subject: unknown): string[] => {
+const getXmpTags = (taglist: unknown): string[] => {
   const parseArr = (subArr: string[]) =>
     subArr.map((t) => t.trim().toLowerCase())
-  if (typeof subject === "string") return parseArr(subject.split(","))
-  if (Array.isArray(subject)) return parseArr(subject)
+  if (typeof taglist === "string") return parseArr(taglist.split(","))
+  if (Array.isArray(taglist)) return parseArr(taglist)
   return []
 }
