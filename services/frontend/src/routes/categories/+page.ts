@@ -6,8 +6,11 @@ import {
   type SerializedPaginatedLoader,
 } from "$lib/PaginatedLoader.svelte"
 
-export const load: PageLoad = async (): Promise<
-  SerializedPaginatedLoader<CategoryApi>
-> => {
-  return await getSerializedPaginatedLoader(apiGetCategories)
+export const load: PageLoad = async ({
+  url,
+}): Promise<SerializedPaginatedLoader<CategoryApi>> => {
+  const orphan = url.searchParams.get("orphan")
+  return await getSerializedPaginatedLoader((p) =>
+    apiGetCategories(p, { orphan: orphan ? "true" : undefined }),
+  )
 }

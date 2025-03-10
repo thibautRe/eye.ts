@@ -32,9 +32,10 @@ export const apiUpdateCategory = (data: {
 
 export const apiGetCategory = (slug: Slug) =>
   get_json<CategoryApi>(routes.CATEGORY.stringify({ slug }))
-export const apiGetCategories = makeCachedPaginatedApi<CategoryApi>(
-  routes.CATEGORY_LIST.pathname,
-)
+export const apiGetCategories = makeCachedPaginatedApi<
+  CategoryApi,
+  { orphan?: "true" | string }
+>(routes.CATEGORY_LIST.pathname)
 export const apiPictureParentAdd = (id: PictureId, slug: Slug) =>
   post_json<PictureApi>(routes.PICTURE_CATEGORY_ADD.stringify({ id }), { slug })
 export const apiPictureParentDel = (id: PictureId, slug: Slug) =>
