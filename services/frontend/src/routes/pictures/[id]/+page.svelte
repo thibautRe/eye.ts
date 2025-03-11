@@ -2,6 +2,7 @@
   import { apiPictureParentAdd, apiPictureParentDel } from "$lib/api"
   import ParentCategories from "$lib/components/ParentCategories.svelte"
   import Picture from "$lib/components/Picture.svelte"
+  import RatingComponent from "$lib/components/RatingComponent.svelte"
   import type { PictureApi } from "api-types"
 
   let { data: pic }: { data: PictureApi } = $props()
@@ -11,6 +12,7 @@
   <h1>{pic.id}</h1>
   <Picture {pic} sizes="60vw" />
   <div>{pic.shotAt}</div>
+  <RatingComponent rating={pic.rating} />
   <ParentCategories
     parents={pic.directParents}
     onAdd={async (slug) => {

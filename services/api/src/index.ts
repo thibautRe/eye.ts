@@ -139,6 +139,7 @@ const toPictureApi = async (dbPic: Pictures): Promise<PictureApi> => {
     blurhash: dbPic.blurhash,
     height: dbPic.original_height,
     width: dbPic.original_width,
+    rating: dbPic.rating,
     originalUrl: getPublicEndpoint(dbPic.original_s3_key),
     cameraBody: dbPic.shot_by_camera_body_id
       ? toCameraBodyApi(await getCameraBodyById(dbPic.shot_by_camera_body_id))

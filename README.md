@@ -29,12 +29,18 @@ bun run migrate
 
 ### Features
 
-- [ ] Picture page
 - [ ] General styling
 - [ ] Camera Bodies, Camera Lenses pages
 - [x] Categories
-  - [ ] Edit auto-exif
+  - [ ] Category page styling
+  - [x] Edit auto-exif
   - [ ] All pictures in top cat
   - [ ] Filter pictures by dates
-  - [ ] Filter categories by orphan
-- [ ] Download as zip
+  - [ ] Filter pictures by rating
+  - [x] Filter categories by orphan
+  - [ ] Download as zip
+- [ ] Pictures
+  - [ ] Picture page styling
+  - [ ] Filter pictures by orphan
+  - [x] Picture rating read
+  - [ ] Picture rating update

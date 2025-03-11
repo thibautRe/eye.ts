@@ -1,4 +1,4 @@
-import { type PictureId, type Slug } from "core"
+import { type PictureId, type Rating, type Slug } from "core"
 
 type ApiMethod = "GET" | "POST" | "PUT" | "DELETE"
 interface RouteOptions {
@@ -187,6 +187,7 @@ export interface PictureApi {
   height: number
   originalUrl: string
   shotAt: string | null
+  rating: Rating | null
   cameraBody: CameraBodyApi | null
   cameraLens: CameraLensApi | null
   exif: PictureExifApi
