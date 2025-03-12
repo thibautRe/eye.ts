@@ -1,4 +1,4 @@
-// THIS FILE REPRESENTS THE CLIENT'S URL
+// THIS FILE REPRESENTS THE CLIENT'S URLs
 
 import type { PictureId } from "core"
 
@@ -12,7 +12,7 @@ export const makeCategoriesUrl = (
   { orphan }: { orphan: boolean } = { orphan: false },
 ) => {
   const sp = new URLSearchParams()
-  if (orphan) sp.set("orphan", "true")
+  if (orphan) sp.set("orphan", "")
   return `/categories${optSp(sp)}`
 }
 export const makeCategoryUrl = (slug: string) =>

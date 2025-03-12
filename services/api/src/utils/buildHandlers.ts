@@ -29,6 +29,7 @@ const getRoutePathnameArgs = (
 
 type SearchParams<T> = {
   get: (param: T) => string | null
+  has: (params: T) => boolean
 }
 
 type Handler<K extends ApiRouteKey, TContext> = (params: {

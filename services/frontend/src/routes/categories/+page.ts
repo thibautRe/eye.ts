@@ -9,8 +9,7 @@ import {
 export const load: PageLoad = async ({
   url,
 }): Promise<SerializedPaginatedLoader<CategoryApi>> => {
-  const orphan = url.searchParams.get("orphan")
   return await getSerializedPaginatedLoader((p) =>
-    apiGetCategories(p, { orphan: orphan ? "true" : undefined }),
+    apiGetCategories(p, { orphan: url.searchParams.has("orphan") }),
   )
 }

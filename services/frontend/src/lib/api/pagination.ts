@@ -12,7 +12,7 @@ export type PaginatedApiLoader<T, P> = (
 
 export const makeCachedPaginatedApi = <
   T,
-  P extends Record<string, number | string> = {},
+  P extends Record<string, number | string | boolean | undefined> = {},
 >(
   route: string,
 ): PaginatedApiLoader<T, P> => {
