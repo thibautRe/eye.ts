@@ -44,3 +44,6 @@ bun run migrate
   - [ ] Filter pictures by orphan
   - [x] Picture rating read
   - [ ] Picture rating update
+- [ ] Auth
+  - [ ] Read-only API access
+  - [ ] Read-only frontend

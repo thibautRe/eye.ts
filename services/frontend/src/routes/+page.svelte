@@ -21,5 +21,6 @@
   </li>
   <li>
     <a href={makeCategoriesUrl()}>Categories</a>
+    (<a href={makeCategoriesUrl({ orphan: true })}>Orphans</a>)
   </li>
 </ul>
