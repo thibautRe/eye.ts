@@ -41,7 +41,7 @@ bun run migrate
   - [ ] Download as zip
 - [ ] Pictures
   - [ ] Picture page styling
-  - [ ] Filter pictures by orphan
+  - [x] Filter pictures by orphan
   - [x] Picture rating read
   - [ ] Picture rating update
 - [ ] Auth

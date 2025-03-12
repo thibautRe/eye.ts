@@ -1,4 +1,5 @@
 import db, {
+  category_parents,
   paginate,
   pictures,
   q,
@@ -23,14 +24,21 @@ const getPictureLeaves = async (
 
 export const listPictures = async (
   p: PaginateOptions,
-  args: { parent: string | null },
+  { parent, orphan }: { parent: string | null; orphan: boolean },
 ) => {
-  const leafIds = await getPictureLeaves(args.parent)
+  const leafIds = await getPictureLeaves(parent)
   return await paginate(
     pictures(db)
-      .find({
-        ...(leafIds ? { category_leaf_id: q.anyOf(leafIds) } : {}),
-      })
+      .find(
+        q.and(
+          ...[
+            ...(leafIds ? [{ category_leaf_id: q.anyOf(leafIds) }] : []),
+            ...(orphan
+              ? [{ category_leaf_id: q.not(category_parents.key("child_id")) }]
+              : []),
+          ],
+        ),
+      )
       .orderByDesc("shot_at"),
     p,
   )

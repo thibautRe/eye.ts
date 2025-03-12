@@ -18,6 +18,7 @@
 <ul>
   <li>
     <a href={makePicturesUrl()}>Pictures</a>
+    (<a href={makePicturesUrl({ orphan: true })}>Orphans</a>)
   </li>
   <li>
     <a href={makeCategoriesUrl()}>Categories</a>

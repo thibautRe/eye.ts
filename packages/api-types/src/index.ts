@@ -59,7 +59,11 @@ export type ApiRoutes =
       PictureApi,
       { args: { id: PictureId }; json: { slug: Slug } }
     >
-  | PaginatedRoute<"PICTURE_LIST", PictureApi, { searchParams: "parent" }>
+  | PaginatedRoute<
+      "PICTURE_LIST",
+      PictureApi,
+      { searchParams: "parent" | "orphan" }
+    >
 
 export type ApiRouteKey = ApiRoutes["key"]
 export type ApiRoute<K extends ApiRouteKey> = Extract<ApiRoutes, { key: K }>

@@ -116,6 +116,7 @@ const runHandlers = buildHandlers({
     const p = getPaginatedParams(searchParams)
     const { content, hasMore } = await listPictures(p, {
       parent: searchParams.get("parent"),
+      orphan: searchParams.has("orphan"),
     })
     return {
       nextPage: hasMore ? p.pageNumber + 1 : null,

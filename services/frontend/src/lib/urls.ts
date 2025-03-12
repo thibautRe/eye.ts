@@ -8,6 +8,8 @@ const optSp = (sp: URLSearchParams) => {
   return `?${spStr}`
 }
 
+// --- Categories
+
 export const makeCategoriesUrl = (
   { orphan }: { orphan: boolean } = { orphan: false },
 ) => {
@@ -20,5 +22,13 @@ export const makeCategoryUrl = (slug: string) =>
 export const makeCategoryEditUrl = (slug: string) =>
   `${makeCategoryUrl(slug)}/edit`
 
-export const makePicturesUrl = () => `/pictures/`
-export const makePictureUrl = (id: PictureId) => `/pictures/${id}`
+// --- Pictures
+
+export const makePicturesUrl = (
+  { orphan }: { orphan: boolean } = { orphan: false },
+) => {
+  const sp = new URLSearchParams()
+  if (orphan) sp.set("orphan", "")
+  return `/pictures${optSp(sp)}`
+}
+export const makePictureUrl = (id: PictureId) => `${makePicturesUrl()}/${id}`

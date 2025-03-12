@@ -75,6 +75,16 @@ export const makeCachedGet = <T>() => {
 type URLSearchParamsLike = Record<string, string | number | boolean | undefined>
 export const withParams = (r: string, params: URLSearchParamsLike) => {
   // @ts-expect-error URLSearchParamsLike is not assignable to URLSearchParams
-  const sp = new URLSearchParams(params).toString()
+  const sp = new URLSearchParams(filterParams(params)).toString()
   return sp ? `${r}?${sp}` : r
+}
+
+// Removes some parameters from URL search param that generally rely on presence (e.g. booleans and "false")
+const filterParams = (params: URLSearchParamsLike): URLSearchParamsLike => {
+  return Object.fromEntries(
+    Object.entries(params).flatMap(([k, v]) => {
+      if (v === false) return []
+      return [[k, v]]
+    }),
+  )
 }

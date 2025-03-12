@@ -4,8 +4,10 @@ import { getSerializedPaginatedLoader } from "$lib/PaginatedLoader.svelte"
 import type { PageLoad } from "./$types"
 import type { PictureApi } from "api-types"
 
-export const load: PageLoad = async (): Promise<
-  SerializedPaginatedLoader<PictureApi>
-> => {
-  return await getSerializedPaginatedLoader(apiGetPictures)
+export const load: PageLoad = async ({
+  url,
+}): Promise<SerializedPaginatedLoader<PictureApi>> => {
+  return await getSerializedPaginatedLoader((p) =>
+    apiGetPictures(p, { orphan: url.searchParams.has("orphan") }),
+  )
 }
