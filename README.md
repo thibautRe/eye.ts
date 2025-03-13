@@ -38,12 +38,12 @@ bun run migrate
   - [ ] Filter pictures by dates
   - [ ] Filter pictures by rating
   - [x] Filter categories by orphan
-  - [ ] Download as zip
 - [ ] Pictures
   - [ ] Picture page styling
   - [x] Filter pictures by orphan
   - [x] Picture rating read
   - [ ] Picture rating update
+  - [ ] Download as zip
 - [ ] Auth
   - [ ] Read-only API access
   - [ ] Read-only frontend

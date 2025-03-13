@@ -36,10 +36,10 @@
       }}
     >
       <input type="text" bind:value={parentCatSlug} />
-      <button type="submit" disabled={!parentCatSlug}>+</button>
+      <button type="submit" class="primary" disabled={!parentCatSlug}>+</button>
     </form>
   {:else}
-    <button onclick={() => (isAdding = true)}>+</button>
+    <button class="primary" onclick={() => (isAdding = true)}>+</button>
   {/if}
 </div>
 
@@ -48,6 +48,9 @@
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    background-color: oklch(0.95 0.005 var(--hue));
+    padding: 6px 10px;
+    border-radius: 6px;
   }
   .categories {
     list-style: none;

@@ -9,10 +9,6 @@
 </script>
 
 <div class="wrapper">
-  <h1>{pic.id}</h1>
-  <Picture {pic} sizes="60vw" />
-  <div>{pic.shotAt}</div>
-  <RatingComponent rating={pic.rating} />
   <ParentCategories
     parents={pic.directParents}
     onAdd={async (slug) => {
@@ -22,6 +18,9 @@
       pic = await apiPictureParentDel(pic.id, slug)
     }}
   />
+  <Picture {pic} sizes="60vw" />
+  <div>{pic.shotAt}</div>
+  <RatingComponent rating={pic.rating} />
 
   <h4>EXIF</h4>
   <table>

@@ -23,12 +23,10 @@
   }
 </script>
 
-<div>
-  <h1>Category {cat.name}</h1>
+<div class="header">
+  <h1>{cat.name}</h1>
   <a href={makeCategoryEditUrl(cat.slug)}>Edit</a>
 </div>
-
-<h2>Parent categories</h2>
 
 <ParentCategories
   parents={cat.directParents}
@@ -60,3 +58,11 @@
 </ul>
 
 <PaginatedPictureGrid {loader} />
+
+<style>
+  .header {
+    display: flex;
+    gap: 16px;
+    align-items: baseline;
+  }
+</style>
