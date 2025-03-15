@@ -1,4 +1,6 @@
 import {
+  type FieldQuery,
+  type WhereCondition,
   allOf,
   and,
   anyOf,
@@ -9,6 +11,8 @@ import {
   not,
   or,
 } from "@databases/pg-typed"
+
+export { type FieldQuery, type WhereCondition }
 
 export const q = {
   greaterThan,

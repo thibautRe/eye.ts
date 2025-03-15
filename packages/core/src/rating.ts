@@ -8,3 +8,27 @@ export const parseRating = (r: unknown): Rating | null => {
   }
   return null
 }
+
+export type RatingFilter =
+  | {
+      type: "eq" | "neq"
+      rating: Rating | null
+    }
+  | {
+      type: "gteq" | "lteq"
+      rating: Rating
+    }
+
+export function parseRatingFilter(f: string | null): RatingFilter | null {
+  if (!f) return null
+  const [type, r] = f.split(":")
+  const rating = parseRating(r)
+  if (type === "eq" || type === "neq") return { type, rating }
+  if ((type === "gteq" || type === "lteq") && rating !== null)
+    return { type, rating }
+  return null
+}
+
+export function stringifyRatingFilter(ratingFilter: RatingFilter): string {
+  return `${ratingFilter.type}:${ratingFilter.rating}`
+}

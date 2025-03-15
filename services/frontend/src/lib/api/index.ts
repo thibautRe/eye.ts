@@ -13,7 +13,7 @@ export const apiUploadFiles = async (filelist: FileList) => {
 
 export const apiGetPictures = makeCachedPaginatedApi<
   PictureApi,
-  { parent?: Slug; orphan?: boolean }
+  { parent?: Slug; orphan?: boolean; rating?: string }
 >(routes.PICTURE_LIST.pathname)
 export const apiGetPicture = (id: PictureId) =>
   get_json<PictureApi>(routes.PICTURE.stringify({ id }))

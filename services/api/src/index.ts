@@ -31,6 +31,7 @@ import {
 } from "./model/category"
 import { buildHandlers, getPaginatedParams } from "./utils/buildHandlers"
 import { getPictureById } from "./model/picture"
+import { parseRatingFilter } from "core"
 
 const runHandlers = buildHandlers({
   CATEGORY: async ({ args: { slug } }) => {
@@ -117,6 +118,7 @@ const runHandlers = buildHandlers({
     const { content, hasMore } = await listPictures(p, {
       parent: searchParams.get("parent"),
       orphan: searchParams.has("orphan"),
+      rating: parseRatingFilter(searchParams.get("rating")),
     })
     return {
       nextPage: hasMore ? p.pageNumber + 1 : null,

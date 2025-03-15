@@ -8,6 +8,9 @@ export const load: PageLoad = async ({
   url,
 }): Promise<SerializedPaginatedLoader<PictureApi>> => {
   return await getSerializedPaginatedLoader((p) =>
-    apiGetPictures(p, { orphan: url.searchParams.has("orphan") }),
+    apiGetPictures(p, {
+      orphan: url.searchParams.has("orphan"),
+      rating: url.searchParams.get("rating") ?? undefined,
+    }),
   )
 }

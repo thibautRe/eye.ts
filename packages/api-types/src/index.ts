@@ -62,7 +62,7 @@ export type ApiRoutes =
   | PaginatedRoute<
       "PICTURE_LIST",
       PictureApi,
-      { searchParams: "parent" | "orphan" }
+      { searchParams: "parent" | "orphan" | "rating" }
     >
 
 export type ApiRouteKey = ApiRoutes["key"]
