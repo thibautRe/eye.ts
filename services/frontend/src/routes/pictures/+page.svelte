@@ -1,14 +1,17 @@
 <script lang="ts">
-  import { apiGetPictures } from "$lib/api"
+  import { apiGetPictures, apiGetPicturesZipRoute } from "$lib/api"
   import PaginatedPictureGrid from "$lib/components/PaginatedPictureGrid.svelte"
-  import {
-    PaginatedLoader,
-    type SerializedPaginatedLoader,
-  } from "$lib/PaginatedLoader.svelte"
-  import type { PictureApi } from "api-types"
+  import { PaginatedLoader } from "$lib/PaginatedLoader.svelte"
+  import type { PicturesPageData } from "./+page"
 
-  let { data }: { data: SerializedPaginatedLoader<PictureApi> } = $props()
-  const loader = new PaginatedLoader(apiGetPictures).fromSerialized(data)
+  let { data }: { data: PicturesPageData } = $props()
+  const picturesParams = $derived(data.picturesParams)
+  const loader = new PaginatedLoader((p) =>
+    apiGetPictures(p, picturesParams),
+  ).fromSerialized(data.pictures)
 </script>
 
+<span>
+  (<a href={apiGetPicturesZipRoute(picturesParams)} download>.zip</a>)
+</span>
 <PaginatedPictureGrid {loader} />

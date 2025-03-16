@@ -62,8 +62,15 @@ export type ApiRoutes =
   | PaginatedRoute<
       "PICTURE_LIST",
       PictureApi,
-      { searchParams: "parent" | "orphan" | "rating" }
+      { searchParams: PictureListSearchParams }
     >
+  | Route<
+      "PICTURE_LIST_ZIP",
+      unknown,
+      { searchParams: PictureListSearchParams }
+    >
+
+type PictureListSearchParams = "parent" | "orphan" | "rating"
 
 export type ApiRouteKey = ApiRoutes["key"]
 export type ApiRoute<K extends ApiRouteKey> = Extract<ApiRoutes, { key: K }>
@@ -154,6 +161,7 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
 
   PICTURE_UPLOAD: { pathname: `/picture/upload`, method: "POST" },
   PICTURE_LIST: { pathname: `/pictures`, method: "GET" },
+  PICTURE_LIST_ZIP: { pathname: `/pictures.zip`, method: "GET" },
   PICTURE: {
     method: "GET",
     stringify: ({ id }) => `/pictures/${id}`,

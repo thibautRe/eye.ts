@@ -36,7 +36,7 @@ bun run migrate
   - [x] Edit auto-exif
   - [ ] All pictures in top cat
   - [ ] Filter pictures by dates
-  - [ ] Filter pictures by rating
+  - [x] Filter pictures by rating
   - [x] Filter categories by orphan
 - [ ] Pictures
   - [ ] Picture page styling

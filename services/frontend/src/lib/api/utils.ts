@@ -9,7 +9,7 @@ const assert_ok = (res: Response) => {
 }
 const jsonHeader = { "Content-Type": "application/json" }
 
-const rootUrl = browser ? `/api` : PUBLIC_API_URL
+export const rootUrl = browser ? `/api` : PUBLIC_API_URL
 
 /** small override of fetch */
 const f = (r: string, init: RequestInit = {}) => {

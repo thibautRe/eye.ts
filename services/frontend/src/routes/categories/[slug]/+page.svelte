@@ -3,6 +3,7 @@
     apiCategoryParentAdd,
     apiCategoryParentDel,
     apiGetPictures,
+    apiGetPicturesZipRoute,
   } from "$lib/api"
   import PaginatedPictureGrid from "$lib/components/PaginatedPictureGrid.svelte"
   import ParentCategories from "$lib/components/ParentCategories.svelte"
@@ -13,9 +14,10 @@
   let { data }: { data: CategoryPageData } = $props()
 
   const cat = $derived(data.category)
+  const picturesParams = $derived(data.picturesParams)
   const loader = $derived(
     new PaginatedLoader((p) =>
-      apiGetPictures(p, { parent: cat.slug }),
+      apiGetPictures(p, picturesParams),
     ).fromSerialized(data.pictures),
   )
   const updateCat = (category: typeof data.category) => {
@@ -26,6 +28,9 @@
 <div class="header">
   <h1>{cat.name}</h1>
   <a href={makeCategoryEditUrl(cat.slug)}>Edit</a>
+  <span>
+    (<a href={apiGetPicturesZipRoute(picturesParams)} download>.zip</a>)
+  </span>
 </div>
 
 <ParentCategories

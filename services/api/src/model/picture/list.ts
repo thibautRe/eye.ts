@@ -24,30 +24,39 @@ const getPictureLeaves = async (
   return childrenCats.map((c) => c.id)
 }
 
-export const listPictures = async (
-  p: PaginateOptions,
-  {
-    parent,
-    orphan,
-    rating,
-  }: { parent: string | null; orphan: boolean; rating: RatingFilter | null },
-) => {
-  const leafIds = await getPictureLeaves(parent)
-  return await paginate(
-    pictures(db)
-      .find(
-        q.and(
-          leafIds ? { category_leaf_id: q.anyOf(leafIds) } : {},
-          orphan
-            ? { category_leaf_id: q.not(category_parents.key("child_id")) }
-            : {},
-          ratingFilterToCondition(rating),
-        ),
-      )
-      .orderByDesc("shot_at"),
-    p,
-  )
+interface PictureListParams {
+  parent: string | null
+  orphan: boolean
+  rating: RatingFilter | null
 }
+
+const getPictureListQuery = async ({
+  parent,
+  orphan,
+  rating,
+}: PictureListParams) => {
+  const leafIds = await getPictureLeaves(parent)
+  return pictures(db)
+    .find(
+      q.and(
+        leafIds ? { category_leaf_id: q.anyOf(leafIds) } : {},
+        orphan
+          ? { category_leaf_id: q.not(category_parents.key("child_id")) }
+          : {},
+        ratingFilterToCondition(rating),
+      ),
+    )
+    .orderByDesc("shot_at")
+}
+
+export const listPicturesPaginate = async (
+  p: PaginateOptions,
+  params: PictureListParams,
+) => {
+  return await paginate(await getPictureListQuery(params), p)
+}
+export const listPictures = async (params: PictureListParams) =>
+  await (await getPictureListQuery(params)).all()
 
 function ratingFilterToCondition(
   r: RatingFilter | null,

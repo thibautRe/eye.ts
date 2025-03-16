@@ -1,5 +1,7 @@
 import { createRouter } from "./utils/router"
 import { asyncLocalStorage, log } from "backend-logs"
+import archiver from "archiver"
+import { Readable } from "stream"
 import {
   type CameraBodyApi,
   type CameraLensApi,
@@ -14,11 +16,11 @@ import db, {
   category_parents,
   type Pictures,
 } from "db"
-import { listPictures } from "./model/picture/list"
+import { listPictures, listPicturesPaginate } from "./model/picture/list"
 import { getCameraBodyById } from "./model/cameraBody"
 import { getCameraLensById } from "./model/cameraLens"
 import { getPictureSizesForPictureId } from "./model/picture/sizes"
-import { getPublicEndpoint } from "./s3Client"
+import { getPublicEndpoint, getS3 } from "./s3Client"
 import {
   categoryLeaveHasSlug,
   createCategoryLeaveWithSlug,
@@ -115,7 +117,7 @@ const runHandlers = buildHandlers({
   },
   PICTURE_LIST: async ({ searchParams }) => {
     const p = getPaginatedParams(searchParams)
-    const { content, hasMore } = await listPictures(p, {
+    const { content, hasMore } = await listPicturesPaginate(p, {
       parent: searchParams.get("parent"),
       orphan: searchParams.has("orphan"),
       rating: parseRatingFilter(searchParams.get("rating")),
@@ -124,6 +126,45 @@ const runHandlers = buildHandlers({
       nextPage: hasMore ? p.pageNumber + 1 : null,
       items: await toPictureApis(content),
     }
+  },
+  PICTURE_LIST_ZIP: async ({ searchParams }) => {
+    const pictures = await listPictures({
+      parent: searchParams.get("parent"),
+      orphan: searchParams.has("orphan"),
+      rating: parseRatingFilter(searchParams.get("rating")),
+    })
+    const archive = archiver("zip", {
+      zlib: { level: 4 },
+    })
+    return new Response(
+      new ReadableStream({
+        async start(controller) {
+          archive.on("data", (chunk: unknown) => controller.enqueue(chunk))
+          archive.on("end", () => controller.close())
+          archive.on("error", (err: unknown) => console.error(err))
+
+          for (const picture of pictures) {
+            const response = await getS3({ Key: picture.original_s3_key })
+            if (response.Body instanceof Readable) {
+              archive.append(response.Body, {
+                name: picture.original_file_name,
+              })
+            } else {
+              throw new Error("Unexpected response from S3")
+            }
+          }
+
+          // Finalize the archive
+          archive.finalize()
+        },
+      }),
+      {
+        headers: new Headers({
+          "Content-Type": "application/zip",
+          "Content-Disposition": 'attachment; filename="eye.thibaut.re.zip"',
+        }),
+      },
+    )
   },
 })
 

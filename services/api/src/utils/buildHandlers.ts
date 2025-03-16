@@ -71,6 +71,7 @@ export const buildHandlers =
         searchParams,
         json,
       })
+      if (handlerRes instanceof Response) return handlerRes
       return Response.json(handlerRes)
     }
     return make404()

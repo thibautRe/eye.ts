@@ -1,6 +1,13 @@
 import { type CategoryApi, type PictureApi, routes } from "api-types"
 import { makeCachedPaginatedApi } from "./pagination"
-import { delete_json, get_json, post, post_json } from "./utils"
+import {
+  delete_json,
+  get_json,
+  post,
+  post_json,
+  rootUrl,
+  withParams,
+} from "./utils"
 import { type PictureId, type Slug } from "core"
 
 export const apiUploadFiles = async (filelist: FileList) => {
@@ -11,10 +18,20 @@ export const apiUploadFiles = async (filelist: FileList) => {
   }
 }
 
+export type ApiGetPicturesParams = {
+  parent?: Slug
+  orphan?: boolean
+  rating?: string
+}
 export const apiGetPictures = makeCachedPaginatedApi<
   PictureApi,
-  { parent?: Slug; orphan?: boolean; rating?: string }
+  ApiGetPicturesParams
 >(routes.PICTURE_LIST.pathname)
+
+// zip, not intended to be used with fetch
+export const apiGetPicturesZipRoute = (params: ApiGetPicturesParams) =>
+  `${rootUrl}${withParams(routes.PICTURE_LIST_ZIP.pathname, params)}`
+
 export const apiGetPicture = (id: PictureId) =>
   get_json<PictureApi>(routes.PICTURE.stringify({ id }))
 
