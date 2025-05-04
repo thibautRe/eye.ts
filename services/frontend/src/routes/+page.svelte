@@ -1,18 +1,50 @@
 <script lang="ts">
-  import { apiUploadFiles } from "$lib/api"
+  import { apiUploadFile } from "$lib/api"
   import { makeCategoriesUrl, makePicturesUrl } from "$lib/urls"
+
+  interface FileImportState {
+    file: File
+    state: "pending" | "uploaded" | "uploading" | "error"
+  }
+  let fileImportStates = $state<FileImportState[]>([])
 </script>
 
 <h1>Home</h1>
 <input
   type="file"
   multiple
-  accept="*.jpg, *.jpeg"
+  accept=".jpg, .jpeg"
+  disabled={fileImportStates.some((i) => i.state === "pending")}
   onchange={async (e) => {
-    const files = (e.target as HTMLInputElement | null)?.files
-    if (files) await apiUploadFiles(files)
+    const files = e.currentTarget.files
+    e.currentTarget.files = null
+    if (!files) return
+
+    fileImportStates = Array.from(files).map(
+      (file): FileImportState => ({ file, state: "pending" }),
+    )
+    for (const fileImport of fileImportStates) {
+      if (fileImport.state !== "pending") continue
+      try {
+        fileImport.state = "uploading"
+        await apiUploadFile(fileImport.file)
+        fileImport.state = "uploaded"
+      } catch (err) {
+        console.error(err)
+        fileImport.state = "error"
+      }
+    }
   }}
 />
+
+{#if fileImportStates.length > 0}
+  <h2>Upload status</h2>
+  <ul>
+    {#each fileImportStates as fileImport}
+      <li>{fileImport.file.name}: {fileImport.state}</li>
+    {/each}
+  </ul>
+{/if}
 
 <h2>Links</h2>
 <ul>

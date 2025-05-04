@@ -10,12 +10,10 @@ import {
 } from "./utils"
 import { type PictureId, type Slug } from "core"
 
-export const apiUploadFiles = async (filelist: FileList) => {
-  for (const file of filelist) {
-    const formData = new FormData()
-    formData.append("file", file)
-    await post(routes.PICTURE_UPLOAD.pathname, formData)
-  }
+export const apiUploadFile = async (file: File) => {
+  const formData = new FormData()
+  formData.append("file", file)
+  await post(routes.PICTURE_UPLOAD.pathname, formData)
 }
 
 export type ApiGetPicturesParams = {
