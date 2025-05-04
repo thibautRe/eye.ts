@@ -63,7 +63,7 @@ export const makeCachedGet = <T>() => {
   const cache = new Map<string, T>()
   return [
     async (r: string) => {
-      if (cache.has(r)) return cache.get(r)!
+      if (cache.has(r) && browser) return cache.get(r)!
       const val = await get_json<T>(r)
       cache.set(r, val)
       return val
