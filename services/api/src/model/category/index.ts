@@ -18,14 +18,10 @@ export const categoryLeaveHasSlug = (
 export const getCategoryLeavesByXmpTag = dedupeAsync(
   batch<string, CategoryLeaves[]>(async (xmpTags) => {
     const leaves = await category_leaves(db)
-      .find({
-        exif_tag: q.anyOf(xmpTags),
-      })
+      .find({ exif_tag: q.anyOf(xmpTags.map((t) => q.caseInsensitive(t))) })
       .all()
-    const map = Map.groupBy(leaves, (l) => l.exif_tag)
-    return {
-      get: (xmpTag) => map.get(xmpTag) ?? [],
-    }
+    const map = Map.groupBy(leaves, (l) => l.exif_tag?.toLocaleLowerCase())
+    return { get: (xmpTag) => map.get(xmpTag.toLocaleLowerCase()) ?? [] }
   }),
   { cache: createCache({ name: "categoryLeavesByXmpTag" }) },
 )
