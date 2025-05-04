@@ -79,11 +79,11 @@ export const withParams = (r: string, params: URLSearchParamsLike) => {
   return sp ? `${r}?${sp}` : r
 }
 
-// Removes some parameters from URL search param that generally rely on presence (e.g. booleans and "false")
+// Removes some parameters from URL search param that generally rely on presence (e.g. booleans and "false", or undefined)
 const filterParams = (params: URLSearchParamsLike): URLSearchParamsLike => {
   return Object.fromEntries(
     Object.entries(params).flatMap(([k, v]) => {
-      if (v === false) return []
+      if (v === false || v === undefined) return []
       return [[k, v]]
     }),
   )
