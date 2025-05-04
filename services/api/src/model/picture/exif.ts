@@ -21,6 +21,8 @@ export const getPictureDataInExif = async (
 
   // this seems to be the darktable history - unnecessarily big, can drop
   if ("history" in exif) delete exif.history
+  // Some XML formatting
+  if ("categories" in exif) delete exif.categories
 
   return {
     pictureData: {

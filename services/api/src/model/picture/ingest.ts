@@ -55,6 +55,14 @@ export const ingestPicture = async (file: File) => {
   if (!size || !size.width || !size.height)
     throw new Error("No image size detected")
 
+  // image-size claims to swap orientation but this doesn't seem to work. So re-swapping as that seems to help
+  if (
+    pictureData.exif.Orientation.includes("270") ||
+    pictureData.exif.Orientation.includes("90")
+  ) {
+    ;[size.height, size.width] = [size.width, size.height]
+  }
+
   await putS3Picture({
     Key: s3key,
     Body: Buffer.from(arrayBuffer),
