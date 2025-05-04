@@ -14,7 +14,9 @@
   type="file"
   multiple
   accept=".jpg, .jpeg"
-  disabled={fileImportStates.some((i) => i.state === "pending")}
+  disabled={fileImportStates.some(
+    (i) => i.state === "pending" || i.state === "uploading",
+  )}
   onchange={async (e) => {
     const files = e.currentTarget.files
     e.currentTarget.files = null
@@ -38,7 +40,10 @@
 />
 
 {#if fileImportStates.length > 0}
-  <h2>Upload status</h2>
+  <h2>
+    Upload status ({fileImportStates.filter((s) => s.state === "uploaded")
+      .length}/{fileImportStates.length})
+  </h2>
   <ul>
     {#each fileImportStates as fileImport}
       <li>{fileImport.file.name}: {fileImport.state}</li>
