@@ -2,38 +2,21 @@ import { createRouter } from "./utils/router"
 import { asyncLocalStorage, log } from "backend-logs"
 import archiver from "archiver"
 import { Readable } from "stream"
-import {
-  type CameraBodyApi,
-  type CameraLensApi,
-  type CategoryApi,
-  type LinkedCategoryApi,
-  type PictureApi,
-} from "api-types"
 import { ingestPicture } from "./model/picture/ingest"
-import db, {
-  type CameraBodies,
-  type CameraLenses,
-  category_parents,
-  type Pictures,
-} from "db"
+import db, { category_parents } from "db"
 import { listPictures, listPicturesPaginate } from "./model/picture/list"
-import { getCameraBodyById } from "./model/cameraBody"
-import { getCameraLensById } from "./model/cameraLens"
-import { getPictureSizesForPictureId } from "./model/picture/sizes"
-import { getPublicEndpoint, getS3 } from "./s3Client"
+import { getS3 } from "./s3Client"
 import {
-  categoryLeaveHasSlug,
   createCategoryLeaveWithSlug,
   getCategoryLeaveWithSlug,
-  getDirectChildrenCategories,
-  getDirectParentCategories,
   listCategories,
   updateCategoryLeaveWithSlug,
-  type CategoryLeavesWithSlug,
 } from "./model/category"
 import { buildHandlers, getPaginatedParams } from "./utils/buildHandlers"
 import { getPictureById } from "./model/picture"
 import { parseRatingFilter } from "core"
+import { toCategoryApi, toCategoryApis } from "./controllers/categories"
+import { toPictureApi, toPictureApis } from "./controllers/picture"
 
 const runHandlers = buildHandlers({
   CATEGORY: async ({ args: { slug } }) => {
@@ -167,70 +150,6 @@ const runHandlers = buildHandlers({
     )
   },
 })
-
-const toCameraLensApi = (dbCameraLens: CameraLenses): CameraLensApi => {
-  return { name: dbCameraLens.name }
-}
-
-const toCameraBodyApi = (dbCameraBody: CameraBodies): CameraBodyApi => {
-  return { name: dbCameraBody.name }
-}
-
-const toPictureApi = async (dbPic: Pictures): Promise<PictureApi> => {
-  return {
-    id: dbPic.id,
-    alt: dbPic.alt,
-    blurhash: dbPic.blurhash,
-    height: dbPic.original_height,
-    width: dbPic.original_width,
-    rating: dbPic.rating,
-    originalUrl: getPublicEndpoint(dbPic.original_s3_key),
-    cameraBody: dbPic.shot_by_camera_body_id
-      ? toCameraBodyApi(await getCameraBodyById(dbPic.shot_by_camera_body_id))
-      : null,
-    cameraLens: dbPic.shot_by_camera_lens_id
-      ? toCameraLensApi(await getCameraLensById(dbPic.shot_by_camera_lens_id))
-      : null,
-    exif: dbPic.exif,
-    shotAt: dbPic.shot_at?.toString() ?? null,
-    sizes: (await getPictureSizesForPictureId(dbPic.id)).map((s) => ({
-      height: s.height,
-      width: s.width,
-      url: getPublicEndpoint(s.s3_key),
-    })),
-    directParents: toLinkedCategoryApi(
-      await getDirectParentCategories(dbPic.category_leaf_id),
-    ),
-  }
-}
-
-const toPictureApis = async (dbPics: Pictures[]) =>
-  await Promise.all(dbPics.map(toPictureApi))
-
-const toCategoryApi = async (
-  category: CategoryLeavesWithSlug,
-): Promise<CategoryApi> => ({
-  slug: category.slug,
-  exifTag: category.exif_tag,
-  name: category.name,
-  directChildren: toLinkedCategoryApi(
-    (await getDirectChildrenCategories(category.id)).filter(
-      categoryLeaveHasSlug,
-    ),
-  ),
-  directParents: toLinkedCategoryApi(
-    await getDirectParentCategories(category.id),
-  ),
-})
-
-const toCategoryApis = async (
-  categories: CategoryLeavesWithSlug[],
-): Promise<CategoryApi[]> => await Promise.all(categories.map(toCategoryApi))
-
-const toLinkedCategoryApi = (
-  categories: CategoryLeavesWithSlug[],
-): LinkedCategoryApi[] =>
-  categories.map((l) => ({ name: l.name, slug: l.slug }))
 
 const router = createRouter()
   .withPreMiddleware(({ request }) => {
