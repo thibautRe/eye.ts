@@ -53,14 +53,16 @@
   }}
 />
 
-<h2>Children categories</h2>
-<ul>
-  {#each cat.directChildren as directChildren}
-    <li>
-      <a href={makeCategoryUrl(directChildren.slug)}>{directChildren.name}</a>
-    </li>
-  {/each}
-</ul>
+{#if cat.directChildren.length > 0}
+  <h2>Children categories</h2>
+  <ul>
+    {#each cat.directChildren as directChildren}
+      <li>
+        <a href={makeCategoryUrl(directChildren.slug)}>{directChildren.name}</a>
+      </li>
+    {/each}
+  </ul>
+{/if}
 
 <PaginatedPictureGrid {loader} />
 
