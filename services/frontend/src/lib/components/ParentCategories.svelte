@@ -35,7 +35,8 @@
         parentCatSlug = ""
       }}
     >
-      <input type="text" bind:value={parentCatSlug} />
+      <!-- svelte-ignore a11y_autofocus -->
+      <input type="text" bind:value={parentCatSlug} autofocus />
       <button type="submit" class="primary" disabled={!parentCatSlug}>+</button>
     </form>
   {:else}
