@@ -16,9 +16,15 @@ export interface CategoryPageData {
   pictures: SerializedPaginatedLoader<PictureApi>
   picturesParams: ApiGetPicturesParams
 }
-export const load: PageLoad = async ({ params }): Promise<CategoryPageData> => {
+export const load: PageLoad = async ({
+  params,
+  url,
+}): Promise<CategoryPageData> => {
   const slug = slugify(params.slug)
-  const picturesParams: ApiGetPicturesParams = { parent: slug }
+  const picturesParams: ApiGetPicturesParams = {
+    parent: slug,
+    rating: url.searchParams.get("rating") ?? undefined,
+  }
   const category = await apiGetCategory(slug)
   const pictures = await getSerializedPaginatedLoader((p) =>
     apiGetPictures(p, picturesParams),
