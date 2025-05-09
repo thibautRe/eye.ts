@@ -21,12 +21,10 @@ const AppProviders: ParentComponent = (p) => {
   )
 }
 
-const App: VoidComponent = () => {
+export const App: VoidComponent = () => {
   return (
     <AppProviders>
       <AppRoutes />
     </AppProviders>
   )
 }
-
-export default App

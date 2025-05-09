@@ -1,6 +1,10 @@
 import { For, type VoidComponent } from "solid-js"
 import type { PictureApi } from "api-types"
 import { splitInLines } from "../../utils/splitInLines"
+import { hstack, vstack } from "../../../styled-system/patterns"
+import { Picture } from "./Picture"
+import { css } from "../../../styled-system/css"
+import { routes } from "../Routes"
 
 export interface PictureGridProps {
   pictures: readonly PictureApi[]
@@ -9,12 +13,25 @@ export interface PictureGridProps {
 export const PictureGrid: VoidComponent<PictureGridProps> = (p) => {
   const lines = () => splitInLines(p.pictures)
   return (
-    <div>
+    <div class={vstack({ gap: "m", alignItems: "initial" })}>
       <For each={lines()}>
         {(line) => (
-          <div style={{ "aspect-ratio": line.aspectRatio }}>
+          <div
+            class={hstack({ gap: "m", alignItems: "initial" })}
+            style={{ "aspect-ratio": line.aspectRatio }}
+          >
             <For each={line.pictures}>
-              {(picture) => <div>{picture.id}</div>}
+              {(p) => (
+                <a
+                  class={css({
+                    display: "contents",
+                    "& > *": { borderRadius: "md", overflow: "hidden" },
+                  })}
+                  href={routes.Picture(p.id)}
+                >
+                  <Picture picture={p} sizes="20vw" />
+                </a>
+              )}
             </For>
           </div>
         )}
