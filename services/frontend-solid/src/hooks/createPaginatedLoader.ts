@@ -31,7 +31,7 @@ interface CreatePaginatedLoaderParams<T, P extends {}> {
 export const createPaginatedLoader = <T, P extends {}>(
   params: CreatePaginatedLoaderParams<T, P>,
 ): PaginatedLoader<T> => {
-  const initSignal: PaginatedSignal<T> = {
+  const initSignal: Accessor<PaginatedSignal<T>> = () => ({
     ...(params.cacheKey && cached.has(params.cacheKey())
       ? { ...cached.get(params.cacheKey())!, shouldLoadNextPage: false }
       : {
@@ -40,14 +40,14 @@ export const createPaginatedLoader = <T, P extends {}>(
           shouldLoadNextPage: true,
         }),
     isLoadingNextPage: false,
-  }
-  const [signal, setSignal] = createSignal<PaginatedSignal<T>>(initSignal)
+  })
+  const [signal, setSignal] = createSignal<PaginatedSignal<T>>(initSignal())
   let keepLoading = false
 
   createEffect(() => {
     // @ts-expect-error this reloads the data entirely when the params change
     params.params()
-    setSignal(initSignal)
+    setSignal(initSignal())
   })
 
   createEffect(async () => {

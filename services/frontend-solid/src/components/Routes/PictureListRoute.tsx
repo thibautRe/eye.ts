@@ -15,7 +15,7 @@ import { hstack } from "../../../styled-system/patterns"
 export default () => {
   const [searchParams, setSearchParams] = useSearchParams<{
     rating: string
-    orphan?: "true"
+    orphan: "true"
   }>()
   const loader = createPaginatedLoader({
     params: () => ({
@@ -23,6 +23,8 @@ export default () => {
       orphan: searchParams.orphan === "true",
     }),
     loader: apiGetPictures,
+    cacheKey: () =>
+      `picture-list-${searchParams.rating}-${searchParams.orphan}`,
   })
   return (
     <PageLayout>
