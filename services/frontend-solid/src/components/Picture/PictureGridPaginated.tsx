@@ -12,7 +12,12 @@ export const PictureGridPaginated: VoidComponent<PictureGridPaginatedProps> = (
   const hasMore = () => p.loader.data().nextPage !== null
   return (
     <>
-      <PictureGrid pictures={p.loader.data().items} />
+      <Show
+        when={p.loader.data().items.length > 0}
+        fallback={<span>No pictures</span>}
+      >
+        <PictureGrid pictures={p.loader.data().items} />
+      </Show>
       <Show when={hasMore()}>
         <button onClick={p.loader.onLoadNext}>Show more</button>
       </Show>

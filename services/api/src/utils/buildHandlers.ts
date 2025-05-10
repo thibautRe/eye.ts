@@ -55,9 +55,15 @@ export const buildHandlers =
 
       log(`Matched handler: ${k}`)
 
-      // @ts-expect-error
-      const searchParams: SearchParams<ApiRouteSearchParams<ApiRouteKey>> =
-        url.searchParams
+      const searchParams: SearchParams<ApiRouteSearchParams<ApiRouteKey>> = {
+        get: (k) => {
+          // @ts-expect-error
+          const param = url.searchParams.get(k)
+          return param && decodeURIComponent(param)
+        },
+        // @ts-expect-error
+        has: (k) => url.searchParams.has(k),
+      }
       // @ts-expect-error
       const json: Promise<ApiRouteJson<ApiRouteKey>> = () => request.json()
 

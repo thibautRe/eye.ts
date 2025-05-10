@@ -3,14 +3,10 @@ import { apiGetPictures } from "../../api"
 import { createPaginatedLoader } from "../../hooks/createPaginatedLoader"
 import { PageLayout } from "../PageLayout"
 import { PictureGridPaginated } from "../Picture/PictureGridPaginated"
-import {
-  parseRatingFilter,
-  stringifyRatingFilter,
-  type Rating,
-  type RatingFilter,
-} from "core"
-import { For, type VoidComponent } from "solid-js"
+import { parseRatingFilter, stringifyRatingFilter } from "core"
+import { type VoidComponent } from "solid-js"
 import { hstack } from "../../../styled-system/patterns"
+import { RatingFilter } from "../Filters/RatingFilter"
 
 export default () => {
   const [searchParams, setSearchParams] = useSearchParams<{
@@ -23,8 +19,6 @@ export default () => {
       orphan: searchParams.orphan === "true",
     }),
     loader: apiGetPictures,
-    cacheKey: () =>
-      `picture-list-${searchParams.rating}-${searchParams.orphan}`,
   })
   return (
     <PageLayout>
@@ -53,35 +47,3 @@ const OrphanFilter: VoidComponent<{
 }> = (p) => (
   <button onClick={() => p.onIsOrphanChange(!p.isOrphan)}>Orphan</button>
 )
-
-const RatingFilter: VoidComponent<{
-  ratingFilter: RatingFilter | null
-  onRatingFilterChange: (ratingFilter: RatingFilter | null) => void
-}> = (p) => {
-  return (
-    <div class={hstack({ gap: "1" })}>
-      <For each={new Array(5).fill(null).map((_, i) => (i + 1) as Rating)}>
-        {(rating) => (
-          <button
-            onClick={() => {
-              if (
-                p.ratingFilter?.type === "gteq" &&
-                p.ratingFilter.rating === rating
-              ) {
-                p.onRatingFilterChange(null)
-              } else {
-                p.onRatingFilterChange({ type: "gteq", rating })
-              }
-            }}
-          >
-            {p.ratingFilter && p.ratingFilter.type === "gteq"
-              ? rating <= p.ratingFilter.rating
-                ? "★"
-                : "☆"
-              : "☆"}
-          </button>
-        )}
-      </For>
-    </div>
-  )
-}
