@@ -9,13 +9,7 @@ export default defineConfig({
 
   exclude: [],
   theme: {
-    extend: {
-      tokens: {
-        spacing: {
-          m: { value: "8px" },
-        },
-      },
-    },
+    extend: {},
   },
 
   // The output directory for your css system

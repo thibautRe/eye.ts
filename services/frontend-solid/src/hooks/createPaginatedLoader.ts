@@ -25,7 +25,7 @@ export interface PaginatedLoader<T> {
 
 interface CreatePaginatedLoaderParams<T, P extends {}> {
   loader: PaginatedApiLoader<T, P>
-  params?: P
+  params?: Accessor<P>
   cacheKey?: Accessor<string>
 }
 export const createPaginatedLoader = <T, P extends {}>(
@@ -44,6 +44,12 @@ export const createPaginatedLoader = <T, P extends {}>(
   const [signal, setSignal] = createSignal<PaginatedSignal<T>>(initSignal)
   let keepLoading = false
 
+  createEffect(() => {
+    // @ts-expect-error this reloads the data entirely when the params change
+    params.params()
+    setSignal(initSignal)
+  })
+
   createEffect(async () => {
     const {
       nextPage,
@@ -56,7 +62,7 @@ export const createPaginatedLoader = <T, P extends {}>(
     setSignal((p) => ({ ...p, isLoadingNextPage: true, status: "loading" }))
 
     try {
-      const res = await params.loader({ page: nextPage }, params.params)
+      const res = await params.loader({ page: nextPage }, params.params?.())
       const items = [...oldItems, ...res.items]
       if (params.cacheKey) {
         cached.set(params.cacheKey(), { items, nextPage: res.nextPage })

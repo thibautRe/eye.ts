@@ -29,6 +29,10 @@ export const AppRoutes = () => (
   <Router>
     <Route path={routes.Pictures} component={PictureList} />
 
+    {/* Convenience redirects */}
+    <Route path="/" component={r(routes.Pictures)} />
+    <Route path={"/picture/"} component={r(routes.Pictures)} />
+
     <Route path="*" component={NotFoundRoute} />
   </Router>
 )

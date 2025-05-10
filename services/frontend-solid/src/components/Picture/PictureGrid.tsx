@@ -5,6 +5,9 @@ import { hstack, vstack } from "../../../styled-system/patterns"
 import { Picture } from "./Picture"
 import { css } from "../../../styled-system/css"
 import { routes } from "../Routes"
+import type { SpacingToken } from "../../../styled-system/tokens"
+
+const gap: SpacingToken = "2"
 
 export interface PictureGridProps {
   pictures: readonly PictureApi[]
@@ -13,11 +16,11 @@ export interface PictureGridProps {
 export const PictureGrid: VoidComponent<PictureGridProps> = (p) => {
   const lines = () => splitInLines(p.pictures)
   return (
-    <div class={vstack({ gap: "m", alignItems: "initial" })}>
+    <div class={vstack({ gap, p: gap, alignItems: "initial" })}>
       <For each={lines()}>
         {(line) => (
           <div
-            class={hstack({ gap: "m", alignItems: "initial" })}
+            class={hstack({ gap, alignItems: "initial" })}
             style={{ "aspect-ratio": line.aspectRatio }}
           >
             <For each={line.pictures}>
