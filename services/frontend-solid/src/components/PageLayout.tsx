@@ -2,6 +2,7 @@ import type { ParentComponent, VoidComponent } from "solid-js"
 import { flex, vstack } from "../../styled-system/patterns"
 import { A } from "@solidjs/router"
 import { css } from "../../styled-system/css"
+import { routes } from "./Routes"
 
 export const PageLayout: ParentComponent = (p) => {
   return (
@@ -30,6 +31,16 @@ const PageHeader: VoidComponent = () => {
       >
         EYE
       </A>
+      <ul class={vstack({ gap: "2" })}>
+        <li>
+          <A
+            href={routes.PictureUpload}
+            class={css({ p: "2", fontSize: "xs", color: "gray.400" })}
+          >
+            Upload
+          </A>
+        </li>
+      </ul>
     </header>
   )
 }
