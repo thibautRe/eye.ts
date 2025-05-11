@@ -49,9 +49,7 @@ export default () => {
               }}
             />
             <div class={stack({ direction: "column", paddingInline: "2" })}>
-              <h1 class={css({ fontSize: "xl", fontWeight: "bold" })}>
-                {category().name}
-              </h1>
+              <h1 class={css({ textStyle: "mainTitle" })}>{category().name}</h1>
               <ChildrenCategory directChildren={category().directChildren} />
               <RatingFilter
                 ratingFilter={parseRatingFilter(searchParams.rating ?? "")}

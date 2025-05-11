@@ -1,4 +1,4 @@
-import { defineConfig } from "@pandacss/dev"
+import { defineConfig, defineTextStyles } from "@pandacss/dev"
 
 export default defineConfig({
   // Whether to use css reset
@@ -9,7 +9,19 @@ export default defineConfig({
 
   exclude: [],
   theme: {
-    extend: {},
+    extend: {
+      textStyles: defineTextStyles({
+        mainTitle: {
+          description: "Main Title for pages",
+          value: {
+            lineHeight: 1.8,
+            fontFamily: "serif",
+            fontSize: "5xl",
+            fontWeight: "extrabold",
+          },
+        },
+      }),
+    },
   },
 
   // The output directory for your css system

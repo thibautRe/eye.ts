@@ -13,7 +13,7 @@ export const ParentCategory: VoidComponent<{
   const [tmpSlug, setTmpSlug] = createSignal("")
   const [isEditing, setIsEditing] = createSignal(false)
   return (
-    <div class={hstack({ gap: "2", p: "2", flexWrap: "wrap", bg: "gray.100" })}>
+    <div class={hstack({ gap: "2", p: "2", flexWrap: "wrap", bg: "gray.300" })}>
       <span>Categories: </span>
       <ul class={css({ display: "contents" })}>
         <For each={p.parents}>
