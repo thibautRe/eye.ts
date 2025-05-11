@@ -12,6 +12,10 @@ export const PageLayout: ParentComponent = (p) => {
   )
 }
 
+export const MainTitle: ParentComponent = (p) => (
+  <h1 class={css({ textStyle: "mainTitle" })}>{p.children}</h1>
+)
+
 const PageHeader: VoidComponent = () => {
   return (
     <header class={vstack({ gap: "4", bg: "gray.950", minHeight: "100vh" })}>

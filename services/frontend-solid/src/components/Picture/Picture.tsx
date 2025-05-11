@@ -1,5 +1,5 @@
 import type { PictureApi } from "api-types"
-import { type VoidComponent } from "solid-js"
+import { type JSX, type VoidComponent } from "solid-js"
 import { PictureBlurhash } from "./PictureBlurhash"
 import { css } from "../../../styled-system/css"
 
@@ -7,25 +7,35 @@ export interface PictureProps {
   picture: PictureApi
   sizes: string
 }
-export const Picture: VoidComponent<PictureProps> = (p) => {
+export const Picture: VoidComponent<PictureProps> = (p) => (
+  <div
+    class={wrapper}
+    style={{ "aspect-ratio": p.picture.width / p.picture.height }}
+  >
+    <PictureBlurhash blurhash={p.picture.blurhash} />
+    <PictureRaw picture={p.picture} sizes={p.sizes} />
+  </div>
+)
+
+interface PictureRawProps {
+  picture: PictureApi
+  sizes: string
+  style?: JSX.CSSProperties
+}
+export const PictureRaw: VoidComponent<PictureRawProps> = (p) => {
   const srcset = () =>
     p.picture.sizes.map((s) => `${s.url} ${s.width}w`).join(",")
   return (
-    <div
-      class={wrapper}
-      style={{ "aspect-ratio": p.picture.width / p.picture.height }}
-    >
-      <PictureBlurhash blurhash={p.picture.blurhash} />
-      <img
-        class={img}
-        srcset={srcset()}
-        sizes={p.sizes}
-        width={p.picture.width}
-        height={p.picture.height}
-        alt={p.picture.alt}
-        loading="lazy"
-      />
-    </div>
+    <img
+      class={img}
+      srcset={srcset()}
+      sizes={p.sizes}
+      width={p.picture.width}
+      height={p.picture.height}
+      alt={p.picture.alt}
+      loading="lazy"
+      style={p.style}
+    />
   )
 }
 

@@ -8,14 +8,13 @@ import {
   apiGetPictures,
 } from "../../api"
 import { createResource, For, Show, type VoidComponent } from "solid-js"
-import { PageLayout } from "../PageLayout"
+import { MainTitle, PageLayout } from "../PageLayout"
 import { RatingFilter } from "../Filters/RatingFilter"
 import { PictureGridPaginated } from "../Picture/PictureGridPaginated"
 import { stack } from "../../../styled-system/patterns"
 import { ParentCategory } from "../Category/ParentCategories"
 import type { LinkedCategoryApi } from "api-types"
 import { routes } from "."
-import { css } from "../../../styled-system/css"
 
 export default () => {
   const params = useParams<{ slug: string }>()
@@ -49,7 +48,7 @@ export default () => {
               }}
             />
             <div class={stack({ direction: "column", paddingInline: "2" })}>
-              <h1 class={css({ textStyle: "mainTitle" })}>{category().name}</h1>
+              <MainTitle>{category().name}</MainTitle>
               <ChildrenCategory directChildren={category().directChildren} />
               <RatingFilter
                 ratingFilter={parseRatingFilter(searchParams.rating ?? "")}

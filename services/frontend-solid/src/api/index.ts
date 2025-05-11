@@ -1,19 +1,12 @@
 import { type CategoryApi, type PictureApi, routes } from "api-types"
 import { makeCachedPaginatedApi } from "./pagination"
-import {
-  delete_json,
-  get_json,
-  post,
-  post_json,
-  rootUrl,
-  withParams,
-} from "./utils"
+import { delete_json, get_json, post_json, rootUrl, withParams } from "./utils"
 import { type PictureId, type Slug } from "core"
 
 export const apiUploadFile = async (file: File) => {
   const formData = new FormData()
   formData.append("file", file)
-  await post(routes.PICTURE_UPLOAD.pathname, formData)
+  return await post_json<PictureApi>(routes.PICTURE_UPLOAD.pathname, formData)
 }
 
 export type ApiGetPicturesParams = {

@@ -8,6 +8,7 @@ import type { PictureId } from "core"
 
 export const routes = {
   Pictures: "/pictures",
+  PictureUpload: "/pictures/upload",
   Picture: (id: PictureId | ":id") => `/picture/${id}`,
 
   Category: (id: string | ":slug") => `/category/${id}`,
@@ -26,12 +27,14 @@ const lazy = (getter: () => Promise<{ default: Component }>) =>
   )
 
 const PictureList = lazy(() => import("./PictureListRoute"))
+const PictureUpload = lazy(() => import("./PictureUploadRoute"))
 const Picture = lazy(() => import("./PictureRoute"))
 const Category = lazy(() => import("./CategoryRoute"))
 
 export const AppRoutes = () => (
   <Router>
     <Route path={routes.Pictures} component={PictureList} />
+    <Route path={routes.PictureUpload} component={PictureUpload} />
     <Route path={routes.Picture(":id")} component={Picture} />
     <Route path={routes.Category(":slug")} component={Category} />
 
