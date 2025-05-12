@@ -11,10 +11,12 @@ bun run dev-frontend
 
 ### Useful scripts
 
-Run migration:
-
 ```sh
+# Run migrations:
 bun run migrate
+
+# Typecheck:
+bun run typecheck
 ```
 
 ## Todo
