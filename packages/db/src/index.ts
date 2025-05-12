@@ -1,4 +1,4 @@
-export { sql } from "@databases/pg"
+export { sql, type Queryable } from "@databases/pg"
 export * from "./database"
 export * from "./paginate"
 export * from "./q"

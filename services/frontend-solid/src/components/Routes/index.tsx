@@ -7,11 +7,13 @@ import {
 import type { PictureId } from "core"
 
 export const routes = {
-  Pictures: "/pictures",
+  PictureList: "/pictures",
   PictureUpload: "/pictures/upload",
   Picture: (id: PictureId | ":id") => `/picture/${id}`,
 
-  Category: (id: string | ":slug") => `/category/${id}`,
+  CategoryList: `/categories`,
+  Category: (slug: string | ":slug") => `/category/${slug}`,
+  CategoryEdit: (slug: string | ":slug") => `${routes.Category(slug)}/edit`,
 } as const
 
 /** Creates a redirect component */
@@ -29,18 +31,25 @@ const lazy = (getter: () => Promise<{ default: Component }>) =>
 const PictureList = lazy(() => import("./PictureListRoute"))
 const PictureUpload = lazy(() => import("./PictureUploadRoute"))
 const Picture = lazy(() => import("./PictureRoute"))
+
+const CategoryList = lazy(() => import("./CategoryListRoute"))
 const Category = lazy(() => import("./CategoryRoute"))
+const CategoryEdit = lazy(() => import("./CategoryEditRoute"))
 
 export const AppRoutes = () => (
   <Router>
-    <Route path={routes.Pictures} component={PictureList} />
+    <Route path={routes.PictureList} component={PictureList} />
     <Route path={routes.PictureUpload} component={PictureUpload} />
     <Route path={routes.Picture(":id")} component={Picture} />
+
+    <Route path={routes.CategoryList} component={CategoryList} />
     <Route path={routes.Category(":slug")} component={Category} />
+    <Route path={routes.CategoryEdit(":slug")} component={CategoryEdit} />
 
     {/* Convenience redirects */}
-    <Route path="/" component={r(routes.Pictures)} />
-    <Route path={"/picture/"} component={r(routes.Pictures)} />
+    <Route path="/" component={r(routes.PictureList)} />
+    <Route path={"/picture/"} component={r(routes.PictureList)} />
+    <Route path={"/category/"} component={r(routes.CategoryList)} />
 
     <Route path="*" component={NotFoundRoute} />
   </Router>

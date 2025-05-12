@@ -19,7 +19,7 @@ const getPictureLeaves = async (
   parent: string | null,
 ): Promise<CategoryLeaves["id"][] | undefined> => {
   if (!parent) return undefined
-  const parentCat = await getCategoryLeaveWithSlug(slugify(parent))
+  const parentCat = await getCategoryLeaveWithSlug(db, slugify(parent))
   const childrenCats = await getDirectChildrenCategories(parentCat.id)
   return childrenCats.map((c) => c.id)
 }

@@ -33,7 +33,14 @@ export type ApiRoutes =
   | Route<
       "CATEGORY_CREATE",
       CategoryApi,
-      { json: { slug: string; name: string; exifTag: string } }
+      {
+        json: {
+          slug: string
+          name: string
+          exifTag?: string
+          parentSlug?: Slug
+        }
+      }
     >
   | PaginatedRoute<"CATEGORY_LIST", CategoryApi, { searchParams: "orphan" }>
   | Route<

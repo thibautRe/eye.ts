@@ -6,6 +6,7 @@ import db, {
   q,
   type CategoryLeaves,
   type PaginateOptions,
+  type Queryable,
 } from "db"
 import createCache from "../../utils/createCache"
 import { isNotNull, slugify, type Slug } from "core"
@@ -27,6 +28,7 @@ export const getCategoryLeavesByXmpTag = dedupeAsync(
 )
 
 export const getCategoryLeaveWithSlug = async (
+  db: Queryable,
   slug: Slug,
 ): Promise<CategoryLeavesWithSlug> =>
   (await category_leaves(db).findOneRequired({
@@ -37,19 +39,34 @@ export const createCategoryLeaveWithSlug = async ({
   slug,
   name,
   exifTag,
+  parentSlug,
 }: {
   slug: string
   name: string
-  exifTag: string | null
-}) =>
-  (
-    await category_leaves(db).insert({
+  exifTag?: string
+  parentSlug?: Slug
+}) => {
+  return await db.tx(async (db) => {
+    const [cat] = await category_leaves(db).insert({
       type: undefined,
       name,
       slug: slugify(slug),
       exif_tag: exifTag,
     })
-  )[0] as CategoryLeavesWithSlug
+
+    const parent =
+      parentSlug && (await getCategoryLeaveWithSlug(db, parentSlug))
+
+    if (parent) {
+      await category_parents(db).insert({
+        parent_id: parent.id,
+        child_id: cat.id,
+      })
+    }
+
+    return cat as CategoryLeavesWithSlug // slug is always defined
+  })
+}
 
 export const updateCategoryLeaveWithSlug = async ({
   slug,

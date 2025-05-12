@@ -1,12 +1,12 @@
+import { parseRatingFilter, stringifyRatingFilter } from "core"
 import { useSearchParams } from "@solidjs/router"
 import { apiGetPictures } from "../../api"
 import { createPaginatedLoader } from "../../hooks/createPaginatedLoader"
 import { PageLayout } from "../PageLayout"
 import { PictureGridPaginated } from "../Picture/PictureGridPaginated"
-import { parseRatingFilter, stringifyRatingFilter } from "core"
-import { type VoidComponent } from "solid-js"
 import { hstack } from "../../../styled-system/patterns"
 import { RatingFilter } from "../Filters/RatingFilter"
+import { OrphanFilter } from "../Filters/OrphanFilter"
 
 export default () => {
   const [searchParams, setSearchParams] = useSearchParams<{
@@ -40,10 +40,3 @@ export default () => {
     </PageLayout>
   )
 }
-
-const OrphanFilter: VoidComponent<{
-  isOrphan: boolean
-  onIsOrphanChange: (o: boolean) => void
-}> = (p) => (
-  <button onClick={() => p.onIsOrphanChange(!p.isOrphan)}>Orphan</button>
-)

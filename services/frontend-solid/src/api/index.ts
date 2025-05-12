@@ -1,4 +1,9 @@
-import { type CategoryApi, type PictureApi, routes } from "api-types"
+import {
+  type ApiRouteJson,
+  type CategoryApi,
+  type PictureApi,
+  routes,
+} from "api-types"
 import { makeCachedPaginatedApi } from "./pagination"
 import { delete_json, get_json, post_json, rootUrl, withParams } from "./utils"
 import { type PictureId, type Slug } from "core"
@@ -26,7 +31,7 @@ export const apiGetPicturesZipRoute = (params: ApiGetPicturesParams) =>
 export const apiGetPicture = (id: PictureId) =>
   get_json<PictureApi>(routes.PICTURE.stringify({ id }))
 
-export const apiCreateCategory = (data: { slug: string; name: string }) =>
+export const apiCreateCategory = (data: ApiRouteJson<"CATEGORY_CREATE">) =>
   post_json<CategoryApi>(routes.CATEGORY_CREATE.pathname, data)
 export const apiUpdateCategory = (data: {
   slug: Slug
