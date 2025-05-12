@@ -10,9 +10,7 @@
   "scripts": {
     "dev": "bun run --filter '*' dev",
     "dev-api": "cd services/api && bun run dev",
-    "dev-frontend": "cd services/frontend-solid && bun run dev",
-    "dev-frontend-legacy": "cd services/frontend && bun run dev",
-    "dev-svelte": "cd services/frontend && bun run check:watch",
+    "dev-frontend": "cd services/frontend && bun run dev",
     "start": "bun run --filter '*' start",
     "codegen": "bun run --filter '*' codegen",
     "migrate": "cd packages/db-migrations && bun run migrate && cd ../.. && bun codegen"

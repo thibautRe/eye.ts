@@ -7,7 +7,6 @@ bun install
 # now open 3 terminals and run:
 bun run dev-api
 bun run dev-frontend
-bun run dev-svelte
 ```
 
 ### Useful scripts
