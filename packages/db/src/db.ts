@@ -1,8 +1,8 @@
-import createConnectionPool from "@databases/pg"
+import createConnectionPool, { type ConnectionPool } from "@databases/pg"
 import { asyncLocalStorage, log, error } from "backend-logs"
 
 declare global {
-  var db: any
+  var db: ConnectionPool
 }
 
 // if there's already a connection pool, destroy it. This can happen

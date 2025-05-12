@@ -20,7 +20,7 @@ import { toPictureApi, toPictureApis } from "./controllers/picture"
 
 const runHandlers = buildHandlers({
   CATEGORY: async ({ args: { slug } }) => {
-    return await toCategoryApi(await getCategoryLeaveWithSlug(slug))
+    return await toCategoryApi(await getCategoryLeaveWithSlug(db, slug))
   },
   CATEGORY_UPDATE: async ({ args: { slug }, json }) => {
     const { name, exifTag } = await json()
@@ -29,13 +29,10 @@ const runHandlers = buildHandlers({
     )
   },
   CATEGORY_CREATE: async ({ json }) => {
-    const { name, slug, exifTag } = await json()
-    return await toCategoryApi(
-      await createCategoryLeaveWithSlug({ slug, name, exifTag }),
-    )
+    return await toCategoryApi(await createCategoryLeaveWithSlug(await json()))
   },
   CATEGORY_LIST: async ({ searchParams }) => {
-    const p = getPaginatedParams(searchParams, { defaultPageSize: 10 })
+    const p = getPaginatedParams(searchParams)
     const { content, hasMore } = await listCategories(p, {
       orphan: searchParams.has("orphan"),
     })
@@ -47,8 +44,8 @@ const runHandlers = buildHandlers({
   CATEGORY_PARENT_ADD: async ({ args: { slug }, json }) => {
     const { parentSlug } = await json()
     const [parent, child] = await Promise.all([
-      getCategoryLeaveWithSlug(parentSlug),
-      getCategoryLeaveWithSlug(slug),
+      getCategoryLeaveWithSlug(db, parentSlug),
+      getCategoryLeaveWithSlug(db, slug),
     ])
     await category_parents(db).insert({
       parent_id: parent.id,
@@ -59,8 +56,8 @@ const runHandlers = buildHandlers({
   CATEGORY_PARENT_DEL: async ({ args: { slug }, json }) => {
     const { parentSlug } = await json()
     const [parent, child] = await Promise.all([
-      getCategoryLeaveWithSlug(parentSlug),
-      getCategoryLeaveWithSlug(slug),
+      getCategoryLeaveWithSlug(db, parentSlug),
+      getCategoryLeaveWithSlug(db, slug),
     ])
     await category_parents(db).delete({
       parent_id: parent.id,
@@ -82,7 +79,7 @@ const runHandlers = buildHandlers({
     const { slug } = await json()
     const picture = await getPictureById(id)
     await category_parents(db).insert({
-      parent_id: (await getCategoryLeaveWithSlug(slug)).id,
+      parent_id: (await getCategoryLeaveWithSlug(db, slug)).id,
       child_id: picture.category_leaf_id,
     })
 
@@ -92,7 +89,7 @@ const runHandlers = buildHandlers({
     const { slug } = await json()
     const picture = await getPictureById(id)
     await category_parents(db).delete({
-      parent_id: (await getCategoryLeaveWithSlug(slug)).id,
+      parent_id: (await getCategoryLeaveWithSlug(db, slug)).id,
       child_id: picture.category_leaf_id,
     })
 

@@ -33,7 +33,14 @@ export type ApiRoutes =
   | Route<
       "CATEGORY_CREATE",
       CategoryApi,
-      { json: { slug: string; name: string; exifTag: string } }
+      {
+        json: {
+          slug: string
+          name: string
+          exifTag?: string
+          parentSlug?: Slug
+        }
+      }
     >
   | PaginatedRoute<"CATEGORY_LIST", CategoryApi, { searchParams: "orphan" }>
   | Route<
@@ -75,28 +82,18 @@ type PictureListSearchParams = "parent" | "orphan" | "rating"
 export type ApiRouteKey = ApiRoutes["key"]
 export type ApiRoute<K extends ApiRouteKey> = Extract<ApiRoutes, { key: K }>
 
-export type ApiRouteArgs<K extends ApiRouteKey> = ApiRoute<K> extends {
-  args: infer A
-}
-  ? A
-  : null
-export type ApiRouteResponse<K extends ApiRouteKey> = ApiRoute<K> extends {
-  response: infer R
-}
-  ? R
-  : null
-export type ApiRouteSearchParams<K extends ApiRouteKey> = ApiRoute<K> extends {
-  searchParams: infer S
-}
-  ? S extends string
-    ? S
+export type ApiRouteArgs<K extends ApiRouteKey> =
+  ApiRoute<K> extends { args: infer A } ? A : null
+export type ApiRouteResponse<K extends ApiRouteKey> =
+  ApiRoute<K> extends { response: infer R } ? R : null
+export type ApiRouteSearchParams<K extends ApiRouteKey> =
+  ApiRoute<K> extends { searchParams: infer S }
+    ? S extends string
+      ? S
+      : null
     : null
-  : null
-export type ApiRouteJson<K extends ApiRouteKey> = ApiRoute<K> extends {
-  json: infer J
-}
-  ? J
-  : never
+export type ApiRouteJson<K extends ApiRouteKey> =
+  ApiRoute<K> extends { json: infer J } ? J : never
 
 export interface ApiPathnameWithArgs<A> {
   method: ApiMethod
@@ -109,11 +106,12 @@ export interface ApiPathnameWithoutArgs {
   pathname: string
 }
 
-type ApiPathname<K extends ApiRouteKey> = ApiRoute<K> extends {
-  args: infer A
-}
-  ? ApiPathnameWithArgs<A>
-  : ApiPathnameWithoutArgs
+type ApiPathname<K extends ApiRouteKey> =
+  ApiRoute<K> extends {
+    args: infer A
+  }
+    ? ApiPathnameWithArgs<A>
+    : ApiPathnameWithoutArgs
 
 export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
   CATEGORY: {
@@ -207,7 +205,12 @@ export interface PictureApi {
   directParents: LinkedCategoryApi[]
 }
 
-export interface PictureExifApi {}
+export interface PictureExifApi {
+  FocalLength?: string
+  FNumber?: string
+  ISO?: string
+  ExposureTime?: string
+}
 
 export interface CameraBodyApi {
   name: string
