@@ -13,7 +13,8 @@
     "dev-frontend": "cd services/frontend && bun run dev",
     "start": "bun run --filter '*' start",
     "codegen": "bun run --filter '*' codegen",
-    "migrate": "cd packages/db-migrations && bun run migrate && cd ../.. && bun codegen"
+    "migrate": "cd packages/db-migrations && bun run migrate && cd ../.. && bun codegen",
+    "typecheck": "bun run --filter '*' typecheck"
   },
   "prettier": {
     "semi": false,

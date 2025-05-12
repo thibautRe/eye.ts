@@ -120,7 +120,7 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     parse: (pathname) => {
       const res = /^\/categories\/([^\/]+)$/.exec(pathname)
       return res
-        ? { ok: true, args: { slug: decodeURIComponent(res[1]) as Slug } }
+        ? { ok: true, args: { slug: decodeURIComponent(res[1]!) as Slug } }
         : { ok: false }
     },
   },
@@ -130,7 +130,7 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     parse: (pathname) => {
       const res = /^\/categories\/([^\/]+)$/.exec(pathname)
       return res
-        ? { ok: true, args: { slug: decodeURIComponent(res[1]) as Slug } }
+        ? { ok: true, args: { slug: decodeURIComponent(res[1]!) as Slug } }
         : { ok: false }
     },
   },
@@ -142,7 +142,7 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     parse: (pathname) => {
       const res = /^\/categories\/([^\/]+)\/parentCategory$/.exec(pathname)
       return res
-        ? { ok: true, args: { slug: decodeURIComponent(res[1]) as Slug } }
+        ? { ok: true, args: { slug: decodeURIComponent(res[1]!) as Slug } }
         : { ok: false }
     },
   },
@@ -152,7 +152,7 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     parse: (pathname) => {
       const res = /^\/categories\/([^\/]+)\/parentCategory$/.exec(pathname)
       return res
-        ? { ok: true, args: { slug: decodeURIComponent(res[1]) as Slug } }
+        ? { ok: true, args: { slug: decodeURIComponent(res[1]!) as Slug } }
         : { ok: false }
     },
   },
@@ -166,7 +166,10 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     parse: (pathname) => {
       const res = /^\/pictures\/(\d+)$/.exec(pathname)
       if (!res) return { ok: false }
-      return { ok: true, args: { id: decodeURIComponent(res[1]) as PictureId } }
+      return {
+        ok: true,
+        args: { id: decodeURIComponent(res[1]!) as PictureId },
+      }
     },
   },
   PICTURE_CATEGORY_ADD: {
@@ -175,7 +178,10 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     parse: (pathname) => {
       const res = /^\/pictures\/(\d+)\/category$/.exec(pathname)
       if (!res) return { ok: false }
-      return { ok: true, args: { id: decodeURIComponent(res[1]) as PictureId } }
+      return {
+        ok: true,
+        args: { id: decodeURIComponent(res[1]!) as PictureId },
+      }
     },
   },
   PICTURE_CATEGORY_DEL: {
@@ -184,7 +190,10 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     parse: (pathname) => {
       const res = /^\/pictures\/(\d+)\/category$/.exec(pathname)
       if (!res) return { ok: false }
-      return { ok: true, args: { id: decodeURIComponent(res[1]) as PictureId } }
+      return {
+        ok: true,
+        args: { id: decodeURIComponent(res[1]!) as PictureId },
+      }
     },
   },
 }

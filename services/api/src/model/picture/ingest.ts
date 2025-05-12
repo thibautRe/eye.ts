@@ -126,5 +126,10 @@ export const ingestPicture = async (file: File) => {
     3,
   )
 
-  return (await pictures(db).update({ id: picture.id }, { blurhash }))[0]
+  const [p] = await pictures(db).update({ id: picture.id }, { blurhash })
+  if (!p) {
+    throw new Error("Could not update picture")
+  }
+
+  return p
 }

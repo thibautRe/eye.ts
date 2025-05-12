@@ -2,6 +2,9 @@
   "name": "backend-logs",
   "main": "src/index.ts",
   "module": "src/index.ts",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
   "dependencies": {
     "core": "workspace:*"
   }

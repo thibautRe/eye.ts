@@ -2,7 +2,8 @@
   "name": "db",
   "main": "src/index.ts",
   "scripts": {
-    "codegen": "bun --bun pg-schema --directory src/__generated__ --config pg.config.ts"
+    "codegen": "bun --bun pg-schema --directory src/__generated__ --config pg.config.ts",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@databases/pg": "^5.5.0",
