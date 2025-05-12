@@ -9,7 +9,8 @@ interface PictureGridPaginatedProps {
 export const PictureGridPaginated: VoidComponent<PictureGridPaginatedProps> = (
   p,
 ) => {
-  const hasMore = () => p.loader.data().nextPage !== null
+  const hasMore = () =>
+    p.loader.data().nextPage !== null && p.loader.data().items.length > 0
   return (
     <>
       <Show
