@@ -32,7 +32,7 @@ export const PictureGrid: VoidComponent<PictureGridProps> = (p) => {
                   })}
                   href={routes.Picture(p.id)}
                 >
-                  <Picture picture={p} sizes="20vw" />
+                  <Picture picture={p} sizes="25vw" />
                 </a>
               )}
             </For>

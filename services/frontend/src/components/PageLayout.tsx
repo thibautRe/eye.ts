@@ -31,16 +31,27 @@ const PageHeader: VoidComponent = () => {
       >
         EYE
       </A>
-      <ul class={vstack({ gap: "2" })}>
-        <li>
-          <A
-            href={routes.PictureUpload}
-            class={css({ p: "2", fontSize: "xs", color: "gray.400" })}
-          >
-            Upload
-          </A>
-        </li>
+      <ul class={vstack({ gap: "0" })}>
+        <HeaderLink href={routes.PictureList}>Pictures</HeaderLink>
+        <HeaderLink href={routes.CategoryList}>Categories</HeaderLink>
+        <HeaderLink href={routes.PictureUpload}>Upload</HeaderLink>
       </ul>
     </header>
   )
 }
+
+const HeaderLink: ParentComponent<{ href: string }> = (p) => (
+  <li>
+    <A
+      href={p.href}
+      class={css({
+        p: "2",
+        fontSize: "xs",
+        color: "gray.400",
+        _hover: { color: "gray.300" },
+      })}
+    >
+      {p.children}
+    </A>
+  </li>
+)

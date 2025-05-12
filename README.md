@@ -25,26 +25,30 @@ bun run typecheck
 
 - [x] Dataloader, batch, cache (cameraBodies, cameraLens model files, toPictureApi)
 - [x] Frontend paginated loader
-- [ ] Exif typings
+- [x] Exif typings
 - [ ] Improve mapping of ApiResponse/Parameters in frontend
 
 ### Features
 
-- [ ] General styling
+- [x] General styling
 - [ ] Camera Bodies, Camera Lenses pages
+- [ ] Infinite scroll
 - [x] Categories
-  - [ ] Category page styling
+  - [x] Category page styling
   - [x] Edit auto-exif
+  - [ ] Re-run auto-exif
   - [ ] All pictures in top cat
   - [ ] Filter pictures by dates
+  - [ ] Bulk add/remove parent categories
   - [x] Filter pictures by rating
   - [x] Filter categories by orphan
-- [ ] Pictures
-  - [ ] Picture page styling
+- [x] Pictures
+  - [x] Picture page styling
   - [x] Filter pictures by orphan
   - [x] Picture rating read
   - [ ] Picture rating update
   - [ ] Download as zip
+    - [ ] Zip information (amt of files)
 - [ ] Auth
   - [ ] Read-only API access
   - [ ] Read-only frontend

@@ -46,17 +46,24 @@ const PictureItem: VoidComponent<{
           p.onPictureChange(await apiPictureParentDel(p.picture.id, slug))
         }
       />
-      <div class={pictureWrapper}>
+      <div
+        class={pictureWrapper}
+        ref={(e) =>
+          requestAnimationFrame(() => e.scrollIntoView({ behavior: "instant" }))
+        }
+      >
         <Picture picture={p.picture} sizes="100vw" />
       </div>
-      <PictureMetadata picture={p.picture} />
+      <div class={css({ paddingInline: "2" })}>
+        <PictureMetadata picture={p.picture} />
+      </div>
     </div>
   )
 }
 
 const pictureWrapper = css({
   height: "100vh",
-  width: "100vw",
+  width: "100%",
   display: "flex",
   justifyContent: "center",
 })

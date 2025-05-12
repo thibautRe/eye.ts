@@ -45,47 +45,44 @@ type FileImport =
   | FileImportError
 
 const MAX_UPLOAD_CONCURRENCY = 3
+const [store, setStore] = createStore<FileImport[]>([])
+createEffect(async () => {
+  if (
+    store.filter((i) => i.state === "uploading").length >=
+    MAX_UPLOAD_CONCURRENCY
+  )
+    return
+  const pending = store.find((i) => i.state === "pending")
+  if (!pending) return
+
+  try {
+    setStore((f) => f.file === pending.file, {
+      state: "uploading",
+      file: pending.file,
+    })
+    const picture = await apiUploadFile(pending.file)
+    setStore((f) => f.file === pending.file, {
+      state: "uploaded",
+      file: pending.file,
+      picture,
+    })
+  } catch (err) {
+    console.error(err)
+    setStore((f) => f.file === pending.file, {
+      state: "error",
+      file: pending.file,
+      message: (err as Error).message,
+    })
+  }
+})
+
 const PictureUpload: VoidComponent = () => {
-  const [store, setStore] = createStore<FileImport[]>([])
-
-  createEffect(async () => {
-    if (
-      store.filter((i) => i.state === "uploading").length >=
-      MAX_UPLOAD_CONCURRENCY
-    )
-      return
-    const pending = store.find((i) => i.state === "pending")
-    if (!pending) return
-
-    try {
-      setStore((f) => f.file === pending.file, {
-        state: "uploading",
-        file: pending.file,
-      })
-      const picture = await apiUploadFile(pending.file)
-      setStore((f) => f.file === pending.file, {
-        state: "uploaded",
-        file: pending.file,
-        picture,
-      })
-    } catch (err) {
-      console.error(err)
-      setStore((f) => f.file === pending.file, {
-        state: "error",
-        file: pending.file,
-        message: (err as Error).message,
-      })
-    }
-  })
   return (
     <div class={flex({ direction: "column" })}>
       <input
         type="file"
         multiple
         accept=".jpg, .jpeg"
-        disabled={store.some(
-          (i) => i.state === "pending" || i.state === "uploading",
-        )}
         onchange={async (e) => {
           const files = e.currentTarget.files
           e.currentTarget.files = null

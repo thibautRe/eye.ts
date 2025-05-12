@@ -22,7 +22,7 @@ export default () => {
   return (
     <PageLayout>
       <div class={stack({ direction: "column", paddingInline: "2" })}>
-        <MainTitle>All categories</MainTitle>
+        <MainTitle>Categories</MainTitle>
         <OrphanFilter
           isOrphan={searchParams.orphan === "true"}
           onIsOrphanChange={(o) =>
