@@ -28,7 +28,10 @@ export type ApiRoutes =
   | Route<
       "CATEGORY_UPDATE",
       CategoryApi,
-      { args: { slug: Slug }; json: { name: string; exifTag: string | null } }
+      {
+        args: { slug: Slug }
+        json: { name: string; exifTag: string | null; slug?: string }
+      }
     >
   | Route<
       "CATEGORY_CREATE",

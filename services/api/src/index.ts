@@ -23,9 +23,9 @@ const runHandlers = buildHandlers({
     return await toCategoryApi(await getCategoryLeaveWithSlug(db, slug))
   },
   CATEGORY_UPDATE: async ({ args: { slug }, json }) => {
-    const { name, exifTag } = await json()
+    const { name, exifTag, slug: newSlug } = await json()
     return await toCategoryApi(
-      await updateCategoryLeaveWithSlug({ slug, name, exifTag }),
+      await updateCategoryLeaveWithSlug({ slug, name, exifTag, newSlug }),
     )
   },
   CATEGORY_CREATE: async ({ json }) => {

@@ -37,10 +37,12 @@ export const apiUpdateCategory = (data: {
   slug: Slug
   name: string
   exifTag: string | null
+  newSlug?: string
 }) =>
   post_json<CategoryApi>(routes.CATEGORY_UPDATE.stringify(data), {
     name: data.name,
     exifTag: data.exifTag,
+    slug: data.newSlug,
   })
 
 export const apiGetCategory = (slug: Slug) =>

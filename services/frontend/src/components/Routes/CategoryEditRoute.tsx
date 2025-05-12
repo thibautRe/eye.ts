@@ -1,5 +1,5 @@
 import { useNavigate, useParams } from "@solidjs/router"
-import { createResource, Show } from "solid-js"
+import { createResource, createSignal, Show } from "solid-js"
 import { slugify } from "core"
 import { MainTitle, PageLayout } from "../PageLayout"
 import { apiGetCategory, apiUpdateCategory } from "../../api"
@@ -15,6 +15,7 @@ export default () => {
   const slug = () => slugify(params.slug)
 
   const [category, { mutate }] = createResource(slug, apiGetCategory)
+  const [newSlug, setNewSlug] = createSignal(slug())
 
   return (
     <PageLayout>
@@ -30,8 +31,11 @@ export default () => {
               })}
               onsubmit={async (e) => {
                 e.preventDefault()
-                await apiUpdateCategory(category())
-                navigate(routes.Category(category().slug))
+                const newCat = await apiUpdateCategory({
+                  ...category(),
+                  newSlug: newSlug(),
+                })
+                navigate(routes.Category(newCat.slug))
               }}
             >
               <FormField label="Name">
@@ -40,6 +44,13 @@ export default () => {
                   onchange={(e) =>
                     mutate({ ...category(), name: e.target.value })
                   }
+                />
+              </FormField>
+
+              <FormField label="Slug">
+                <Input
+                  value={newSlug()}
+                  onchange={(e) => setNewSlug(slugify(e.target.value))}
                 />
               </FormField>
 

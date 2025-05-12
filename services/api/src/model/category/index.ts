@@ -72,14 +72,20 @@ export const updateCategoryLeaveWithSlug = async ({
   slug,
   name,
   exifTag,
+  newSlug,
 }: {
   slug: string
   name: string
   exifTag: string | null
+  newSlug?: string
 }) => {
   const [updated] = await category_leaves(db).update(
     { slug: slugify(slug) },
-    { name, exif_tag: exifTag },
+    {
+      name,
+      exif_tag: exifTag,
+      ...(newSlug ? { slug: slugify(newSlug) } : {}),
+    },
   )
   return updated as CategoryLeavesWithSlug
 }
