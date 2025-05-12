@@ -176,8 +176,6 @@ dist
 # Finder (MacOS) folder config
 .DS_Store
 
-
-.svelte-kit
 ## Panda
 styled-system
 styled-system-studio
