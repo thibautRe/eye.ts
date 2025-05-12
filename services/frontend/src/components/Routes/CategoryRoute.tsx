@@ -23,6 +23,7 @@ import { ParentCategory } from "../Category/ParentCategories"
 import type { LinkedCategoryApi } from "api-types"
 import { routes } from "."
 import { css } from "../../../styled-system/css"
+import { Input } from "../Form"
 
 export default () => {
   const params = useParams<{ slug: string }>()
@@ -131,6 +132,7 @@ const CreateNewCategory: VoidComponent<{
       fallback={<button onClick={() => setIsCreating(true)}>Create new</button>}
     >
       <form
+        class={hstack()}
         onsubmit={async (e) => {
           e.preventDefault()
           try {
@@ -142,10 +144,10 @@ const CreateNewCategory: VoidComponent<{
           }
         }}
       >
-        <input
+        <Input
+          ref={(e) => requestAnimationFrame(() => e.focus())}
           value={tmpCategoryName()}
           onchange={(e) => setTmpCategoryName(e.target.value)}
-          ref={(e) => requestAnimationFrame(() => e.focus())}
         />
         <button disabled={isSubmiting()} type="submit">
           +

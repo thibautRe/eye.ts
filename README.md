@@ -40,6 +40,7 @@ bun run typecheck
   - [x] Edit slug
   - [ ] All pictures in top cat
   - [ ] Filter pictures by dates
+  - [ ] Auto-complete category to add
   - [ ] Bulk add/remove parent categories
   - [x] Filter pictures by rating
   - [x] Filter categories by orphan
