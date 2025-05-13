@@ -49,8 +49,8 @@ bun run typecheck
   - [x] Filter pictures by orphan
   - [x] Picture rating read
   - [ ] Picture rating update
-  - [ ] Download as zip
-    - [ ] Zip information (amt of files)
+  - [x] Download as zip
+    - [x] Zip information (amt of files)
 - [ ] Auth
   - [ ] Read-only API access
   - [ ] Read-only frontend

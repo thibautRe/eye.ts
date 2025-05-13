@@ -2,6 +2,7 @@ import {
   type ApiRouteJson,
   type CategoryApi,
   type PictureApi,
+  type PictureListZipPreflightResponse,
   routes,
 } from "api-types"
 import { makeCachedPaginatedApi } from "./pagination"
@@ -27,6 +28,10 @@ export const apiGetPictures = makeCachedPaginatedApi<
 // zip, not intended to be used with fetch
 export const apiGetPicturesZipRoute = (params: ApiGetPicturesParams) =>
   `${rootUrl}${withParams(routes.PICTURE_LIST_ZIP.pathname, params)}`
+export const apiGetPicturesZipPreflight = (params: ApiGetPicturesParams) =>
+  get_json<PictureListZipPreflightResponse>(
+    withParams(routes.PICTURE_LIST_ZIP_PREFLIGHT.pathname, params),
+  )
 
 export const apiGetPicture = (id: PictureId) =>
   get_json<PictureApi>(routes.PICTURE.stringify({ id }))

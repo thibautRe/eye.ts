@@ -7,6 +7,9 @@ import {
   apiCreateCategory,
   apiGetCategory,
   apiGetPictures,
+  apiGetPicturesZipPreflight,
+  apiGetPicturesZipRoute,
+  type ApiGetPicturesParams,
 } from "../../api"
 import {
   createResource,
@@ -75,14 +78,26 @@ export default () => {
                   })
                 }}
               />
-              <RatingFilter
-                ratingFilter={parseRatingFilter(searchParams.rating ?? "")}
-                onRatingFilterChange={(r) =>
-                  setSearchParams({
-                    rating: r ? stringifyRatingFilter(r) : null,
-                  })
-                }
-              />
+              <div class={hstack()}>
+                <RatingFilter
+                  ratingFilter={parseRatingFilter(searchParams.rating ?? "")}
+                  onRatingFilterChange={(r) =>
+                    setSearchParams({
+                      rating: r ? stringifyRatingFilter(r) : null,
+                    })
+                  }
+                />
+                <button
+                  onclick={async () => {
+                    await downloadAsZip({
+                      parent: category().slug,
+                      rating: searchParams.rating,
+                    })
+                  }}
+                >
+                  .zip
+                </button>
+              </div>
               <PictureGridPaginated loader={loader} />
             </div>
           </div>
@@ -155,4 +170,23 @@ const CreateNewCategory: VoidComponent<{
       </form>
     </Show>
   )
+}
+
+const downloadAsZip = async (params: ApiGetPicturesParams) => {
+  const preflightRes = await apiGetPicturesZipPreflight(params)
+  if (
+    !confirm(
+      `This will download ${preflightRes.pictureAmt} pictures, resulting in a ${preflightRes.approximateSizeBytes / 1_000_000_000}GB file. Continue?`,
+    )
+  )
+    return
+
+  const a = document.createElement("a")
+  // @ts-expect-error
+  a.style = "display: none"
+  document.documentElement.appendChild(a)
+  a.href = apiGetPicturesZipRoute(params)
+  a.download = ""
+  a.click()
+  document.documentElement.removeChild(a)
 }

@@ -1,5 +1,6 @@
 import db, {
   category_parents,
+  count,
   paginate,
   pictures,
   q,
@@ -57,6 +58,8 @@ export const listPicturesPaginate = async (
 }
 export const listPictures = async (params: PictureListParams) =>
   await (await getPictureListQuery(params)).all()
+export const countPictures = async (params: PictureListParams) =>
+  await count(await getPictureListQuery(params))
 
 function ratingFilterToCondition(
   r: RatingFilter | null,

@@ -1,5 +1,9 @@
 import type { Slug, PictureId } from "core"
-import type { CategoryApi, PictureApi } from "./models"
+import type {
+  CategoryApi,
+  PictureApi,
+  PictureListZipPreflightResponse,
+} from "./models"
 import type { PaginatedRoute, Route } from "./route"
 import type { ApiPathname, ApiRouteKey } from "./properties"
 
@@ -52,6 +56,11 @@ export type ApiRoutes =
   | PaginatedRoute<
       "PICTURE_LIST",
       PictureApi,
+      { searchParams: PictureListSearchParams }
+    >
+  | Route<
+      "PICTURE_LIST_ZIP_PREFLIGHT",
+      PictureListZipPreflightResponse,
       { searchParams: PictureListSearchParams }
     >
   | Route<
@@ -109,6 +118,10 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
   PICTURE_UPLOAD: { pathname: `/picture/upload`, method: "POST" },
   PICTURE_LIST: { pathname: `/pictures`, method: "GET" },
   PICTURE_LIST_ZIP: { pathname: `/pictures.zip`, method: "GET" },
+  PICTURE_LIST_ZIP_PREFLIGHT: {
+    pathname: `/pictures.zip/preflight`,
+    method: "GET",
+  },
   PICTURE: {
     method: "GET",
     stringify: ({ id }) => `/pictures/${id}`,

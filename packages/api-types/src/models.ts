@@ -48,3 +48,8 @@ export interface CategoryApi {
   directParents: LinkedCategoryApi[]
   directChildren: LinkedCategoryApi[]
 }
+
+export interface PictureListZipPreflightResponse {
+  pictureAmt: number
+  approximateSizeBytes: number
+}

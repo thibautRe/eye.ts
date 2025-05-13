@@ -4,7 +4,11 @@ import archiver from "archiver"
 import { Readable } from "stream"
 import { ingestPicture } from "./model/picture/ingest"
 import db, { category_parents } from "db"
-import { listPictures, listPicturesPaginate } from "./model/picture/list"
+import {
+  countPictures,
+  listPictures,
+  listPicturesPaginate,
+} from "./model/picture/list"
 import { getS3 } from "./s3Client"
 import {
   createCategoryLeaveWithSlug,
@@ -145,6 +149,14 @@ const runHandlers = buildHandlers({
         }),
       },
     )
+  },
+  PICTURE_LIST_ZIP_PREFLIGHT: async ({ searchParams }) => {
+    const count = await countPictures({
+      parent: searchParams.get("parent"),
+      orphan: searchParams.has("orphan"),
+      rating: parseRatingFilter(searchParams.get("rating")),
+    })
+    return { pictureAmt: count, approximateSizeBytes: count * 10_000_000 }
   },
 })
 
