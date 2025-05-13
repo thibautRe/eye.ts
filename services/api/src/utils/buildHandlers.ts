@@ -27,7 +27,7 @@ const getRoutePathnameArgs = (
   return route.pathname === pathname ? { args: null } : null
 }
 
-type SearchParams<T> = {
+export type SearchParams<T> = {
   get: (param: T) => string | null
   has: (params: T) => boolean
 }

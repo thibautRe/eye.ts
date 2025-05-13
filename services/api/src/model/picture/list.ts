@@ -14,7 +14,9 @@ import {
   getCategoryLeaveWithSlug,
   getDirectChildrenCategories,
 } from "../category"
-import { slugify, type RatingFilter } from "core"
+import { parseRatingFilter, slugify, type RatingFilter } from "core"
+import { SearchParams } from "../../utils/buildHandlers"
+import { PictureListSearchParams } from "api-types"
 
 const getPictureLeaves = async (
   parent: string | null,
@@ -25,26 +27,18 @@ const getPictureLeaves = async (
   return childrenCats.map((c) => c.id)
 }
 
-interface PictureListParams {
-  parent: string | null
-  orphan: boolean
-  rating: RatingFilter | null
-}
-
-const getPictureListQuery = async ({
-  parent,
-  orphan,
-  rating,
-}: PictureListParams) => {
-  const leafIds = await getPictureLeaves(parent)
+const getPictureListQuery = async (
+  params: SearchParams<PictureListSearchParams>,
+) => {
+  const leafIds = await getPictureLeaves(params.get("parent"))
   return pictures(db)
     .find(
       q.and(
         leafIds ? { category_leaf_id: q.anyOf(leafIds) } : {},
-        orphan
+        params.has("orphan")
           ? { category_leaf_id: q.not(category_parents.key("child_id")) }
           : {},
-        ratingFilterToCondition(rating),
+        ratingFilterToCondition(parseRatingFilter(params.get("rating"))),
       ),
     )
     .orderByDesc("shot_at")
@@ -52,14 +46,16 @@ const getPictureListQuery = async ({
 
 export const listPicturesPaginate = async (
   p: PaginateOptions,
-  params: PictureListParams,
+  params: SearchParams<PictureListSearchParams>,
 ) => {
   return await paginate(await getPictureListQuery(params), p)
 }
-export const listPictures = async (params: PictureListParams) =>
-  await (await getPictureListQuery(params)).all()
-export const countPictures = async (params: PictureListParams) =>
-  await count(await getPictureListQuery(params))
+export const listPictures = async (
+  params: SearchParams<PictureListSearchParams>,
+) => await (await getPictureListQuery(params)).all()
+export const countPictures = async (
+  params: SearchParams<PictureListSearchParams>,
+) => await count(await getPictureListQuery(params))
 
 function ratingFilterToCondition(
   r: RatingFilter | null,

@@ -18,7 +18,6 @@ import {
 } from "./model/category"
 import { buildHandlers, getPaginatedParams } from "./utils/buildHandlers"
 import { getPictureById } from "./model/picture"
-import { parseRatingFilter } from "core"
 import { toCategoryApi, toCategoryApis } from "./controllers/categories"
 import { toPictureApi, toPictureApis } from "./controllers/picture"
 
@@ -101,25 +100,15 @@ const runHandlers = buildHandlers({
   },
   PICTURE_LIST: async ({ searchParams }) => {
     const p = getPaginatedParams(searchParams)
-    const { content, hasMore } = await listPicturesPaginate(p, {
-      parent: searchParams.get("parent"),
-      orphan: searchParams.has("orphan"),
-      rating: parseRatingFilter(searchParams.get("rating")),
-    })
+    const { content, hasMore } = await listPicturesPaginate(p, searchParams)
     return {
       nextPage: hasMore ? p.pageNumber + 1 : null,
       items: await toPictureApis(content),
     }
   },
   PICTURE_LIST_ZIP: async ({ searchParams }) => {
-    const pictures = await listPictures({
-      parent: searchParams.get("parent"),
-      orphan: searchParams.has("orphan"),
-      rating: parseRatingFilter(searchParams.get("rating")),
-    })
-    const archive = archiver("zip", {
-      zlib: { level: 4 },
-    })
+    const pictures = await listPictures(searchParams)
+    const archive = archiver("zip", { zlib: { level: 4 } })
     return new Response(
       new ReadableStream({
         async start(controller) {
@@ -151,11 +140,7 @@ const runHandlers = buildHandlers({
     )
   },
   PICTURE_LIST_ZIP_PREFLIGHT: async ({ searchParams }) => {
-    const count = await countPictures({
-      parent: searchParams.get("parent"),
-      orphan: searchParams.has("orphan"),
-      rating: parseRatingFilter(searchParams.get("rating")),
-    })
+    const count = await countPictures(searchParams)
     return { pictureAmt: count, approximateSizeBytes: count * 10_000_000 }
   },
 })
