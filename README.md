@@ -42,13 +42,15 @@ bun run typecheck
   - [ ] Filter pictures by dates
   - [ ] Auto-complete category to add
   - [ ] Bulk add/remove parent categories
+  - [ ] Delete category
   - [x] Filter pictures by rating
   - [x] Filter categories by orphan
 - [x] Pictures
+  - [ ] Picture rating update
+  - [ ] Delete picture
   - [x] Picture page styling
   - [x] Filter pictures by orphan
   - [x] Picture rating read
-  - [ ] Picture rating update
   - [x] Download as zip
     - [x] Zip information (amt of files)
 - [ ] Auth
