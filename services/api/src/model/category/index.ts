@@ -4,6 +4,7 @@ import db, {
   category_parents,
   paginate,
   q,
+  sql,
   type CategoryLeaves,
   type PaginateOptions,
   type Queryable,
@@ -144,15 +145,24 @@ export const getDirectChildrenCategories = batch<
 
 export const listCategories = async (
   p: PaginateOptions,
-  { orphan }: { orphan: boolean },
+  { orphan, q: searchQuery }: { orphan: boolean; q: string | null },
 ) => {
+  const pattern = searchQuery && `%${searchQuery.toLowerCase().trim()}%`
   return await paginate<CategoryLeavesWithSlug>(
     // @ts-expect-error CategoryLeaves cannot be assigned to CategoryLeavesWithSlug
     category_leaves(db)
-      .find({
-        slug: q.not(null),
-        ...(orphan ? { id: q.not(category_parents.key("child_id")) } : {}),
-      })
+      .find(
+        q.and<CategoryLeaves>(
+          { slug: q.not(null) },
+          orphan ? { id: q.not(category_parents.key("child_id")) } : {},
+          pattern
+            ? q.or<CategoryLeaves>(
+                sql`LOWER(slug) LIKE ${pattern}`,
+                sql`LOWER(name) LIKE ${pattern}`,
+              )
+            : {},
+        ),
+      )
       .orderByAsc("id"),
     p,
   )

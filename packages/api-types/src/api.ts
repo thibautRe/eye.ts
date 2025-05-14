@@ -29,7 +29,11 @@ export type ApiRoutes =
         }
       }
     >
-  | PaginatedRoute<"CATEGORY_LIST", CategoryApi, { searchParams: "orphan" }>
+  | PaginatedRoute<
+      "CATEGORY_LIST",
+      CategoryApi,
+      { searchParams: "orphan" | "q" }
+    >
   | Route<
       "CATEGORY_PARENT_ADD",
       CategoryApi,
