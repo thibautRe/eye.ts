@@ -34,17 +34,19 @@ bun run typecheck
 - [ ] Camera Bodies, Camera Lenses pages
 - [ ] Infinite scroll
 - [x] Categories
-  - [x] Category page styling
-  - [x] Edit auto-exif
   - [ ] Re-run auto-exif
-  - [x] Edit slug
-  - [x] All pictures in top cat
   - [ ] Filter pictures by dates
   - [ ] Auto-complete category to add
+    - [x] search category in backend
+    - [ ] input with dropdown
   - [ ] Bulk add/remove parent categories
   - [ ] Delete category
   - [x] Filter pictures by rating
   - [x] Filter categories by orphan
+  - [x] Edit slug
+  - [x] All pictures in top cat
+  - [x] Category page styling
+  - [x] Edit auto-exif
 - [x] Pictures
   - [ ] Picture rating update
   - [ ] Delete picture
