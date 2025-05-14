@@ -7,8 +7,6 @@ import {
   apiCreateCategory,
   apiGetCategory,
   apiGetPictures,
-  apiGetPicturesZipPreflight,
-  apiGetPicturesZipRoute,
   type ApiGetPicturesParams,
 } from "../../api"
 import {
@@ -16,6 +14,7 @@ import {
   createSignal,
   For,
   Show,
+  type Accessor,
   type VoidComponent,
 } from "solid-js"
 import { MainTitle, PageLayout } from "../PageLayout"
@@ -27,18 +26,26 @@ import type { LinkedCategoryApi } from "api-types"
 import { routes } from "."
 import { css } from "../../../styled-system/css"
 import { Input } from "../Form"
+import { downloadPicturesZip } from "../../utils/downloadPicturesZip"
+import { DeepFilter } from "../Filters/DeepFilter"
 
 export default () => {
   const params = useParams<{ slug: string }>()
   const [searchParams, setSearchParams] = useSearchParams<{
     rating: string
+    deep: "true"
   }>()
 
   const slug = () => slugify(params.slug)
 
   const [category, { mutate }] = createResource(slug, apiGetCategory)
+  const picturesParams: Accessor<ApiGetPicturesParams> = () => ({
+    parent: slug(),
+    rating: searchParams.rating,
+    deep: searchParams.deep === "true",
+  })
   const loader = createPaginatedLoader({
-    params: () => ({ rating: searchParams.rating, parent: slug() }),
+    params: picturesParams,
     loader: apiGetPictures,
   })
   return (
@@ -87,12 +94,15 @@ export default () => {
                     })
                   }
                 />
+                <DeepFilter
+                  isDeep={searchParams.deep === "true"}
+                  onIsDeepChange={(d) =>
+                    setSearchParams({ deep: d ? "true" : null })
+                  }
+                />
                 <button
                   onclick={async () => {
-                    await downloadAsZip({
-                      parent: category().slug,
-                      rating: searchParams.rating,
-                    })
+                    await downloadPicturesZip(picturesParams())
                   }}
                 >
                   .zip
@@ -170,23 +180,4 @@ const CreateNewCategory: VoidComponent<{
       </form>
     </Show>
   )
-}
-
-const downloadAsZip = async (params: ApiGetPicturesParams) => {
-  const preflightRes = await apiGetPicturesZipPreflight(params)
-  if (
-    !confirm(
-      `This will download ${preflightRes.pictureAmt} pictures, resulting in a ${preflightRes.approximateSizeBytes / 1_000_000_000}GB file. Continue?`,
-    )
-  )
-    return
-
-  const a = document.createElement("a")
-  // @ts-expect-error
-  a.style = "display: none"
-  document.documentElement.appendChild(a)
-  a.href = apiGetPicturesZipRoute(params)
-  a.download = ""
-  a.click()
-  document.documentElement.removeChild(a)
 }

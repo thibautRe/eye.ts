@@ -38,7 +38,7 @@ bun run typecheck
   - [x] Edit auto-exif
   - [ ] Re-run auto-exif
   - [x] Edit slug
-  - [ ] All pictures in top cat
+  - [x] All pictures in top cat
   - [ ] Filter pictures by dates
   - [ ] Auto-complete category to add
   - [ ] Bulk add/remove parent categories

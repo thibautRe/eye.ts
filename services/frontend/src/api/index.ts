@@ -19,6 +19,7 @@ export type ApiGetPicturesParams = {
   parent?: Slug
   orphan?: boolean
   rating?: string
+  deep?: boolean
 }
 export const apiGetPictures = makeCachedPaginatedApi<
   PictureApi,

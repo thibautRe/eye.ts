@@ -69,7 +69,7 @@ export type ApiRoutes =
       { searchParams: PictureListSearchParams }
     >
 
-export type PictureListSearchParams = "parent" | "orphan" | "rating"
+export type PictureListSearchParams = "parent" | "orphan" | "rating" | "deep"
 
 export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
   CATEGORY: {
