@@ -1,17 +1,17 @@
 import type { LinkedCategoryApi } from "api-types"
-import { slugify, type Slug } from "core"
+import { type Slug } from "core"
 import { createSignal, For, Show, type VoidComponent } from "solid-js"
 import { routes } from "../Routes"
 import { hstack } from "../../../styled-system/patterns"
 import { css } from "../../../styled-system/css"
-import { Input } from "../Form"
+
+import { CategoryCombobox } from "./CategoryCombobox"
 
 export const ParentCategory: VoidComponent<{
   parents: LinkedCategoryApi[]
   onAdd: (slug: Slug) => Promise<void>
   onDel: (slug: Slug) => Promise<void>
 }> = (p) => {
-  const [tmpSlug, setTmpSlug] = createSignal("")
   const [isEditing, setIsEditing] = createSignal(false)
   return (
     <nav class={hstack({ gap: "2", p: "2", flexWrap: "wrap", bg: "gray.300" })}>
@@ -45,23 +45,7 @@ export const ParentCategory: VoidComponent<{
         when={isEditing()}
         fallback={<button onclick={() => setIsEditing(true)}>Edit</button>}
       >
-        <form
-          class={hstack({ gap: "2" })}
-          onsubmit={async (e) => {
-            e.preventDefault()
-            await p.onAdd(slugify(tmpSlug()))
-            setTmpSlug("")
-          }}
-        >
-          <Input
-            ref={(e) => requestAnimationFrame(() => e.focus())}
-            value={tmpSlug()}
-            onchange={(e) => setTmpSlug(e.target.value)}
-          />
-          <button type="submit" disabled={!tmpSlug}>
-            +
-          </button>
-        </form>
+        <CategoryCombobox onSelect={(cat) => p.onAdd(cat.slug)} />
       </Show>
     </nav>
   )
