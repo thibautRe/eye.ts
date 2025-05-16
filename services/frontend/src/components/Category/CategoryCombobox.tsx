@@ -9,7 +9,7 @@ import {
   type VoidComponent,
 } from "solid-js"
 import * as combobox from "@zag-js/combobox"
-import { normalizeProps, useMachine } from "@zag-js/solid"
+import { mergeProps, normalizeProps, useMachine } from "@zag-js/solid"
 import { apiGetCategories } from "../../api"
 import { createDebouncedSignal } from "../../hooks/createDebouncedSignal"
 import { input } from "../Form"
@@ -48,9 +48,12 @@ export const CategoryCombobox: VoidComponent<{
       get collection() {
         return collection()
       },
+      selectionBehavior: "clear",
       onSelect({ itemValue }) {
         const item = collection().find(itemValue)
-        if (item) p.onSelect(item)
+        if (item) {
+          p.onSelect(item)
+        }
       },
       onInputValueChange({ inputValue }) {
         setQuery(inputValue)
@@ -66,7 +69,9 @@ export const CategoryCombobox: VoidComponent<{
           <input class={input} {...api().getInputProps()} />
         </div>
       </div>
-      <div {...api().getPositionerProps()}>
+      <div
+        {...mergeProps(api().getPositionerProps, { style: { "z-index": 100 } })}
+      >
         <Suspense>
           <Show when={categories().length > 0}>
             <ul {...api().getContentProps()} class={content}>
@@ -97,6 +102,7 @@ const content = vstack({
 const item = css({
   paddingInline: "2",
   paddingBlock: "1",
+  borderRadius: "md",
   "&[data-highlighted]": {
     bg: "Highlight",
     color: "HighlightText",
