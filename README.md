@@ -36,9 +36,6 @@ bun run typecheck
 - [x] Categories
   - [ ] Re-run auto-exif
   - [ ] Filter pictures by dates
-  - [ ] Auto-complete category to add
-    - [x] search category in backend
-    - [ ] input with dropdown
   - [ ] Bulk add/remove parent categories
   - [ ] Delete category
   - [x] Filter pictures by rating
@@ -47,6 +44,7 @@ bun run typecheck
   - [x] All pictures in top cat
   - [x] Category page styling
   - [x] Edit auto-exif
+  - [x] Auto-complete category to add
 - [x] Pictures
   - [ ] Picture rating update
   - [ ] Delete picture
