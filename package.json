@@ -14,10 +14,14 @@
     "start": "bun run --filter '*' start",
     "codegen": "bun run --filter '*' codegen",
     "migrate": "cd packages/db-migrations && bun run migrate && cd ../.. && bun codegen",
-    "typecheck": "bun run --filter '*' typecheck"
+    "typecheck": "bun run --filter '*' typecheck",
+    "test": "vitest"
   },
   "prettier": {
     "semi": false,
     "trailingComma": "all"
+  },
+  "devDependencies": {
+    "vitest": "^3.1.3"
   }
 }

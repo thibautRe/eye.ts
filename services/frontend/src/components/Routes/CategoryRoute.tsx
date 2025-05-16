@@ -36,7 +36,7 @@ export default () => {
     deep: "true"
   }>()
 
-  const slug = () => slugify(params.slug)
+  const slug = () => slugify(decodeURIComponent(params.slug))
 
   const [category, { mutate }] = createResource(slug, apiGetCategory)
   const picturesParams: Accessor<ApiGetPicturesParams> = () => ({

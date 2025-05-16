@@ -5,7 +5,7 @@ export function createDebouncedSignal<T>(
   { wait }: { wait?: number },
 ) {
   const [internalSignal, setInternalSignal] = createSignal(signal())
-  let timeoutRef: number | null = null
+  let timeoutRef: NodeJS.Timeout | null = null
 
   const cancel = () => clearTimeout(timeoutRef!)
   createEffect(
