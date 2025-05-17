@@ -24,23 +24,9 @@ bun run test
 
 ## Todo
 
-### Infra
-
-- [x] Dataloader, batch, cache (cameraBodies, cameraLens model files, toPictureApi)
-- [x] Frontend paginated loader
-- [x] Exif typings
-- [ ] Postgres Full Text Search for category name
-- [ ] Improve mapping of ApiResponse/Parameters in frontend
-
-### Features
-
-- [ ] Camera Bodies, Camera Lenses pages
 - [ ] Infinite scroll
 - [ ] Omnisearch
   - [ ] Category search
-- [ ] Auth
-  - [ ] Read-only API access
-  - [ ] Read-only frontend
 - [ ] Categories
   - [ ] Re-run auto-exif
   - [ ] Filter pictures by dates
@@ -49,6 +35,13 @@ bun run test
 - [ ] Pictures
   - [ ] Picture rating update
   - [ ] Delete picture
+- [ ] Camera Bodies, Camera Lenses pages
+- [ ] Infra
+  - [ ] Postgres Full Text Search for category name
+  - [ ] Improve mapping of ApiResponse/Parameters in frontend
+  - [ ] Auth
+    - [ ] Read-only API access
+    - [ ] Read-only frontend
 
 ### Done
 
@@ -66,3 +59,9 @@ bun run test
   - [x] Filter pictures by orphan
   - [x] Picture rating read
   - [x] Download as zip
+- [x] Infra
+  - [x] Dataloader, batch, cache (cameraBodies, cameraLens model files, toPictureApi)
+  - [x] Frontend paginated loader
+  - [x] Exif typings
+  - [x] Typecheck
+  - [x] Tests
