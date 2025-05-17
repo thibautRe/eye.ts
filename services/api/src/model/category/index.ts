@@ -91,6 +91,9 @@ export const updateCategoryLeaveWithSlug = async ({
   return updated as CategoryLeavesWithSlug
 }
 
+export const deleteCategoryLeaveWithSlug = async (slug: Slug) =>
+  await category_leaves(db).delete({ slug })
+
 export const getCategoryLeavesIdByXmpTag = async (xmpTags: string[]) => {
   const leaves = (
     await Promise.all(xmpTags.map(getCategoryLeavesByXmpTag))

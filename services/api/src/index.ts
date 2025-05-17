@@ -12,12 +12,13 @@ import {
 import { getS3 } from "./s3Client"
 import {
   createCategoryLeaveWithSlug,
+  deleteCategoryLeaveWithSlug,
   getCategoryLeaveWithSlug,
   listCategories,
   updateCategoryLeaveWithSlug,
 } from "./model/category"
 import { buildHandlers, getPaginatedParams } from "./utils/buildHandlers"
-import { getPictureById } from "./model/picture"
+import { deletePictureById, getPictureById } from "./model/picture"
 import { toCategoryApi, toCategoryApis } from "./controllers/categories"
 import { toPictureApi, toPictureApis } from "./controllers/picture"
 
@@ -30,6 +31,16 @@ const runHandlers = buildHandlers({
     return await toCategoryApi(
       await updateCategoryLeaveWithSlug({ slug, name, exifTag, newSlug }),
     )
+  },
+  CATEGORY_DELETE: async ({ args: { slug } }) => {
+    try {
+      await deleteCategoryLeaveWithSlug(slug)
+      return true
+    } catch (err) {
+      console.error(`Cannot delete category ${slug}`)
+      console.error(err)
+      return false
+    }
   },
   CATEGORY_CREATE: async ({ json }) => {
     return await toCategoryApi(await createCategoryLeaveWithSlug(await json()))
@@ -78,6 +89,16 @@ const runHandlers = buildHandlers({
   },
   PICTURE: async ({ args: { id } }) => {
     return await toPictureApi(await getPictureById(id))
+  },
+  PICTURE_DELETE: async ({ args: { id } }) => {
+    try {
+      await deletePictureById(id)
+      return true
+    } catch (err) {
+      console.error(`Cannot delete picture with id ${id}`)
+      console.error(err)
+      return false
+    }
   },
   PICTURE_CATEGORY_ADD: async ({ args: { id }, json }) => {
     const { slug } = await json()

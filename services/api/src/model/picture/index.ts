@@ -1,6 +1,6 @@
 import { batch } from "@databases/dataloader"
 import { type PictureId } from "core"
-import db, { pictures, q, type Pictures } from "db"
+import db, { category_leaves, pictures, q, type Pictures } from "db"
 
 export const getPictureById = batch<PictureId, Pictures>(async (ids) => {
   const pics = await pictures(db)
@@ -14,3 +14,12 @@ export const getPictureById = batch<PictureId, Pictures>(async (ids) => {
     },
   }
 })
+
+export const deletePictureById = async (id: PictureId) => {
+  return await db.tx(async (db) => {
+    await category_leaves(db).delete({
+      id: pictures.key("category_leaf_id", { id }),
+    })
+    await pictures(db).delete({ id })
+  })
+}

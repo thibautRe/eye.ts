@@ -4,11 +4,12 @@ import type {
   PictureApi,
   PictureListZipPreflightResponse,
 } from "./models"
-import type { PaginatedRoute, Route } from "./route"
+import type { ApiMethod, PaginatedRoute, Route } from "./route"
 import type { ApiPathname, ApiRouteKey } from "./properties"
 
 export type ApiRoutes =
   | Route<"CATEGORY", CategoryApi, { args: { slug: Slug } }>
+  | Route<"CATEGORY_DELETE", boolean, { args: { slug: Slug } }>
   | Route<
       "CATEGORY_UPDATE",
       CategoryApi,
@@ -47,6 +48,7 @@ export type ApiRoutes =
   /** --- */
   | Route<"PICTURE_UPLOAD", PictureApi>
   | Route<"PICTURE", PictureApi, { args: { id: PictureId } }>
+  | Route<"PICTURE_DELETE", boolean, { args: { id: PictureId } }>
   | Route<
       "PICTURE_CATEGORY_ADD",
       PictureApi,
@@ -75,27 +77,34 @@ export type ApiRoutes =
 
 export type PictureListSearchParams = "parent" | "orphan" | "rating" | "deep"
 
+const makeCategoryRoute = (method: ApiMethod): ApiPathname<"CATEGORY"> => ({
+  method,
+  stringify: ({ slug }) => `/categories/${slug}`,
+  parse: (pathname) => {
+    const res = /^\/categories\/([^\/]+)$/.exec(pathname)
+    return res
+      ? { ok: true, args: { slug: decodeURIComponent(res[1]!) as Slug } }
+      : { ok: false }
+  },
+})
+
+const makePictureRoute = (method: ApiMethod): ApiPathname<"PICTURE"> => ({
+  method,
+  stringify: ({ id }) => `/pictures/${id}`,
+  parse: (pathname) => {
+    const res = /^\/pictures\/(\d+)$/.exec(pathname)
+    if (!res) return { ok: false }
+    return {
+      ok: true,
+      args: { id: decodeURIComponent(res[1]!) as PictureId },
+    }
+  },
+})
+
 export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
-  CATEGORY: {
-    method: "GET",
-    stringify: ({ slug }) => `/categories/${slug}`,
-    parse: (pathname) => {
-      const res = /^\/categories\/([^\/]+)$/.exec(pathname)
-      return res
-        ? { ok: true, args: { slug: decodeURIComponent(res[1]!) as Slug } }
-        : { ok: false }
-    },
-  },
-  CATEGORY_UPDATE: {
-    method: "POST",
-    stringify: ({ slug }) => `/categories/${slug}`,
-    parse: (pathname) => {
-      const res = /^\/categories\/([^\/]+)$/.exec(pathname)
-      return res
-        ? { ok: true, args: { slug: decodeURIComponent(res[1]!) as Slug } }
-        : { ok: false }
-    },
-  },
+  CATEGORY: makeCategoryRoute("GET"),
+  CATEGORY_DELETE: makeCategoryRoute("DELETE"),
+  CATEGORY_UPDATE: makeCategoryRoute("POST"),
   CATEGORY_CREATE: { method: "POST", pathname: `/categories/` },
   CATEGORY_LIST: { method: "GET", pathname: "/categories/" },
   CATEGORY_PARENT_ADD: {
@@ -126,18 +135,8 @@ export const routes: { [key in ApiRouteKey]: ApiPathname<key> } = {
     pathname: `/pictures.zip/preflight`,
     method: "GET",
   },
-  PICTURE: {
-    method: "GET",
-    stringify: ({ id }) => `/pictures/${id}`,
-    parse: (pathname) => {
-      const res = /^\/pictures\/(\d+)$/.exec(pathname)
-      if (!res) return { ok: false }
-      return {
-        ok: true,
-        args: { id: decodeURIComponent(res[1]!) as PictureId },
-      }
-    },
-  },
+  PICTURE: makePictureRoute("GET"),
+  PICTURE_DELETE: makePictureRoute("DELETE"),
   PICTURE_CATEGORY_ADD: {
     method: "POST",
     stringify: ({ id }) => `/pictures/${id}/category`,
