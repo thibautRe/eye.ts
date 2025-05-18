@@ -18,7 +18,7 @@ import {
 } from "../category"
 import { parseRatingFilter, Slug, slugify, type RatingFilter } from "core"
 import { SearchParams } from "../../utils/buildHandlers"
-import { PictureListSearchParams } from "api-types"
+import { PictureListSearchParams } from "api-types/src/routes/picture"
 
 const getPictureLeaves = async (
   parent: string | null,

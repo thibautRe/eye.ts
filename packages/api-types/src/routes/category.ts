@@ -1,7 +1,7 @@
 import type { Slug } from "core"
 import type { CategoryApi } from "../models"
 import type { ApiMethod, PaginatedRoute, Route } from "../route"
-import type { ApiPathname, RouteDefinition } from "../properties"
+import type { ApiPathnameWithArgs, RouteDefinition } from "../types"
 
 export type CategoryRoutes =
   | Route<"CATEGORY", CategoryApi, { args: { slug: Slug } }>
@@ -42,7 +42,9 @@ export type CategoryRoutes =
       { args: { slug: Slug }; json: { parentSlug: Slug } }
     >
 
-const makeCategoryRoute = (method: ApiMethod): ApiPathname<"CATEGORY"> => ({
+const makeCategoryRoute = (
+  method: ApiMethod,
+): ApiPathnameWithArgs<{ slug: Slug }> => ({
   method,
   stringify: ({ slug }) => `/categories/${slug}`,
   parse: (pathname) => {

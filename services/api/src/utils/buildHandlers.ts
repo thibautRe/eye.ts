@@ -1,6 +1,5 @@
 import {
-  type ApiPathnameWithArgs,
-  type ApiPathnameWithoutArgs,
+  type ApiPathname,
   type ApiRouteKey,
   type ApiRouteSearchParams,
   type ApiRouteArgs,
@@ -16,7 +15,7 @@ import { log } from "backend-logs"
 const make404 = () => new Response("Not found", { status: 404 })
 
 const getRoutePathnameArgs = (
-  route: ApiPathnameWithArgs<any> | ApiPathnameWithoutArgs,
+  route: ApiPathname<any>,
   pathname: string,
 ): { args: unknown } | null => {
   if (typeof route.pathname === "undefined") {
@@ -50,6 +49,7 @@ export const buildHandlers =
       const key = k as ApiRouteKey
       const route = routes[key]
       if (route.method !== request.method) continue
+      // @ts-expect-error
       const res = getRoutePathnameArgs(route, url.pathname)
       if (!res) continue
 

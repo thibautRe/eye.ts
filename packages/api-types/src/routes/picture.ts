@@ -1,7 +1,7 @@
 import type { PictureId, Slug } from "core"
 import type { PictureApi, PictureListZipPreflightResponse } from "../models"
 import type { Route, PaginatedRoute, ApiMethod } from "../route"
-import type { ApiPathname, RouteDefinition } from "../properties"
+import type { ApiPathnameWithArgs, RouteDefinition } from "../types"
 
 export type PictureListSearchParams = "parent" | "orphan" | "rating" | "deep"
 
@@ -35,7 +35,9 @@ export type PictureRoutes =
       { searchParams: PictureListSearchParams }
     >
 
-const makePictureRoute = (method: ApiMethod): ApiPathname<"PICTURE"> => ({
+const makePictureRoute = (
+  method: ApiMethod,
+): ApiPathnameWithArgs<{ id: PictureId }> => ({
   method,
   stringify: ({ id }) => `/pictures/${id}`,
   parse: (pathname) => {

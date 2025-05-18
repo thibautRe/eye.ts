@@ -21,6 +21,7 @@ import { buildHandlers, getPaginatedParams } from "./utils/buildHandlers"
 import { deletePictureById, getPictureById } from "./model/picture"
 import { toCategoryApi, toCategoryApis } from "./controllers/categories"
 import { toPictureApi, toPictureApis } from "./controllers/picture"
+import { getUnusedXmpTags } from "./model/picture/exif"
 
 const runHandlers = buildHandlers({
   CATEGORY: async ({ args: { slug } }) => {
@@ -164,6 +165,9 @@ const runHandlers = buildHandlers({
   PICTURE_LIST_ZIP_PREFLIGHT: async ({ searchParams }) => {
     const count = await countPictures(searchParams)
     return { pictureAmt: count, approximateSizeBytes: count * 10_000_000 }
+  },
+  ADMIN_XMP_UNTRACKED: async () => {
+    return await getUnusedXmpTags()
   },
 })
 

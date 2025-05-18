@@ -1,4 +1,4 @@
-import type { Pictures } from "db"
+import { sql, type Pictures } from "db"
 import { parse } from "exifr"
 
 import { getCameraBodyByName } from "../cameraBody"
@@ -41,4 +41,21 @@ const getXmpTags = (taglist: unknown): string[] => {
   if (typeof taglist === "string") return parseArr(taglist.split(","))
   if (Array.isArray(taglist)) return parseArr(taglist)
   return []
+}
+
+export const getUnusedXmpTags = async (): Promise<string[]> => {
+  const tags: { tag: string }[] = await db.query(sql`
+    WITH all_picture_tags AS (
+      SELECT DISTINCT json_array_elements_text((exif->'TagsList')::json) AS tag
+      FROM pictures
+      WHERE exif ? 'TagsList'
+    )
+    SELECT tag FROM all_picture_tags
+    WHERE tag NOT IN (
+      SELECT exif_tag 
+      FROM category_leaves 
+      WHERE exif_tag IS NOT NULL
+    );
+  `)
+  return tags.map((t) => t.tag)
 }
