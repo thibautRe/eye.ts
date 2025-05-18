@@ -1,4 +1,4 @@
-import { type Accessor, createEffect, createSignal } from "solid-js"
+import { type Accessor, createEffect, createSignal, on } from "solid-js"
 import type { PaginatedApiLoader } from "../api/pagination"
 
 interface PaginatedSignal<T> {
@@ -44,11 +44,12 @@ export const createPaginatedLoader = <T, P extends {}>(
   const [signal, setSignal] = createSignal<PaginatedSignal<T>>(initSignal())
   let keepLoading = false
 
-  createEffect(() => {
-    // @ts-expect-error this reloads the data entirely when the params change
-    params.params()
-    setSignal(initSignal())
-  })
+  if (params.params)
+    createEffect(
+      on(params.params, () => {
+        setSignal(initSignal())
+      }),
+    )
 
   createEffect(async () => {
     const {
