@@ -33,7 +33,8 @@ bun run test
   - [ ] Bulk add/remove parent categories
   - [ ] Delete category
 - [ ] Pictures
-  - [ ] Picture rating update
+  - [ ] Picture update
+    - [ ] Picture rating update
   - [ ] Delete picture
 - [ ] Camera Bodies, Camera Lenses pages
 - [ ] Infra

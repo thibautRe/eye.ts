@@ -101,7 +101,7 @@ export const createPaginatedLoader = <T, P extends {}>(
     keepLoading = false
   }
 
-  const onReload = () => setSignal(initSignal)
+  const onReload = () => setSignal(initSignal())
 
   const data = () => {
     const sig = signal()
