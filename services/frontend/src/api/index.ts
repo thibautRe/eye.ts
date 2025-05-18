@@ -80,3 +80,6 @@ export const apiCategoryParentDel = (data: {
     routes.CATEGORY_PARENT_ADD.stringify({ slug: data.childSlug }),
     { parentSlug: data.parentSlug },
   )
+
+export const apiCategoryExifReindex = (slug: Slug) =>
+  post_json(routes.CATEGORY_EXIF_REINDEX.stringify({ slug }))

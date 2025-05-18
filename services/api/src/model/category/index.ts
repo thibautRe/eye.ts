@@ -11,6 +11,7 @@ import db, {
 } from "db"
 import createCache from "../../utils/createCache"
 import { isNotNull, slugify, type Slug } from "core"
+import { getPicturesWithExifTag } from "../picture/exif"
 
 export type CategoryLeavesWithSlug = CategoryLeaves & { slug: string }
 export const categoryLeaveHasSlug = (
@@ -169,4 +170,17 @@ export const listCategories = async (
       .orderByAsc("id"),
     p,
   )
+}
+
+export const reindexCategory = async (slug: Slug) => {
+  const category = await getCategoryLeaveWithSlug(db, slug)
+  if (!category.exif_tag) return
+  const pictures = await getPicturesWithExifTag(category.exif_tag)
+  await category_parents(db).bulkInsertOrIgnore({
+    columnsToInsert: ["child_id", "parent_id"],
+    records: pictures.map((picture) => ({
+      parent_id: category.id,
+      child_id: picture.category_leaf_id,
+    })),
+  })
 }

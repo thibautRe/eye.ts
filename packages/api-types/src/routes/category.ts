@@ -41,19 +41,24 @@ export type CategoryRoutes =
       CategoryApi,
       { args: { slug: Slug }; json: { parentSlug: Slug } }
     >
+  | Route<"CATEGORY_EXIF_REINDEX", boolean, { args: { slug: Slug } }>
 
 const makeCategoryRoute = (
   method: ApiMethod,
-): ApiPathnameWithArgs<{ slug: Slug }> => ({
-  method,
-  stringify: ({ slug }) => `/categories/${slug}`,
-  parse: (pathname) => {
-    const res = /^\/categories\/([^\/]+)$/.exec(pathname)
-    return res
-      ? { ok: true, args: { slug: decodeURIComponent(res[1]!) as Slug } }
-      : { ok: false }
-  },
-})
+  suffix = "",
+): ApiPathnameWithArgs<{ slug: Slug }> => {
+  const regex = new RegExp(`^\\\/categories\\\/([^\\\/]+)${suffix}$`)
+  return {
+    method,
+    stringify: ({ slug }) => `/categories/${slug}${suffix}`,
+    parse: (pathname) => {
+      const res = regex.exec(pathname)
+      return res
+        ? { ok: true, args: { slug: decodeURIComponent(res[1]!) as Slug } }
+        : { ok: false }
+    },
+  }
+}
 
 export const categoryRoutes: RouteDefinition<CategoryRoutes> = {
   CATEGORY: makeCategoryRoute("GET"),
@@ -61,24 +66,7 @@ export const categoryRoutes: RouteDefinition<CategoryRoutes> = {
   CATEGORY_UPDATE: makeCategoryRoute("POST"),
   CATEGORY_CREATE: { method: "POST", pathname: `/categories/` },
   CATEGORY_LIST: { method: "GET", pathname: "/categories/" },
-  CATEGORY_PARENT_ADD: {
-    method: "POST",
-    stringify: ({ slug }) => `/categories/${slug}/parentCategory`,
-    parse: (pathname) => {
-      const res = /^\/categories\/([^\/]+)\/parentCategory$/.exec(pathname)
-      return res
-        ? { ok: true, args: { slug: decodeURIComponent(res[1]!) as Slug } }
-        : { ok: false }
-    },
-  },
-  CATEGORY_PARENT_DEL: {
-    method: "DELETE",
-    stringify: ({ slug }) => `/categories/${slug}/parentCategory`,
-    parse: (pathname) => {
-      const res = /^\/categories\/([^\/]+)\/parentCategory$/.exec(pathname)
-      return res
-        ? { ok: true, args: { slug: decodeURIComponent(res[1]!) as Slug } }
-        : { ok: false }
-    },
-  },
+  CATEGORY_PARENT_ADD: makeCategoryRoute("POST", "/parentCategory"),
+  CATEGORY_PARENT_DEL: makeCategoryRoute("DELETE", "/parentCategory"),
+  CATEGORY_EXIF_REINDEX: makeCategoryRoute("POST", "/exif/reindex"),
 }

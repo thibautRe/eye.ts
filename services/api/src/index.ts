@@ -15,6 +15,7 @@ import {
   deleteCategoryLeaveWithSlug,
   getCategoryLeaveWithSlug,
   listCategories,
+  reindexCategory,
   updateCategoryLeaveWithSlug,
 } from "./model/category"
 import { buildHandlers, getPaginatedParams } from "./utils/buildHandlers"
@@ -80,6 +81,10 @@ const runHandlers = buildHandlers({
       child_id: child.id,
     })
     return await toCategoryApi(child)
+  },
+  CATEGORY_EXIF_REINDEX: async ({ args: { slug } }) => {
+    await reindexCategory(slug)
+    return true
   },
   PICTURE_UPLOAD: async ({ request }) => {
     const formData = await request.formData()

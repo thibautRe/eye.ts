@@ -1,4 +1,4 @@
-import { sql, type Pictures } from "db"
+import { pictures, sql, type Pictures } from "db"
 import { parse } from "exifr"
 
 import { getCameraBodyByName } from "../cameraBody"
@@ -58,4 +58,10 @@ export const getUnusedXmpTags = async (): Promise<string[]> => {
     );
   `)
   return tags.map((t) => t.tag)
+}
+
+export const getPicturesWithExifTag = async (tag: string) => {
+  return await pictures(db)
+    .find(sql`exif ? 'TagsList' AND exif->'TagsList' ? ${tag}`)
+    .all()
 }

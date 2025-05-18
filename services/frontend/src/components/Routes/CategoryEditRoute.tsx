@@ -2,9 +2,13 @@ import { useNavigate, useParams } from "@solidjs/router"
 import { createResource, createSignal, Show } from "solid-js"
 import { slugify } from "core"
 import { MainTitle, PageLayout } from "../PageLayout"
-import { apiGetCategory, apiUpdateCategory } from "../../api"
+import {
+  apiCategoryExifReindex,
+  apiGetCategory,
+  apiUpdateCategory,
+} from "../../api"
 import { css } from "../../../styled-system/css"
-import { flex } from "../../../styled-system/patterns"
+import { flex, hstack } from "../../../styled-system/patterns"
 import { FormField, Input } from "../Form"
 import { routes } from "."
 
@@ -54,14 +58,26 @@ export default () => {
                 />
               </FormField>
 
-              <FormField label="EXIF">
-                <Input
-                  value={category().exifTag ?? ""}
-                  onchange={(e) =>
-                    mutate({ ...category(), exifTag: e.target.value })
-                  }
-                />
-              </FormField>
+              <div class={hstack()}>
+                <FormField label="EXIF">
+                  <Input
+                    value={category().exifTag ?? ""}
+                    onchange={(e) =>
+                      mutate({ ...category(), exifTag: e.target.value })
+                    }
+                  />
+                </FormField>
+                <button
+                  type="button"
+                  onclick={async () => {
+                    await apiCategoryExifReindex(category().slug)
+                    // TODO(ux)
+                    alert("OK")
+                  }}
+                >
+                  Reindex
+                </button>
+              </div>
               <button type="submit">Submit</button>
             </form>
           </div>
