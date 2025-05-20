@@ -37,18 +37,22 @@ export type PictureRoutes =
 
 const makePictureRoute = (
   method: ApiMethod,
-): ApiPathnameWithArgs<{ id: PictureId }> => ({
-  method,
-  stringify: ({ id }) => `/pictures/${id}`,
-  parse: (pathname) => {
-    const res = /^\/pictures\/(\d+)$/.exec(pathname)
-    if (!res) return { ok: false }
-    return {
-      ok: true,
-      args: { id: decodeURIComponent(res[1]!) as PictureId },
-    }
-  },
-})
+  suffix = "",
+): ApiPathnameWithArgs<{ id: PictureId }> => {
+  const regex = new RegExp(`^\\\/pictures\\\/(\\\d+)${suffix}$/`)
+  return {
+    method,
+    stringify: ({ id }) => `/pictures/${id}${suffix}`,
+    parse: (pathname) => {
+      const res = regex.exec(pathname)
+      if (!res) return { ok: false }
+      return {
+        ok: true,
+        args: { id: decodeURIComponent(res[1]!) as PictureId },
+      }
+    },
+  }
+}
 
 export const pictureRoutes: RouteDefinition<PictureRoutes> = {
   PICTURE_UPLOAD: { pathname: `/picture/upload`, method: "POST" },
@@ -60,28 +64,6 @@ export const pictureRoutes: RouteDefinition<PictureRoutes> = {
   },
   PICTURE: makePictureRoute("GET"),
   PICTURE_DELETE: makePictureRoute("DELETE"),
-  PICTURE_CATEGORY_ADD: {
-    method: "POST",
-    stringify: ({ id }) => `/pictures/${id}/category`,
-    parse: (pathname) => {
-      const res = /^\/pictures\/(\d+)\/category$/.exec(pathname)
-      if (!res) return { ok: false }
-      return {
-        ok: true,
-        args: { id: decodeURIComponent(res[1]!) as PictureId },
-      }
-    },
-  },
-  PICTURE_CATEGORY_DEL: {
-    method: "DELETE",
-    stringify: ({ id }) => `/pictures/${id}/category`,
-    parse: (pathname) => {
-      const res = /^\/pictures\/(\d+)\/category$/.exec(pathname)
-      if (!res) return { ok: false }
-      return {
-        ok: true,
-        args: { id: decodeURIComponent(res[1]!) as PictureId },
-      }
-    },
-  },
+  PICTURE_CATEGORY_ADD: makePictureRoute("POST", `/category`),
+  PICTURE_CATEGORY_DEL: makePictureRoute("DELETE", `/category`),
 }
