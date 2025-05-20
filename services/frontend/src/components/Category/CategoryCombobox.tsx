@@ -16,8 +16,24 @@ import { vstack } from "../../../styled-system/patterns"
 import { css } from "../../../styled-system/css"
 import type { CategoryApi } from "api-types"
 
+type CategoryCollectionItem =
+  | {
+      type: "category"
+      category: CategoryApi
+    }
+  | {
+      type: "special"
+      special: "new"
+    }
+
+const specialNewItem: CategoryCollectionItem = {
+  type: "special",
+  special: "new",
+}
+
 export const CategoryCombobox: VoidComponent<{
   onSelect: (category: CategoryApi) => void
+  onCreate: (name: string) => Promise<void>
 }> = (p) => {
   const [query, setQuery] = createSignal("")
   const debouncedQuery = createDebouncedSignal(query, { wait: 300 })
@@ -31,15 +47,30 @@ export const CategoryCombobox: VoidComponent<{
   )
 
   const collection = createMemo(() =>
-    combobox.collection({
-      items: categories.latest,
-      itemToValue: (item) => item.slug,
-      itemToString: (item) => item.name,
+    combobox.collection<CategoryCollectionItem>({
+      items: [
+        ...categories.latest.map(
+          (category): CategoryCollectionItem => ({
+            type: "category",
+            category,
+          }),
+        ),
+        {
+          type: "special",
+          special: "new",
+        },
+      ],
+      itemToValue: (item) =>
+        item.type === "category"
+          ? item.category.slug
+          : `special/${item.special}`,
+      itemToString: (item) =>
+        item.type === "category" ? item.category.name : item.special,
     }),
   )
 
   const service = useMachine(
-    combobox.machine as combobox.Machine<CategoryApi>,
+    combobox.machine as combobox.Machine<CategoryCollectionItem>,
     {
       id: createUniqueId(),
       inputBehavior: "autohighlight",
@@ -50,8 +81,10 @@ export const CategoryCombobox: VoidComponent<{
       selectionBehavior: "clear",
       onSelect({ itemValue }) {
         const item = collection().find(itemValue)
-        if (item) {
-          p.onSelect(item)
+        if (item?.type === "category") {
+          p.onSelect(item.category)
+        } else if (item?.type === "special" && item.special === "new") {
+          p.onCreate(query())
         }
       },
       onInputValueChange({ inputValue }) {
@@ -75,12 +108,17 @@ export const CategoryCombobox: VoidComponent<{
           <ul {...api().getContentProps()} class={content}>
             <For each={categories()}>
               {(i) => (
-                <li {...api().getItemProps({ item: i })} class={item}>
+                <li
+                  {...api().getItemProps({ item: collection().find(i.slug) })}
+                  class={item}
+                >
                   {i.name}
                 </li>
               )}
             </For>
-            <div class={item}>Create "{query()}"</div>
+            <div {...api().getItemProps({ item: specialNewItem })} class={item}>
+              Create "{query()}"
+            </div>
           </ul>
         </Suspense>
       </div>

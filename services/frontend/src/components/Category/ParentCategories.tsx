@@ -10,6 +10,7 @@ import { Button } from "../Form/Button"
 
 export const ParentCategory: VoidComponent<{
   parents: LinkedCategoryApi[]
+  onCreate: (name: string) => Promise<void>
   onAdd: (slug: Slug) => Promise<void>
   onDel: (slug: Slug) => Promise<void>
 }> = (p) => {
@@ -46,7 +47,10 @@ export const ParentCategory: VoidComponent<{
         when={isEditing()}
         fallback={<Button onclick={() => setIsEditing(true)}>Edit</Button>}
       >
-        <CategoryCombobox onSelect={(cat) => p.onAdd(cat.slug)} />
+        <CategoryCombobox
+          onSelect={(cat) => p.onAdd(cat.slug)}
+          onCreate={p.onCreate}
+        />
       </Show>
     </nav>
   )

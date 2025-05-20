@@ -6,7 +6,12 @@ import { CategoryCombobox } from "../Category/CategoryCombobox"
 import { FormFieldInline } from "../Form"
 import { Checkbox } from "../Form/Checkbox"
 import { Button } from "../Form/Button"
-import { apiCategoryBulkPictureAdd, apiCategoryBulkPictureDel } from "../../api"
+import {
+  apiCategoryBulkPictureAdd,
+  apiCategoryBulkPictureDel,
+  apiCreateCategory,
+} from "../../api"
+import { slugify } from "core"
 
 export const SelectMultipleControl: VoidComponent = () => {
   const [store, updater] = useMultiselectContext()
@@ -19,7 +24,14 @@ export const SelectMultipleControl: VoidComponent = () => {
           <Show
             when={categoryForAction()}
             fallback={
-              <CategoryCombobox onSelect={(cat) => setCategoryForAction(cat)} />
+              <CategoryCombobox
+                onSelect={(cat) => setCategoryForAction(cat)}
+                onCreate={async (name) => {
+                  setCategoryForAction(
+                    await apiCreateCategory({ slug: slugify(name), name }),
+                  )
+                }}
+              />
             }
           >
             {(category) => (

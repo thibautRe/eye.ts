@@ -58,6 +58,17 @@ export default () => {
           <div class={stack({ direction: "column" })}>
             <ParentCategory
               parents={category().directParents}
+              onCreate={async (name) => {
+                const parentCat = await apiCreateCategory({
+                  name: name,
+                  slug: slugify(name),
+                  childSlug: category().slug,
+                })
+                mutate({
+                  ...category(),
+                  directParents: [...category().directParents, parentCat],
+                })
+              }}
               onAdd={async (parentSlug) => {
                 mutate(
                   await apiCategoryParentAdd({ parentSlug, childSlug: slug() }),

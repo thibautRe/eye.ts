@@ -42,11 +42,13 @@ export const createCategoryLeaveWithSlug = async ({
   name,
   exifTag,
   parentSlug,
+  childSlug,
 }: {
   slug: string
   name: string
   exifTag?: string
   parentSlug?: Slug
+  childSlug?: Slug
 }) => {
   return await db.tx(async (db) => {
     const [cat] = await category_leaves(db).insert({
@@ -56,13 +58,21 @@ export const createCategoryLeaveWithSlug = async ({
       exif_tag: exifTag,
     })
 
-    const parent =
-      parentSlug && (await getCategoryLeaveWithSlug(db, parentSlug))
+    const [parent, child] = await Promise.all([
+      parentSlug && (await getCategoryLeaveWithSlug(db, parentSlug)),
+      childSlug && (await getCategoryLeaveWithSlug(db, childSlug)),
+    ])
 
     if (parent) {
       await category_parents(db).insert({
         parent_id: parent.id,
         child_id: cat.id,
+      })
+    }
+    if (child) {
+      await category_parents(db).insert({
+        parent_id: cat.id,
+        child_id: child.id,
       })
     }
 

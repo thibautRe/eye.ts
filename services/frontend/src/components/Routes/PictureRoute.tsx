@@ -39,6 +39,10 @@ const PictureItem: VoidComponent<{
     <div class={vstack({ gap: "4", alignItems: "initial" })}>
       <ParentCategory
         parents={p.picture.directParents}
+        onCreate={() => {
+          // TODO
+          throw new Error("Not implemented")
+        }}
         onAdd={async (slug) =>
           p.onPictureChange(await apiPictureParentAdd(p.picture.id, slug))
         }

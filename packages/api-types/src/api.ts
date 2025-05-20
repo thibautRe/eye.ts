@@ -1,4 +1,4 @@
-import { adminRoutes, AdminRoutes } from "./routes/admin"
+import { adminRoutes, type AdminRoutes } from "./routes/admin"
 import { categoryRoutes, type CategoryRoutes } from "./routes/category"
 import { pictureRoutes, type PictureRoutes } from "./routes/picture"
 import type { RouteDefinition } from "./types"
