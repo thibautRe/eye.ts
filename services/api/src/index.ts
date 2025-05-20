@@ -23,6 +23,12 @@ import { deletePictureById, getPictureById } from "./model/picture"
 import { toCategoryApi, toCategoryApis } from "./controllers/categories"
 import { toPictureApi, toPictureApis } from "./controllers/picture"
 import { getUnusedXmpTags } from "./model/picture/exif"
+import {
+  createCategoryLink,
+  createPicturesCategoryLink,
+  deleteCategoryLink,
+  deletePicturesCategoryLink,
+} from "./model/category/parents"
 
 const runHandlers = buildHandlers({
   CATEGORY: async ({ args: { slug } }) => {
@@ -60,30 +66,26 @@ const runHandlers = buildHandlers({
   },
   CATEGORY_PARENT_ADD: async ({ args: { slug }, json }) => {
     const { parentSlug } = await json()
-    const [parent, child] = await Promise.all([
-      getCategoryLeaveWithSlug(db, parentSlug),
-      getCategoryLeaveWithSlug(db, slug),
-    ])
-    await category_parents(db).insert({
-      parent_id: parent.id,
-      child_id: child.id,
-    })
+    const { child } = await createCategoryLink({ parentSlug, childSlug: slug })
     return await toCategoryApi(child)
   },
   CATEGORY_PARENT_DEL: async ({ args: { slug }, json }) => {
     const { parentSlug } = await json()
-    const [parent, child] = await Promise.all([
-      getCategoryLeaveWithSlug(db, parentSlug),
-      getCategoryLeaveWithSlug(db, slug),
-    ])
-    await category_parents(db).delete({
-      parent_id: parent.id,
-      child_id: child.id,
-    })
+    const { child } = await deleteCategoryLink({ childSlug: slug, parentSlug })
     return await toCategoryApi(child)
   },
   CATEGORY_EXIF_REINDEX: async ({ args: { slug } }) => {
     await reindexCategory(slug)
+    return true
+  },
+  CATEGORY_BULK_PICTURE_ADD: async ({ args: { slug }, json }) => {
+    const { pictureIds } = await json()
+    await createPicturesCategoryLink({ slug, pictureIds })
+    return true
+  },
+  CATEGORY_BULK_PICTURE_DEL: async ({ args: { slug }, json }) => {
+    const { pictureIds } = await json()
+    await deletePicturesCategoryLink({ slug, pictureIds })
     return true
   },
   PICTURE_UPLOAD: async ({ request }) => {

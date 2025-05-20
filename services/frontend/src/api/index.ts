@@ -81,5 +81,21 @@ export const apiCategoryParentDel = (data: {
     { parentSlug: data.parentSlug },
   )
 
+export const apiCategoryBulkPictureAdd = (data: {
+  slug: Slug
+  pictureIds: PictureId[]
+}) =>
+  post_json(routes.CATEGORY_BULK_PICTURE_ADD.stringify({ slug: data.slug }), {
+    pictureIds: data.pictureIds,
+  })
+
+export const apiCategoryBulkPictureDel = (data: {
+  slug: Slug
+  pictureIds: PictureId[]
+}) =>
+  delete_json(routes.CATEGORY_BULK_PICTURE_DEL.stringify({ slug: data.slug }), {
+    pictureIds: data.pictureIds,
+  })
+
 export const apiCategoryExifReindex = (slug: Slug) =>
   post_json(routes.CATEGORY_EXIF_REINDEX.stringify({ slug }))

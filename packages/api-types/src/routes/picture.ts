@@ -39,7 +39,7 @@ const makePictureRoute = (
   method: ApiMethod,
   suffix = "",
 ): ApiPathnameWithArgs<{ id: PictureId }> => {
-  const regex = new RegExp(`^\\\/pictures\\\/(\\\d+)${suffix}$/`)
+  const regex = new RegExp(`^\\\/pictures\\\/(\\\d+)${suffix}$`)
   return {
     method,
     stringify: ({ id }) => `/pictures/${id}${suffix}`,

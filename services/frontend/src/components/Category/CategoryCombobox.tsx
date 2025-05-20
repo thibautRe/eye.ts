@@ -4,7 +4,6 @@ import {
   createSignal,
   createUniqueId,
   For,
-  Show,
   Suspense,
   type VoidComponent,
 } from "solid-js"
@@ -73,17 +72,16 @@ export const CategoryCombobox: VoidComponent<{
         {...mergeProps(api().getPositionerProps, { style: { "z-index": 100 } })}
       >
         <Suspense>
-          <Show when={categories().length > 0}>
-            <ul {...api().getContentProps()} class={content}>
-              <For each={categories()}>
-                {(i) => (
-                  <li {...api().getItemProps({ item: i })} class={item}>
-                    {i.name}
-                  </li>
-                )}
-              </For>
-            </ul>
-          </Show>
+          <ul {...api().getContentProps()} class={content}>
+            <For each={categories()}>
+              {(i) => (
+                <li {...api().getItemProps({ item: i })} class={item}>
+                  {i.name}
+                </li>
+              )}
+            </For>
+            <div class={item}>Create "{query()}"</div>
+          </ul>
         </Suspense>
       </div>
     </div>

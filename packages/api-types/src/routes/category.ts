@@ -1,4 +1,4 @@
-import type { Slug } from "core"
+import type { PictureId, Slug } from "core"
 import type { CategoryApi } from "../models"
 import type { ApiMethod, PaginatedRoute, Route } from "../route"
 import type { ApiPathnameWithArgs, RouteDefinition } from "../types"
@@ -41,6 +41,16 @@ export type CategoryRoutes =
       CategoryApi,
       { args: { slug: Slug }; json: { parentSlug: Slug } }
     >
+  | Route<
+      "CATEGORY_BULK_PICTURE_ADD",
+      boolean,
+      { args: { slug: Slug }; json: { pictureIds: PictureId[] } }
+    >
+  | Route<
+      "CATEGORY_BULK_PICTURE_DEL",
+      boolean,
+      { args: { slug: Slug }; json: { pictureIds: PictureId[] } }
+    >
   | Route<"CATEGORY_EXIF_REINDEX", boolean, { args: { slug: Slug } }>
 
 const makeCategoryRoute = (
@@ -68,5 +78,7 @@ export const categoryRoutes: RouteDefinition<CategoryRoutes> = {
   CATEGORY_LIST: { method: "GET", pathname: "/categories/" },
   CATEGORY_PARENT_ADD: makeCategoryRoute("POST", "/parentCategory"),
   CATEGORY_PARENT_DEL: makeCategoryRoute("DELETE", "/parentCategory"),
+  CATEGORY_BULK_PICTURE_ADD: makeCategoryRoute("POST", "/childPicture/bulk"),
+  CATEGORY_BULK_PICTURE_DEL: makeCategoryRoute("DELETE", "/childPicture/bulk"),
   CATEGORY_EXIF_REINDEX: makeCategoryRoute("POST", "/exif/reindex"),
 }
