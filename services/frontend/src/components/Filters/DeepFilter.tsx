@@ -1,16 +1,12 @@
 import type { VoidComponent } from "solid-js"
-import { hstack } from "../../../styled-system/patterns"
+import { FormFieldInline } from "../Form"
+import { Checkbox } from "../Form/Checkbox"
 
 export const DeepFilter: VoidComponent<{
   isDeep: boolean
   onIsDeepChange: (o: boolean) => void
 }> = (p) => (
-  <label class={hstack({ gap: "1" })}>
-    <input
-      type="checkbox"
-      checked={p.isDeep}
-      onchange={(e) => p.onIsDeepChange(e.target.checked)}
-    />
-    <span>Deep</span>
-  </label>
+  <FormFieldInline label="Deep">
+    <Checkbox checked={p.isDeep} onCheckedChange={p.onIsDeepChange} />
+  </FormFieldInline>
 )

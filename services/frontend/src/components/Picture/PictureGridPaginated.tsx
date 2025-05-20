@@ -2,6 +2,7 @@ import { Show, type VoidComponent } from "solid-js"
 import type { PictureApi } from "api-types"
 import { PictureGrid } from "./PictureGrid"
 import type { PaginatedLoader } from "../../hooks/createPaginatedLoader"
+import { Button } from "../Form/Button"
 
 interface PictureGridPaginatedProps {
   loader: PaginatedLoader<PictureApi>
@@ -20,7 +21,7 @@ export const PictureGridPaginated: VoidComponent<PictureGridPaginatedProps> = (
         <PictureGrid pictures={p.loader.data().items} />
       </Show>
       <Show when={hasMore()}>
-        <button onClick={p.loader.onLoadNext}>Show more</button>
+        <Button onClick={p.loader.onLoadNext}>Show more</Button>
       </Show>
     </>
   )

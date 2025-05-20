@@ -10,6 +10,7 @@ import type { CategoryApi } from "api-types"
 import { OrphanFilter } from "../Filters/OrphanFilter"
 import { routes } from "."
 import { stack } from "../../../styled-system/patterns"
+import { Button } from "../Form/Button"
 
 export default () => {
   const [searchParams, setSearchParams] = useSearchParams<{
@@ -53,7 +54,7 @@ const PaginatedCategories: VoidComponent<{
         </ul>
       </Show>
       <Show when={hasMore()}>
-        <button onClick={p.loader.onLoadNext}>Show more</button>
+        <Button onClick={p.loader.onLoadNext}>Show more</Button>
       </Show>
     </>
   )

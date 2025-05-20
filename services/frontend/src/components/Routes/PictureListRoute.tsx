@@ -7,6 +7,8 @@ import { PictureGridPaginated } from "../Picture/PictureGridPaginated"
 import { hstack, stack } from "../../../styled-system/patterns"
 import { RatingFilter } from "../Filters/RatingFilter"
 import { OrphanFilter } from "../Filters/OrphanFilter"
+import { MultiselectContextProvider } from "../../contexts/MultiselectContext"
+import { SelectMultipleControl } from "../Picture/SelectMultipleControl"
 
 export default () => {
   const [searchParams, setSearchParams] = useSearchParams<{
@@ -38,7 +40,10 @@ export default () => {
             }
           />
         </div>
-        <PictureGridPaginated loader={loader} />
+        <MultiselectContextProvider pictures={loader.data().items}>
+          <SelectMultipleControl />
+          <PictureGridPaginated loader={loader} />
+        </MultiselectContextProvider>
       </div>
     </PageLayout>
   )

@@ -11,6 +11,7 @@ import { css } from "../../../styled-system/css"
 import { flex, hstack } from "../../../styled-system/patterns"
 import { FormField, Input } from "../Form"
 import { routes } from "."
+import { Button } from "../Form/Button"
 
 export default () => {
   const params = useParams<{ slug: string }>()
@@ -67,7 +68,7 @@ export default () => {
                     }
                   />
                 </FormField>
-                <button
+                <Button
                   type="button"
                   onclick={async () => {
                     await apiCategoryExifReindex(category().slug)
@@ -76,9 +77,9 @@ export default () => {
                   }}
                 >
                   Reindex
-                </button>
+                </Button>
               </div>
-              <button type="submit">Submit</button>
+              <Button type="submit">Submit</Button>
             </form>
           </div>
         )}

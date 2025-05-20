@@ -1,4 +1,9 @@
-import { createContext, createUniqueId, type ParentComponent } from "solid-js"
+import {
+  createContext,
+  createUniqueId,
+  useContext,
+  type ParentComponent,
+} from "solid-js"
 
 export interface FormFieldContext {
   id: string
@@ -10,3 +15,5 @@ export const FormFieldContextProvider: ParentComponent = (p) => (
     {p.children}
   </FormFieldContext.Provider>
 )
+
+export const useFormFieldContext = () => useContext(FormFieldContext)

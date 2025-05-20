@@ -6,6 +6,7 @@ import { hstack } from "../../../styled-system/patterns"
 import { css } from "../../../styled-system/css"
 
 import { CategoryCombobox } from "./CategoryCombobox"
+import { Button } from "../Form/Button"
 
 export const ParentCategory: VoidComponent<{
   parents: LinkedCategoryApi[]
@@ -27,7 +28,7 @@ export const ParentCategory: VoidComponent<{
                 {parent.name}
               </a>
               <Show when={isEditing()}>
-                <button
+                <Button
                   onclick={() => {
                     if (!confirm(`Delete parent category "${parent.name}"?`))
                       return
@@ -35,7 +36,7 @@ export const ParentCategory: VoidComponent<{
                   }}
                 >
                   x
-                </button>
+                </Button>
               </Show>
             </li>
           )}
@@ -43,7 +44,7 @@ export const ParentCategory: VoidComponent<{
       </ul>
       <Show
         when={isEditing()}
-        fallback={<button onclick={() => setIsEditing(true)}>Edit</button>}
+        fallback={<Button onclick={() => setIsEditing(true)}>Edit</Button>}
       >
         <CategoryCombobox onSelect={(cat) => p.onAdd(cat.slug)} />
       </Show>

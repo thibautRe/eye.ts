@@ -1,9 +1,10 @@
 import { defineConfig } from "vite"
 import solidPlugin from "vite-plugin-solid"
+import devtools from "solid-devtools/vite"
 
 export default defineConfig({
   // @ts-expect-error
-  plugins: [solidPlugin()],
+  plugins: [devtools({ autoname: true }), solidPlugin()],
   build: { target: "esnext" },
   server: {
     proxy: {

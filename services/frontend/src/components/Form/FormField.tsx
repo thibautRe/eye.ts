@@ -1,6 +1,9 @@
-import { useContext, type ParentComponent } from "solid-js"
+import { type ParentComponent } from "solid-js"
 import { hstack, vstack } from "../../../styled-system/patterns"
-import { FormFieldContext, FormFieldContextProvider } from "./FormFieldContext"
+import {
+  FormFieldContextProvider,
+  useFormFieldContext,
+} from "./FormFieldContext"
 import { css } from "../../../styled-system/css"
 
 interface FormFieldProps {
@@ -25,7 +28,7 @@ export const FormFieldInline: ParentComponent<FormFieldProps> = (p) => (
 )
 
 const FormFieldLabel: ParentComponent = (p) => {
-  const context = useContext(FormFieldContext)
+  const context = useFormFieldContext()
   return (
     <label class={label} for={context?.id}>
       {p.children}
@@ -38,8 +41,8 @@ const wrapper = vstack({
   alignItems: "flex-start",
 })
 const inlineWrapper = hstack({
-  gap: "2",
-  alignItems: "flex-start",
+  gap: "0",
+  alignItems: "center",
   flexDirection: "row-reverse",
 })
 

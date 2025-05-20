@@ -28,6 +28,9 @@ import { css } from "../../../styled-system/css"
 import { Input } from "../Form"
 import { downloadPicturesZip } from "../../utils/downloadPicturesZip"
 import { DeepFilter } from "../Filters/DeepFilter"
+import { MultiselectContextProvider } from "../../contexts/MultiselectContext"
+import { SelectMultipleControl } from "../Picture/SelectMultipleControl"
+import { Button } from "../Form/Button"
 
 export default () => {
   const params = useParams<{ slug: string }>()
@@ -100,15 +103,18 @@ export default () => {
                     setSearchParams({ deep: d ? "true" : null })
                   }
                 />
-                <button
+                <Button
                   onclick={async () => {
                     await downloadPicturesZip(picturesParams())
                   }}
                 >
                   .zip
-                </button>
+                </Button>
               </div>
-              <PictureGridPaginated loader={loader} />
+              <MultiselectContextProvider pictures={loader.data().items}>
+                <SelectMultipleControl />
+                <PictureGridPaginated loader={loader} />
+              </MultiselectContextProvider>
             </div>
           </div>
         )}
@@ -154,7 +160,7 @@ const CreateNewCategory: VoidComponent<{
   return (
     <Show
       when={isCreating()}
-      fallback={<button onClick={() => setIsCreating(true)}>Create new</button>}
+      fallback={<Button onClick={() => setIsCreating(true)}>Create new</Button>}
     >
       <form
         class={hstack()}
@@ -174,9 +180,9 @@ const CreateNewCategory: VoidComponent<{
           value={tmpCategoryName()}
           onchange={(e) => setTmpCategoryName(e.target.value)}
         />
-        <button disabled={isSubmiting()} type="submit">
+        <Button disabled={isSubmiting()} type="submit">
           +
-        </button>
+        </Button>
       </form>
     </Show>
   )
