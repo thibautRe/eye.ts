@@ -6,7 +6,7 @@ import { hstack } from "../../../styled-system/patterns"
 import { css } from "../../../styled-system/css"
 
 import { CategoryCombobox } from "./CategoryCombobox"
-import { Button } from "../Form/Button"
+import { TextButton } from "../Form/Button"
 
 export const ParentCategory: VoidComponent<{
   parents: LinkedCategoryApi[]
@@ -16,7 +16,15 @@ export const ParentCategory: VoidComponent<{
 }> = (p) => {
   const [isEditing, setIsEditing] = createSignal(false)
   return (
-    <nav class={hstack({ gap: "2", p: "2", flexWrap: "wrap", bg: "gray.300" })}>
+    <nav
+      class={hstack({
+        gap: "2",
+        p: "2",
+        flexWrap: "wrap",
+        borderBottom: "1px solid",
+        borderBottomColor: "InactiveBorder",
+      })}
+    >
       <strong>Categories:</strong>
       <ul class={css({ display: "contents" })}>
         <For each={p.parents}>
@@ -29,7 +37,7 @@ export const ParentCategory: VoidComponent<{
                 {parent.name}
               </a>
               <Show when={isEditing()}>
-                <Button
+                <TextButton
                   onclick={() => {
                     if (!confirm(`Delete parent category "${parent.name}"?`))
                       return
@@ -37,7 +45,7 @@ export const ParentCategory: VoidComponent<{
                   }}
                 >
                   x
-                </Button>
+                </TextButton>
               </Show>
             </li>
           )}
@@ -45,7 +53,9 @@ export const ParentCategory: VoidComponent<{
       </ul>
       <Show
         when={isEditing()}
-        fallback={<Button onclick={() => setIsEditing(true)}>Edit</Button>}
+        fallback={
+          <TextButton onclick={() => setIsEditing(true)}>Edit</TextButton>
+        }
       >
         <CategoryCombobox
           onSelect={(cat) => p.onAdd(cat.slug)}

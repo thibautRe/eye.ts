@@ -30,7 +30,7 @@ import { downloadPicturesZip } from "../../utils/downloadPicturesZip"
 import { DeepFilter } from "../Filters/DeepFilter"
 import { MultiselectContextProvider } from "../../contexts/MultiselectContext"
 import { SelectMultipleControl } from "../Picture/SelectMultipleControl"
-import { Button } from "../Form/Button"
+import { TextButton } from "../Form/Button"
 
 export default () => {
   const params = useParams<{ slug: string }>()
@@ -114,13 +114,13 @@ export default () => {
                     setSearchParams({ deep: d ? "true" : null })
                   }
                 />
-                <Button
+                <TextButton
                   onclick={async () => {
                     await downloadPicturesZip(picturesParams())
                   }}
                 >
                   .zip
-                </Button>
+                </TextButton>
               </div>
               <MultiselectContextProvider pictures={loader.data().items}>
                 <SelectMultipleControl />
@@ -171,7 +171,9 @@ const CreateNewCategory: VoidComponent<{
   return (
     <Show
       when={isCreating()}
-      fallback={<Button onClick={() => setIsCreating(true)}>Create new</Button>}
+      fallback={
+        <TextButton onClick={() => setIsCreating(true)}>Create new</TextButton>
+      }
     >
       <form
         class={hstack()}
@@ -191,9 +193,9 @@ const CreateNewCategory: VoidComponent<{
           value={tmpCategoryName()}
           onchange={(e) => setTmpCategoryName(e.target.value)}
         />
-        <Button disabled={isSubmiting()} type="submit">
+        <TextButton disabled={isSubmiting()} type="submit">
           +
-        </Button>
+        </TextButton>
       </form>
     </Show>
   )

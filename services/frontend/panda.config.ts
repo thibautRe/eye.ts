@@ -10,6 +10,11 @@ export default defineConfig({
   exclude: [],
   theme: {
     extend: {
+      semanticTokens: {
+        sizes: {
+          InteractiveMd: { value: "34px" },
+        },
+      },
       textStyles: defineTextStyles({
         mainTitle: {
           description: "Main Title for pages",

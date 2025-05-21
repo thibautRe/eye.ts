@@ -13,4 +13,14 @@ export const input = css({
   borderRadius: "md",
   paddingInline: "2",
   paddingBlock: "1",
+
+  border: "1px solid",
+  borderColor: "gray.400",
+
+  height: "InteractiveMd",
+
+  "&:focus": {
+    borderColor: "blue.400",
+    outlineOffset: "0.5",
+  },
 })

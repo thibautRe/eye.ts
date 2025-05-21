@@ -8,7 +8,7 @@ import { MainTitle, PageLayout } from "../PageLayout"
 import { apiUploadFile } from "../../api"
 import { PictureRaw } from "../Picture/Picture"
 import { routes } from "."
-import { Button } from "../Form/Button"
+import { TextButton } from "../Form/Button"
 
 export default () => {
   return (
@@ -132,7 +132,7 @@ const PictureUpload: VoidComponent = () => {
                     {(i) => (
                       <li class={pictureBox}>
                         Failed: {i().file.name}
-                        <Button
+                        <TextButton
                           onclick={() => {
                             setStore((f) => f.file === i().file, {
                               state: "pending",
@@ -141,7 +141,7 @@ const PictureUpload: VoidComponent = () => {
                           }}
                         >
                           Retry
-                        </Button>
+                        </TextButton>
                       </li>
                     )}
                   </Match>

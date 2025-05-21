@@ -1,7 +1,7 @@
 import type { Rating, RatingFilter as RF } from "core"
 import { For, type VoidComponent } from "solid-js"
 import { hstack } from "../../../styled-system/patterns"
-import { Button } from "../Form/Button"
+import { TextButton } from "../Form/Button"
 
 export const RatingFilter: VoidComponent<{
   ratingFilter: RF | null
@@ -11,7 +11,7 @@ export const RatingFilter: VoidComponent<{
     <div class={hstack({ gap: "1" })}>
       <For each={new Array(5).fill(null).map((_, i) => (i + 1) as Rating)}>
         {(rating) => (
-          <Button
+          <TextButton
             onClick={() => {
               if (
                 p.ratingFilter?.type === "gteq" &&
@@ -28,7 +28,7 @@ export const RatingFilter: VoidComponent<{
                 ? "★"
                 : "☆"
               : "☆"}
-          </Button>
+          </TextButton>
         )}
       </For>
     </div>

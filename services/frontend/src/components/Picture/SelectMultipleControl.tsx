@@ -5,7 +5,7 @@ import { useMultiselectContext } from "../../contexts/MultiselectContext"
 import { CategoryCombobox } from "../Category/CategoryCombobox"
 import { FormFieldInline } from "../Form"
 import { Checkbox } from "../Form/Checkbox"
-import { Button } from "../Form/Button"
+import { TextButton } from "../Form/Button"
 import {
   apiCategoryBulkPictureAdd,
   apiCategoryBulkPictureDel,
@@ -37,10 +37,12 @@ export const SelectMultipleControl: VoidComponent = () => {
             {(category) => (
               <>
                 {category().name}
-                <Button onclick={() => setCategoryForAction(null)}>X</Button>
+                <TextButton onclick={() => setCategoryForAction(null)}>
+                  X
+                </TextButton>
 
                 <div class={hstack()}>
-                  <Button
+                  <TextButton
                     onclick={async () =>
                       apiCategoryBulkPictureAdd({
                         slug: category().slug,
@@ -49,8 +51,8 @@ export const SelectMultipleControl: VoidComponent = () => {
                     }
                   >
                     +
-                  </Button>
-                  <Button
+                  </TextButton>
+                  <TextButton
                     onclick={async () =>
                       apiCategoryBulkPictureDel({
                         slug: category().slug,
@@ -59,7 +61,7 @@ export const SelectMultipleControl: VoidComponent = () => {
                     }
                   >
                     -
-                  </Button>
+                  </TextButton>
                 </div>
               </>
             )}
