@@ -22,15 +22,15 @@ import { RatingFilter } from "../Filters/RatingFilter"
 import { PictureGridPaginated } from "../Picture/PictureGridPaginated"
 import { hstack, stack, vstack } from "../../../styled-system/patterns"
 import { ParentCategory } from "../Category/ParentCategories"
-import type { LinkedCategoryApi } from "api-types"
+import type { CategoryApi, LinkedCategoryApi } from "api-types"
 import { routes } from "."
 import { css } from "../../../styled-system/css"
-import { Input } from "../Form"
 import { downloadPicturesZip } from "../../utils/downloadPicturesZip"
 import { DeepFilter } from "../Filters/DeepFilter"
 import { MultiselectContextProvider } from "../../contexts/MultiselectContext"
 import { SelectMultipleControl } from "../Picture/SelectMultipleControl"
 import { TextButton } from "../Form/Button"
+import { CategoryCombobox } from "../Category/CategoryCombobox"
 
 export default () => {
   const params = useParams<{ slug: string }>()
@@ -87,15 +87,25 @@ export default () => {
               </div>
               <ChildrenCategory
                 directChildren={category().directChildren}
-                onNew={async (name) => {
-                  const childCat = await apiCreateCategory({
-                    name: name,
+                onCreateChild={async (name) => {
+                  const cat = await apiCreateCategory({
+                    name,
                     slug: slugify(name),
                     parentSlug: category().slug,
                   })
                   mutate({
                     ...category(),
-                    directChildren: [...category().directChildren, childCat],
+                    directChildren: [...category().directChildren, cat],
+                  })
+                }}
+                onAddChild={async (cat) => {
+                  await apiCategoryParentAdd({
+                    childSlug: cat.slug,
+                    parentSlug: category().slug,
+                  })
+                  mutate({
+                    ...category(),
+                    directChildren: [...category().directChildren, cat],
                   })
                 }}
               />
@@ -136,7 +146,8 @@ export default () => {
 
 const ChildrenCategory: VoidComponent<{
   directChildren: LinkedCategoryApi[]
-  onNew: (name: string) => Promise<void>
+  onAddChild: (cat: CategoryApi) => Promise<void>
+  onCreateChild: (name: string) => Promise<void>
 }> = (p) => {
   return (
     <div class={vstack({ alignItems: "flex-start" })}>
@@ -157,46 +168,27 @@ const ChildrenCategory: VoidComponent<{
           </For>
         </ul>
       </Show>
-      <CreateNewCategory onNew={p.onNew} />
+      <AddChildCategory
+        onAddChild={p.onAddChild}
+        onCreateChild={p.onCreateChild}
+      />
     </div>
   )
 }
 
-const CreateNewCategory: VoidComponent<{
-  onNew: (name: string) => Promise<unknown>
+const AddChildCategory: VoidComponent<{
+  onAddChild: (cat: CategoryApi) => Promise<void>
+  onCreateChild: (name: string) => Promise<void>
 }> = (p) => {
-  const [tmpCategoryName, setTmpCategoryName] = createSignal("")
-  const [isCreating, setIsCreating] = createSignal(false)
-  const [isSubmiting, setIsSubmiting] = createSignal(false)
+  const [isEditing, setIsEditing] = createSignal(false)
   return (
     <Show
-      when={isCreating()}
+      when={isEditing()}
       fallback={
-        <TextButton onClick={() => setIsCreating(true)}>Create new</TextButton>
+        <TextButton onClick={() => setIsEditing(true)}>Edit</TextButton>
       }
     >
-      <form
-        class={hstack()}
-        onsubmit={async (e) => {
-          e.preventDefault()
-          try {
-            setIsSubmiting(true)
-            await p.onNew(tmpCategoryName())
-            setTmpCategoryName("")
-          } finally {
-            setIsSubmiting(false)
-          }
-        }}
-      >
-        <Input
-          ref={(e) => requestAnimationFrame(() => e.focus())}
-          value={tmpCategoryName()}
-          onchange={(e) => setTmpCategoryName(e.target.value)}
-        />
-        <TextButton disabled={isSubmiting()} type="submit">
-          +
-        </TextButton>
-      </form>
+      <CategoryCombobox onSelect={p.onAddChild} onCreate={p.onCreateChild} />
     </Show>
   )
 }

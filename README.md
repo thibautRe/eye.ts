@@ -29,8 +29,6 @@ bun run test
   - [ ] Category search
 - [ ] Categories
   - [ ] Filter pictures by dates
-  - [ ] Make combobox add new categories
-  - [ ] Use combobox for children categories
   - [ ] Delete category
 - [ ] Pictures
   - [ ] Picture update
@@ -57,6 +55,8 @@ bun run test
   - [x] Auto-complete category to add
   - [x] Re-run auto-exif
   - [x] Bulk add/remove parent categories
+  - [x] Make combobox add new categories
+  - [x] Use combobox for children categories
 - [x] Pictures
   - [x] Picture page styling
   - [x] Filter pictures by orphan
