@@ -22,7 +22,9 @@ export const validate = (token: string) => {
   const payload = jwt.verify(token, getSecret())
   return AuthRoleSchema.parse(payload)
 }
-export const decode = (token: string) => {
-  const payload = jwt.decode(token)
-  return AuthRoleSchema.parse(payload)
+export const validateOrNull = (token: string) => {
+  const payload = jwt.verify(token, getSecret())
+  const result = AuthRoleSchema.safeParse(payload)
+  if (result.success) return result.data
+  return null
 }

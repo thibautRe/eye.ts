@@ -12,7 +12,9 @@ import type { RouterRun } from "./router"
 import type { PaginateOptions } from "db"
 import { log } from "backend-logs"
 
-const make404 = () => new Response("Not found", { status: 404 })
+export const make401 = () => new Response("Unauthorized", { status: 401 })
+export const make403 = () => new Response("Forbidden", { status: 403 })
+export const make404 = () => new Response("Not found", { status: 404 })
 
 const getRoutePathnameArgs = (
   route: ApiPathname<any>,
@@ -38,13 +40,15 @@ type Handler<K extends ApiRouteKey, TContext> = (params: {
   args: ApiRouteArgs<K>
   searchParams: SearchParams<ApiRouteSearchParams<K>>
   json: () => Promise<ApiRouteJson<K>>
-}) => Promise<ApiRouteResponse<K>>
+}) => Promise<ApiRouteResponse<K> | Response>
+
 export const buildHandlers =
   <TContext>(handlers: {
     [key in ApiRouteKey]: Handler<key, TContext>
   }): RouterRun<TContext> =>
   async ({ request, context }) => {
     const url = new URL(request.url)
+
     for (const k of Object.keys(routes)) {
       const key = k as ApiRouteKey
       const route = routes[key]
@@ -64,11 +68,12 @@ export const buildHandlers =
         // @ts-expect-error
         has: (k) => url.searchParams.has(k),
       }
-      // @ts-expect-error
-      const json: Promise<ApiRouteJson<ApiRouteKey>> = () => request.json()
+      const json: () => Promise<ApiRouteJson<ApiRouteKey>> = () =>
+        // @ts-expect-error
+        request.json()
 
       // @ts-expect-error Handler<"A"> | Handler<"B"> is not assignable to Handler<"A" | "B">
-      const handler: Handler<ApiRouteKey> = handlers[key]
+      const handler: Handler<ApiRouteKey, unknown> = handlers[key]
       const handlerRes = await handler({
         request,
         context,

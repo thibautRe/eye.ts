@@ -1,4 +1,5 @@
 import { HttpError } from "../utils/errors"
+import { apiClientHeaders } from "./client"
 
 const assert_ok = (res: Response) => {
   if (!res.ok) throw new HttpError(res)
@@ -10,9 +11,10 @@ export const rootUrl = `/api`
 
 /** small override of fetch */
 const f = (r: string, init: RequestInit = {}) => {
-  return fetch(`${rootUrl}${r}`, {
-    ...init,
-  })
+  const headers = new Headers(init.headers)
+  if (apiClientHeaders.Authorization)
+    headers.append("Authorization", apiClientHeaders.Authorization)
+  return fetch(`${rootUrl}${r}`, { ...init, headers })
 }
 
 export const get = async (r: string) => assert_ok(await f(r))

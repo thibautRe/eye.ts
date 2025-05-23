@@ -6,6 +6,6 @@
     "jwt-gen": "bun src/jwt-gen.ts"
   },
   "dependencies": {
-    "auth": "workspace:*"
+    "@local/auth": "workspace:*"
   }
 }
