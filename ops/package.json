@@ -1,0 +1,11 @@
+{
+  "name": "ops",
+  "private": true,
+  "version": "0.0.1",
+  "scripts": {
+    "jwt-gen": "bun src/jwt-gen.ts"
+  },
+  "dependencies": {
+    "auth": "workspace:*"
+  }
+}
