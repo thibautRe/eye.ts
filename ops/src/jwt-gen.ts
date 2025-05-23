@@ -1,4 +1,4 @@
-import { create } from "auth"
+import { create } from "@local/auth"
 
 console.log("Admin token:")
 console.log(create({ version: 1, role: "admin" }))

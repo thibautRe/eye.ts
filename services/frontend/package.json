@@ -15,6 +15,7 @@
     "@zag-js/combobox": "^1.12.2",
     "@zag-js/menu": "^1.12.4",
     "@zag-js/solid": "^1.12.2",
+    "@local/auth": "workspace:*",
     "api-types": "workspace:*",
     "blurhash": "^2.0.5",
     "core": "workspace:*",

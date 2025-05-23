@@ -1,8 +1,8 @@
-import { type infer as i, literal, object, union } from "zod/v4-mini"
+import { z } from "zod"
 
-export const AuthRoleSchema = object({
-  version: literal(1),
-  role: union([literal("admin"), literal("user")]),
+export const AuthRoleSchema = z.object({
+  version: z.literal(1),
+  role: z.union([z.literal("admin"), z.literal("user")]),
 })
 
-export type AuthRole = i<typeof AuthRoleSchema>
+export type AuthRole = z.infer<typeof AuthRoleSchema>
