@@ -4,9 +4,21 @@
 
 ```bash
 bun install
-# now open 3 terminals and run:
+# now open 2 terminals and run:
 bun run dev-api
 bun run dev-frontend
+```
+
+You will need to generate some JWT_SECRET. You can do so by running:
+
+```sh
+cd ops && bun run src/jwt-secret-gen.ts && cd ..
+```
+
+Paste the result in as `JWT_SECRET` in the `.env` file. You can then run:
+
+```sh
+cd ops && bun run src/jwt-gen.ts && cd ..
 ```
 
 ### Useful scripts
