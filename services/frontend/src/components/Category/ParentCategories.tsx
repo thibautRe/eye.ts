@@ -7,6 +7,7 @@ import { css } from "../../../styled-system/css"
 
 import { CategoryCombobox } from "./CategoryCombobox"
 import { TextButton } from "../Form/Button"
+import { AdminFence } from "../AdminFence"
 
 export const ParentCategory: VoidComponent<{
   parents: LinkedCategoryApi[]
@@ -54,7 +55,9 @@ export const ParentCategory: VoidComponent<{
       <Show
         when={isEditing()}
         fallback={
-          <TextButton onclick={() => setIsEditing(true)}>Edit</TextButton>
+          <AdminFence>
+            <TextButton onclick={() => setIsEditing(true)}>Edit</TextButton>
+          </AdminFence>
         }
       >
         <CategoryCombobox

@@ -3,6 +3,7 @@ import { flex, vstack } from "../../styled-system/patterns"
 import { A } from "@solidjs/router"
 import { css } from "../../styled-system/css"
 import { routes } from "./Routes"
+import { AdminFence } from "./AdminFence"
 
 export const PageLayout: ParentComponent = (p) => {
   return (
@@ -34,7 +35,9 @@ const PageHeader: VoidComponent = () => {
       <ul class={vstack({ gap: "0" })}>
         <HeaderLink href={routes.PictureList}>Pictures</HeaderLink>
         <HeaderLink href={routes.CategoryList}>Categories</HeaderLink>
-        <HeaderLink href={routes.PictureUpload}>Upload</HeaderLink>
+        <AdminFence>
+          <HeaderLink href={routes.PictureUpload}>Upload</HeaderLink>
+        </AdminFence>
       </ul>
     </header>
   )

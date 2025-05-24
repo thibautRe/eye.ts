@@ -9,28 +9,20 @@ import {
   apiGetPictures,
   type ApiGetPicturesParams,
 } from "../../api"
-import {
-  createResource,
-  createSignal,
-  For,
-  Show,
-  type Accessor,
-  type VoidComponent,
-} from "solid-js"
+import { createResource, Show, type Accessor } from "solid-js"
 import { MainTitle, PageLayout } from "../PageLayout"
 import { RatingFilter } from "../Filters/RatingFilter"
 import { PictureGridPaginated } from "../Picture/PictureGridPaginated"
-import { hstack, stack, vstack } from "../../../styled-system/patterns"
+import { hstack, stack } from "../../../styled-system/patterns"
 import { ParentCategory } from "../Category/ParentCategories"
-import type { CategoryApi, LinkedCategoryApi } from "api-types"
 import { routes } from "."
-import { css } from "../../../styled-system/css"
 import { downloadPicturesZip } from "../../utils/downloadPicturesZip"
 import { DeepFilter } from "../Filters/DeepFilter"
 import { MultiselectContextProvider } from "../../contexts/MultiselectContext"
 import { SelectMultipleControl } from "../Picture/SelectMultipleControl"
 import { TextButton } from "../Form/Button"
-import { CategoryCombobox } from "../Category/CategoryCombobox"
+import { ChildrenCategories } from "../Category/ChildrenCategories"
+import { AdminFence } from "../AdminFence"
 
 export default () => {
   const params = useParams<{ slug: string }>()
@@ -83,9 +75,11 @@ export default () => {
             <div class={stack({ direction: "column", paddingInline: "2" })}>
               <div class={hstack({ alignItems: "center" })}>
                 <MainTitle>{category().name}</MainTitle>
-                <A href={routes.CategoryEdit(category().slug)}>Edit</A>
+                <AdminFence>
+                  <A href={routes.CategoryEdit(category().slug)}>Edit</A>
+                </AdminFence>
               </div>
-              <ChildrenCategory
+              <ChildrenCategories
                 directChildren={category().directChildren}
                 onCreateChild={async (name) => {
                   const cat = await apiCreateCategory({
@@ -133,7 +127,9 @@ export default () => {
                 </TextButton>
               </div>
               <MultiselectContextProvider pictures={loader.data().items}>
-                <SelectMultipleControl />
+                <AdminFence>
+                  <SelectMultipleControl />
+                </AdminFence>
                 <PictureGridPaginated loader={loader} />
               </MultiselectContextProvider>
             </div>
@@ -141,54 +137,5 @@ export default () => {
         )}
       </Show>
     </PageLayout>
-  )
-}
-
-const ChildrenCategory: VoidComponent<{
-  directChildren: LinkedCategoryApi[]
-  onAddChild: (cat: CategoryApi) => Promise<void>
-  onCreateChild: (name: string) => Promise<void>
-}> = (p) => {
-  return (
-    <div class={vstack({ alignItems: "flex-start" })}>
-      <h2>Subcategories</h2>
-      <Show when={p.directChildren.length > 0}>
-        <ul>
-          <For each={p.directChildren}>
-            {(directChildren) => (
-              <li>
-                <a
-                  href={routes.Category(directChildren.slug)}
-                  class={css({ textDecoration: "underline" })}
-                >
-                  {directChildren.name}
-                </a>
-              </li>
-            )}
-          </For>
-        </ul>
-      </Show>
-      <AddChildCategory
-        onAddChild={p.onAddChild}
-        onCreateChild={p.onCreateChild}
-      />
-    </div>
-  )
-}
-
-const AddChildCategory: VoidComponent<{
-  onAddChild: (cat: CategoryApi) => Promise<void>
-  onCreateChild: (name: string) => Promise<void>
-}> = (p) => {
-  const [isEditing, setIsEditing] = createSignal(false)
-  return (
-    <Show
-      when={isEditing()}
-      fallback={
-        <TextButton onClick={() => setIsEditing(true)}>Edit</TextButton>
-      }
-    >
-      <CategoryCombobox onSelect={p.onAddChild} onCreate={p.onCreateChild} />
-    </Show>
   )
 }
