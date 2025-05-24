@@ -24,6 +24,7 @@ export type CategoryRoutes =
           exifTag?: string
           parentSlug?: Slug
           childSlug?: Slug
+          childPictureId?: PictureId
         }
       }
     >

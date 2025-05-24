@@ -1,12 +1,13 @@
 import { createResource, Show, type VoidComponent } from "solid-js"
 import {
+  apiCreateCategory,
   apiGetPicture,
   apiPictureParentAdd,
   apiPictureParentDel,
 } from "../../api"
 import { PageLayout } from "../PageLayout"
 import { useParams } from "@solidjs/router"
-import type { PictureId } from "core"
+import { slugify, type PictureId } from "core"
 import { Picture } from "../Picture/Picture"
 import type { PictureApi } from "api-types"
 import { vstack } from "../../../styled-system/patterns"
@@ -39,9 +40,8 @@ const PictureItem: VoidComponent<{
     <div class={vstack({ gap: "4", alignItems: "initial" })}>
       <ParentCategory
         parents={p.picture.directParents}
-        onCreate={() => {
-          // TODO
-          throw new Error("Not implemented")
+        onCreate={async (name) => {
+          await apiCreateCategory({ name, slug: slugify(name), childSlug })
         }}
         onAdd={async (slug) =>
           p.onPictureChange(await apiPictureParentAdd(p.picture.id, slug))
