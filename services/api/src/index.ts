@@ -44,7 +44,7 @@ import {
 const runHandlers = buildHandlers<RouterContext>({
   CATEGORY: async ({ args: { slug }, context }) => {
     if (!context.role) return make401()
-    return await toCategoryApi(await getCategoryLeaveWithSlug(db, slug))
+    return await toCategoryApi(await getCategoryLeaveWithSlug(slug))
   },
   CATEGORY_UPDATE: async ({ args: { slug }, json, context }) => {
     if (context.role?.role !== "admin") return make403()
@@ -137,7 +137,7 @@ const runHandlers = buildHandlers<RouterContext>({
     const { slug } = await json()
     const picture = await getPictureById(id)
     await category_parents(db).insert({
-      parent_id: (await getCategoryLeaveWithSlug(db, slug)).id,
+      parent_id: (await getCategoryLeaveWithSlug(slug)).id,
       child_id: picture.category_leaf_id,
     })
 
@@ -148,7 +148,7 @@ const runHandlers = buildHandlers<RouterContext>({
     const { slug } = await json()
     const picture = await getPictureById(id)
     await category_parents(db).delete({
-      parent_id: (await getCategoryLeaveWithSlug(db, slug)).id,
+      parent_id: (await getCategoryLeaveWithSlug(slug)).id,
       child_id: picture.category_leaf_id,
     })
 

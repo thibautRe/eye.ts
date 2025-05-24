@@ -11,8 +11,8 @@ export const createCategoryLink = async ({
   childSlug: Slug
 }) => {
   const [parent, child] = await Promise.all([
-    getCategoryLeaveWithSlug(db, parentSlug),
-    getCategoryLeaveWithSlug(db, childSlug),
+    getCategoryLeaveWithSlug(parentSlug),
+    getCategoryLeaveWithSlug(childSlug),
   ])
   await category_parents(db).insert({
     parent_id: parent.id,
@@ -29,8 +29,8 @@ export const deleteCategoryLink = async ({
   childSlug: Slug
 }) => {
   const [parent, child] = await Promise.all([
-    getCategoryLeaveWithSlug(db, parentSlug),
-    getCategoryLeaveWithSlug(db, childSlug),
+    getCategoryLeaveWithSlug(parentSlug),
+    getCategoryLeaveWithSlug(childSlug),
   ])
   await category_parents(db).delete({
     parent_id: parent.id,
@@ -47,7 +47,7 @@ export const createPicturesCategoryLink = async ({
   pictureIds: PictureId[]
 }) => {
   const [category, pictures] = await Promise.all([
-    getCategoryLeaveWithSlug(db, slug),
+    getCategoryLeaveWithSlug(slug),
     await Promise.all(pictureIds.map(getPictureById)),
   ])
   await category_parents(db).bulkInsertOrIgnore({
@@ -67,7 +67,7 @@ export const deletePicturesCategoryLink = async ({
   pictureIds: PictureId[]
 }) => {
   const [category, pictures] = await Promise.all([
-    getCategoryLeaveWithSlug(db, slug),
+    getCategoryLeaveWithSlug(slug),
     await Promise.all(pictureIds.map(getPictureById)),
   ])
   await category_parents(db).bulkDelete({

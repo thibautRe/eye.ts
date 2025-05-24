@@ -7,7 +7,6 @@ import db, {
   sql,
   type CategoryLeaves,
   type PaginateOptions,
-  type Queryable,
 } from "db"
 import createCache from "../../utils/createCache"
 import { isNotNull, type PictureId, slugify, type Slug } from "core"
@@ -31,7 +30,6 @@ export const getCategoryLeavesByXmpTag = dedupeAsync(
 )
 
 export const getCategoryLeaveWithSlug = async (
-  db: Queryable,
   slug: Slug,
 ): Promise<CategoryLeavesWithSlug> =>
   (await category_leaves(db).findOneRequired({
@@ -54,9 +52,9 @@ export const createCategoryLeaveWithSlug = async ({
   childPictureId?: PictureId
 }) => {
   const [parent, child, childPic] = await Promise.all([
-    parentSlug && (await getCategoryLeaveWithSlug(db, parentSlug)),
-    childSlug && (await getCategoryLeaveWithSlug(db, childSlug)),
-    childPictureId && (await getPictureById(childPictureId)),
+    parentSlug && getCategoryLeaveWithSlug(parentSlug),
+    childSlug && getCategoryLeaveWithSlug(childSlug),
+    childPictureId && getPictureById(childPictureId),
   ])
   return await db.tx(async (db) => {
     const [cat] = await category_leaves(db).insert({
@@ -185,7 +183,7 @@ export const listCategories = async (
 }
 
 export const reindexCategory = async (slug: Slug) => {
-  const category = await getCategoryLeaveWithSlug(db, slug)
+  const category = await getCategoryLeaveWithSlug(slug)
   if (!category.exif_tag) return
   const pictures = await getPicturesWithExifTag(category.exif_tag)
   await category_parents(db).bulkInsertOrIgnore({

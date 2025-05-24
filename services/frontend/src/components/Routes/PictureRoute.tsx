@@ -41,7 +41,15 @@ const PictureItem: VoidComponent<{
       <ParentCategory
         parents={p.picture.directParents}
         onCreate={async (name) => {
-          await apiCreateCategory({ name, slug: slugify(name), childSlug })
+          const category = await apiCreateCategory({
+            name,
+            slug: slugify(name),
+            childPictureId: p.picture.id,
+          })
+          p.onPictureChange({
+            ...p.picture,
+            directParents: [...p.picture.directParents, category],
+          })
         }}
         onAdd={async (slug) =>
           p.onPictureChange(await apiPictureParentAdd(p.picture.id, slug))
