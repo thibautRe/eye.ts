@@ -27,8 +27,9 @@ export const apiGetPictures = makeCachedPaginatedApi<
 >(routes.PICTURE_LIST.pathname)
 
 // zip, not intended to be used with fetch
-export const apiGetPicturesZipRoute = (params: ApiGetPicturesParams) =>
-  `${rootUrl}${withParams(routes.PICTURE_LIST_ZIP.pathname, params)}`
+export const apiGetPicturesZipRoute = (
+  params: ApiGetPicturesParams & { jwt: string },
+) => `${rootUrl}${withParams(routes.PICTURE_LIST_ZIP.pathname, params)}`
 export const apiGetPicturesZipPreflight = (params: ApiGetPicturesParams) =>
   get_json<PictureListZipPreflightResponse>(
     withParams(routes.PICTURE_LIST_ZIP_PREFLIGHT.pathname, params),

@@ -17,7 +17,7 @@ export const downloadPicturesZip = async (params: ApiGetPicturesParams) => {
   // @ts-expect-error
   a.style = "display: none"
   document.documentElement.appendChild(a)
-  a.href = apiGetPicturesZipRoute(params)
+  a.href = apiGetPicturesZipRoute({ ...params, jwt: preflightRes.jwt })
   a.download = ""
   a.click()
   document.documentElement.removeChild(a)

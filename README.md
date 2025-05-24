@@ -50,9 +50,6 @@ bun run test
 - [ ] Infra
   - [ ] Postgres Full Text Search for category name
   - [ ] Improve mapping of ApiResponse/Parameters in frontend
-  - [ ] Auth
-    - [ ] Read-only API access
-    - [ ] Read-only frontend
 
 ### Done
 
@@ -80,3 +77,6 @@ bun run test
   - [x] Exif typings
   - [x] Typecheck
   - [x] Tests
+  - [x] Auth
+    - [x] Read-only API access
+    - [x] Read-only frontend

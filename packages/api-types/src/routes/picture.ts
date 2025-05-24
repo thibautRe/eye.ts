@@ -32,7 +32,7 @@ export type PictureRoutes =
   | Route<
       "PICTURE_LIST_ZIP",
       unknown,
-      { searchParams: PictureListSearchParams }
+      { searchParams: PictureListSearchParams | "jwt" }
     >
 
 const makePictureRoute = (
