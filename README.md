@@ -36,7 +36,6 @@ bun run test
 
 ## Todo
 
-- [ ] Infinite scroll
 - [ ] Omnisearch
   - [ ] Category search
 - [ ] Categories
@@ -67,6 +66,7 @@ bun run test
   - [x] Make combobox add new categories
   - [x] Use combobox for children categories
 - [x] Pictures
+  - [x] Infinite scroll
   - [x] Picture page styling
   - [x] Filter pictures by orphan
   - [x] Picture rating read

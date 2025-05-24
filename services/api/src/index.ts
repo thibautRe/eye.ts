@@ -156,7 +156,7 @@ const runHandlers = buildHandlers<RouterContext>({
   },
   PICTURE_LIST: async ({ searchParams, context }) => {
     if (!context.role) return make401()
-    const p = getPaginatedParams(searchParams)
+    const p = getPaginatedParams(searchParams, { defaultPageSize: 20 })
     const { content, hasMore } = await listPicturesPaginate(p, searchParams)
     return {
       nextPage: hasMore ? p.pageNumber + 1 : null,

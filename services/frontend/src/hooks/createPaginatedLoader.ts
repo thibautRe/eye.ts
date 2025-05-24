@@ -17,7 +17,6 @@ const cached = new Map<
 export interface PaginatedLoader<T> {
   readonly data: Accessor<PaginatedSignal<T>>
   readonly onReload: () => void
-
   readonly onLoadNext: () => void
   readonly onLoadNextContinuous: () => void
   readonly onLoadNextContinuousAbort: () => void
@@ -96,7 +95,6 @@ export const createPaginatedLoader = <T, P extends {}>(
     keepLoading = true
     onLoadNext()
   }
-
   const onLoadNextContinuousAbort = () => {
     keepLoading = false
   }
@@ -111,8 +109,8 @@ export const createPaginatedLoader = <T, P extends {}>(
 
   return {
     data,
-    onLoadNext,
     onReload,
+    onLoadNext,
     onLoadNextContinuous,
     onLoadNextContinuousAbort,
   }
