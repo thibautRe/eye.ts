@@ -52,4 +52,5 @@ export interface CategoryApi {
 export interface PictureListZipPreflightResponse {
   pictureAmt: number
   approximateSizeBytes: number
+  jwt: string
 }

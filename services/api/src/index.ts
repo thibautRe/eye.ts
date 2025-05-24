@@ -34,7 +34,12 @@ import {
   deleteCategoryLink,
   deletePicturesCategoryLink,
 } from "./model/category/parents"
-import { AuthRole, validateOrNull } from "@local/auth"
+import {
+  AuthRole,
+  createZipToken,
+  validateOrNull,
+  validateZipToken,
+} from "@local/auth"
 
 const runHandlers = buildHandlers<RouterContext>({
   CATEGORY: async ({ args: { slug }, context }) => {
@@ -159,7 +164,11 @@ const runHandlers = buildHandlers<RouterContext>({
     }
   },
   PICTURE_LIST_ZIP: async ({ searchParams }) => {
-    // no role check
+    try {
+      validateZipToken(searchParams.get("jwt") ?? "")
+    } catch (err) {
+      return make403()
+    }
 
     const pictures = await listPictures(searchParams)
     const archive = archiver("zip", { zlib: { level: 4 } })
@@ -196,7 +205,11 @@ const runHandlers = buildHandlers<RouterContext>({
   PICTURE_LIST_ZIP_PREFLIGHT: async ({ searchParams, context }) => {
     if (!context.role) return make401()
     const count = await countPictures(searchParams)
-    return { pictureAmt: count, approximateSizeBytes: count * 10_000_000 }
+    return {
+      pictureAmt: count,
+      approximateSizeBytes: count * 10_000_000,
+      jwt: createZipToken(),
+    }
   },
   ADMIN_XMP_UNTRACKED: async ({ context }) => {
     if (context.role?.role !== "admin") return make403()

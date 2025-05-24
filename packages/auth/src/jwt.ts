@@ -15,9 +15,7 @@ const getSecret = () => {
   return JWT_SECRET
 }
 
-export const create = (role: AuthRole) => {
-  return jwt.sign(role, getSecret())
-}
+export const create = (role: AuthRole) => jwt.sign(role, getSecret())
 export const validate = (token: string) => {
   const payload = jwt.verify(token, getSecret())
   return AuthRoleSchema.parse(payload)
@@ -27,4 +25,10 @@ export const validateOrNull = (token: string) => {
   const result = AuthRoleSchema.safeParse(payload)
   if (result.success) return result.data
   return null
+}
+
+export const createZipToken = () =>
+  jwt.sign({ role: "zip" }, getSecret(), { expiresIn: "2min" })
+export const validateZipToken = (token: string) => {
+  jwt.verify(token, getSecret())
 }
