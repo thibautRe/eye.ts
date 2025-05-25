@@ -55,15 +55,16 @@ const makePictureRoute = (
 }
 
 export const pictureRoutes: RouteDefinition<PictureRoutes> = {
-  PICTURE_UPLOAD: { pathname: `/picture/upload`, method: "POST" },
   PICTURE_LIST: { pathname: `/pictures`, method: "GET" },
+  PICTURE: makePictureRoute("GET"),
+  PICTURE_DELETE: makePictureRoute("DELETE"),
+  PICTURE_CATEGORY_ADD: makePictureRoute("POST", `/category`),
+  PICTURE_CATEGORY_DEL: makePictureRoute("DELETE", `/category`),
+
+  PICTURE_UPLOAD: { pathname: `/pictures/upload`, method: "POST" },
   PICTURE_LIST_ZIP: { pathname: `/pictures.zip`, method: "GET" },
   PICTURE_LIST_ZIP_PREFLIGHT: {
     pathname: `/pictures.zip/preflight`,
     method: "GET",
   },
-  PICTURE: makePictureRoute("GET"),
-  PICTURE_DELETE: makePictureRoute("DELETE"),
-  PICTURE_CATEGORY_ADD: makePictureRoute("POST", `/category`),
-  PICTURE_CATEGORY_DEL: makePictureRoute("DELETE", `/category`),
 }
