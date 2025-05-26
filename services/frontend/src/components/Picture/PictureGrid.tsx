@@ -39,7 +39,7 @@ export const PictureGrid: VoidComponent<PictureGridProps> = (p) => {
 const PictureItem: VoidComponent<{ picture: PictureApi }> = (p) => {
   const [store, updater] = useMultiselectContext()
   const pic = () => (
-    <Picture picture={p.picture} sizes="(min-width: 700px) 20vw, 35vw" />
+    <Picture picture={p.picture} sizes="(min-width: 700px) 20vw, 50vw" />
   )
 
   return (
