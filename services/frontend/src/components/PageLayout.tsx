@@ -7,9 +7,14 @@ import { AdminFence } from "./AdminFence"
 
 export const PageLayout: ParentComponent = (p) => {
   return (
-    <div class={flex({ alignItems: "stretch" })}>
+    <div
+      class={flex({
+        direction: { base: "column", sm: "row" },
+        sm: { alignItems: "stretch" },
+      })}
+    >
       <PageHeader />
-      <main class={css({ flex: 1 })}>{p.children}</main>
+      <main class={css({ sm: { flex: 1 } })}>{p.children}</main>
     </div>
   )
 }
@@ -20,7 +25,13 @@ export const MainTitle: ParentComponent = (p) => (
 
 const PageHeader: VoidComponent = () => {
   return (
-    <header class={vstack({ gap: "4", bg: "gray.950", minHeight: "100vh" })}>
+    <header
+      class={vstack({
+        gap: { base: "0", sm: "4" },
+        bg: "gray.950",
+        sm: { minHeight: "100vh" },
+      })}
+    >
       <A
         href="/"
         class={css({
@@ -32,7 +43,13 @@ const PageHeader: VoidComponent = () => {
       >
         EYE
       </A>
-      <ul class={vstack({ gap: "0" })}>
+      <ul
+        class={flex({
+          direction: { base: "row", sm: "column" },
+          gap: "0",
+          marginBottom: { base: "1", sm: "0" },
+        })}
+      >
         <HeaderLink href={routes.PictureList}>Pictures</HeaderLink>
         <HeaderLink href={routes.CategoryList}>Categories</HeaderLink>
         <AdminFence>

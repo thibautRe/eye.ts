@@ -8,6 +8,7 @@ import { routes } from "../Routes"
 import type { SpacingToken } from "../../../styled-system/tokens"
 import { Checkbox } from "../Form/Checkbox"
 import { useMultiselectContext } from "../../contexts/MultiselectContext"
+import { windowAspectRatio } from "../../utils/windowAspectRatio"
 
 const gap: SpacingToken = "2"
 
@@ -15,8 +16,12 @@ export interface PictureGridProps {
   pictures: readonly PictureApi[]
   sizes?: string
 }
+
 export const PictureGrid: VoidComponent<PictureGridProps> = (p) => {
-  const lines = () => splitInLines(p.pictures)
+  const lines = () =>
+    splitInLines(p.pictures, {
+      maxAspectRatio: windowAspectRatio() * 4,
+    })
   return (
     <div class={vstack({ gap, p: gap, alignItems: "initial" })}>
       <For each={lines()}>

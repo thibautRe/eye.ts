@@ -18,7 +18,13 @@ export const button = css({
 
   height: "InteractiveMd",
 
-  "&:hover": {
+  _disabled: {
+    cursor: "initial",
+    bg: "gray.300",
+    color: "gray.600",
+  },
+
+  "&:hover:not(:disabled)": {
     bg: "gray.200",
     borderColor: "gray.300",
   },

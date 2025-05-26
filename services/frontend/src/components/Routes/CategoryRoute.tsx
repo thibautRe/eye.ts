@@ -119,6 +119,7 @@ export default () => {
                   }
                 />
                 <TextButton
+                  disabled={loader.data().items.length === 0}
                   onclick={async () => {
                     await downloadPicturesZip(picturesParams())
                   }}
