@@ -15,6 +15,7 @@ import { input } from "../Form"
 import { vstack } from "../../../styled-system/patterns"
 import { css } from "../../../styled-system/css"
 import type { CategoryApi } from "api-types"
+import { Show } from "solid-js"
 
 type CategoryCollectionItem =
   | {
@@ -33,14 +34,14 @@ const specialNewItem: CategoryCollectionItem = {
 
 export const CategoryCombobox: VoidComponent<{
   onSelect: (category: CategoryApi) => void
-  onCreate: (name: string) => Promise<void>
+  onCreate?: (name: string) => Promise<void>
 }> = (p) => {
   const [query, setQuery] = createSignal("")
-  const debouncedQuery = createDebouncedSignal(query, { wait: 300 })
+  const debouncedQuery = createDebouncedSignal(query, { wait: 100 })
   const [categories] = createResource(
     debouncedQuery,
     async (query) =>
-      query?.length > 2
+      query?.length >= 2
         ? (await apiGetCategories({ page: 0 }, { q: query })).items
         : [],
     { initialValue: [] },
@@ -55,10 +56,7 @@ export const CategoryCombobox: VoidComponent<{
             category,
           }),
         ),
-        {
-          type: "special",
-          special: "new",
-        },
+        ...(p.onCreate ? [specialNewItem] : []),
       ],
       itemToValue: (item) =>
         item.type === "category"
@@ -84,6 +82,9 @@ export const CategoryCombobox: VoidComponent<{
         if (item?.type === "category") {
           p.onSelect(item.category)
         } else if (item?.type === "special" && item.special === "new") {
+          if (!p.onCreate) {
+            throw new Error("Could not call p.onCreate")
+          }
           p.onCreate(query())
         }
       },
@@ -93,6 +94,8 @@ export const CategoryCombobox: VoidComponent<{
     },
   )
   const api = createMemo(() => combobox.connect(service, normalizeProps))
+
+  const showContent = () => Boolean(p.onCreate) || categories().length > 0
 
   return (
     <div>
@@ -105,21 +108,28 @@ export const CategoryCombobox: VoidComponent<{
         {...mergeProps(api().getPositionerProps, { style: { "z-index": 100 } })}
       >
         <Suspense>
-          <ul {...api().getContentProps()} class={content}>
-            <For each={categories()}>
-              {(i) => (
-                <li
-                  {...api().getItemProps({ item: collection().find(i.slug) })}
+          <Show when={showContent()}>
+            <ul {...api().getContentProps()} class={content}>
+              <For each={categories()}>
+                {(i) => (
+                  <li
+                    {...api().getItemProps({ item: collection().find(i.slug) })}
+                    class={item}
+                  >
+                    {i.name}
+                  </li>
+                )}
+              </For>
+              <Show when={p.onCreate}>
+                <div
+                  {...api().getItemProps({ item: specialNewItem })}
                   class={item}
                 >
-                  {i.name}
-                </li>
-              )}
-            </For>
-            <div {...api().getItemProps({ item: specialNewItem })} class={item}>
-              Create "{query()}"
-            </div>
-          </ul>
+                  Create "{query()}"
+                </div>
+              </Show>
+            </ul>
+          </Show>
         </Suspense>
       </div>
     </div>

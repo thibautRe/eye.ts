@@ -36,9 +36,6 @@ bun run test
 
 ## Todo
 
-- [ ] Mobile-friendly lists
-- [ ] Omnisearch
-  - [ ] Category search
 - [ ] Categories
   - [ ] Filter pictures by dates
   - [ ] Delete category
@@ -47,6 +44,8 @@ bun run test
   - [ ] Picture update
     - [ ] Picture rating update
   - [ ] Delete picture
+- [ ] Auth
+  - [ ] Single-category access
 - [ ] Camera Bodies, Camera Lenses pages
 - [ ] Infra
   - [ ] Postgres Full Text Search for category name
@@ -67,6 +66,7 @@ bun run test
   - [x] Bulk add/remove parent categories
   - [x] Make combobox add new categories
   - [x] Use combobox for children categories
+  - [x] Category search
 - [x] Pictures
   - [x] Infinite scroll
   - [x] Picture page styling

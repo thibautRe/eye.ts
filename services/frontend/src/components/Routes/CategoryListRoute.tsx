@@ -1,4 +1,4 @@
-import { A, useSearchParams } from "@solidjs/router"
+import { A, useNavigate, useSearchParams } from "@solidjs/router"
 import {
   createPaginatedLoader,
   type PaginatedLoader,
@@ -11,8 +11,11 @@ import { OrphanFilter } from "../Filters/OrphanFilter"
 import { routes } from "."
 import { stack } from "../../../styled-system/patterns"
 import { TextButton } from "../Form/Button"
+import { FormField } from "../Form"
+import { CategoryCombobox } from "../Category/CategoryCombobox"
 
 export default () => {
+  const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams<{
     orphan: "true"
   }>()
@@ -24,6 +27,11 @@ export default () => {
     <PageLayout>
       <div class={stack({ direction: "column", paddingInline: "2" })}>
         <MainTitle>Categories</MainTitle>
+        <FormField label="Search">
+          <CategoryCombobox
+            onSelect={(cat) => navigate(routes.Category(cat.slug))}
+          />
+        </FormField>
         <OrphanFilter
           isOrphan={searchParams.orphan === "true"}
           onIsOrphanChange={(o) =>
