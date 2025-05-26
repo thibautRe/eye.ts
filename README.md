@@ -40,6 +40,7 @@ bun run test
   - [ ] Filter pictures by dates
   - [ ] Delete category
 - [ ] Pictures
+  - [ ] Improve single picture view
   - [ ] View original
   - [ ] Picture update
     - [ ] Picture rating update

@@ -11,12 +11,12 @@ test("splitInLines", () => {
         { height: 50, width: 40 },
         { height: 30, width: 40 },
       ],
-      { maxAspectRatio: 5 },
+      { targetAspectRatio: 5 },
     ),
   ).toMatchInlineSnapshot(`
     [
       {
-        "aspectRatio": 4.466666666666667,
+        "aspectRatio": 5.8,
         "pictures": [
           {
             "height": 30,
@@ -34,11 +34,6 @@ test("splitInLines", () => {
             "height": 50,
             "width": 40,
           },
-        ],
-      },
-      {
-        "aspectRatio": 3.75,
-        "pictures": [
           {
             "height": 30,
             "width": 40,
@@ -62,12 +57,12 @@ test("splitInLines", () => {
         { height: 50, width: 40 },
         { height: 30, width: 40 },
       ],
-      { maxAspectRatio: 5 },
+      { targetAspectRatio: 5 },
     ),
   ).toMatchInlineSnapshot(`
     [
       {
-        "aspectRatio": 4.466666666666667,
+        "aspectRatio": 8.466666666666667,
         "pictures": [
           {
             "height": 30,
@@ -85,11 +80,6 @@ test("splitInLines", () => {
             "height": 50,
             "width": 40,
           },
-        ],
-      },
-      {
-        "aspectRatio": 4,
-        "pictures": [
           {
             "height": 10,
             "width": 40,
@@ -97,7 +87,7 @@ test("splitInLines", () => {
         ],
       },
       {
-        "aspectRatio": 3.8666666666666663,
+        "aspectRatio": 5.199999999999999,
         "pictures": [
           {
             "height": 30,
@@ -115,11 +105,6 @@ test("splitInLines", () => {
             "height": 50,
             "width": 40,
           },
-        ],
-      },
-      {
-        "aspectRatio": 3.75,
-        "pictures": [
           {
             "height": 30,
             "width": 40,
@@ -131,7 +116,7 @@ test("splitInLines", () => {
 })
 
 test("splitInLines: no infinite loop", () => {
-  expect(splitInLines([{ height: 1, width: 10 }], { maxAspectRatio: 5 }))
+  expect(splitInLines([{ height: 1, width: 10 }], { targetAspectRatio: 5 }))
     .toMatchInlineSnapshot(`
     [
       {

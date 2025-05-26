@@ -19,9 +19,7 @@ export interface PictureGridProps {
 
 export const PictureGrid: VoidComponent<PictureGridProps> = (p) => {
   const lines = () =>
-    splitInLines(p.pictures, {
-      maxAspectRatio: windowAspectRatio() * 4,
-    })
+    splitInLines(p.pictures, { targetAspectRatio: windowAspectRatio() * 2.5 })
   return (
     <div class={vstack({ gap, p: gap, alignItems: "initial" })}>
       <For each={lines()}>
@@ -40,7 +38,9 @@ export const PictureGrid: VoidComponent<PictureGridProps> = (p) => {
 
 const PictureItem: VoidComponent<{ picture: PictureApi }> = (p) => {
   const [store, updater] = useMultiselectContext()
-  const pic = () => <Picture picture={p.picture} sizes="25vw" />
+  const pic = () => (
+    <Picture picture={p.picture} sizes="(min-width: 700px) 20vw, 35vw" />
+  )
 
   return (
     <Show
