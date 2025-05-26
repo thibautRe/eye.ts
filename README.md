@@ -36,12 +36,14 @@ bun run test
 
 ## Todo
 
+- [ ] Mobile-friendly lists
 - [ ] Omnisearch
   - [ ] Category search
 - [ ] Categories
   - [ ] Filter pictures by dates
   - [ ] Delete category
 - [ ] Pictures
+  - [ ] View original
   - [ ] Picture update
     - [ ] Picture rating update
   - [ ] Delete picture
