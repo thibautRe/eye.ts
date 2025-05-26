@@ -90,7 +90,7 @@ export const updateCategoryLeaveWithSlug = async ({
   name: string
   exifTag: string | null
   newSlug?: string
-}) => {
+}): Promise<CategoryLeavesWithSlug> => {
   const [updated] = await category_leaves(db).update(
     { slug: slugify(slug) },
     {
@@ -99,7 +99,11 @@ export const updateCategoryLeaveWithSlug = async ({
       ...(newSlug ? { slug: slugify(newSlug) } : {}),
     },
   )
-  return updated as CategoryLeavesWithSlug
+  if (updated && updated.slug) {
+    getCategoryLeavesByXmpTag.cache.delete(updated.slug)
+    return updated as CategoryLeavesWithSlug
+  }
+  throw new Error("Could not update category")
 }
 
 export const deleteCategoryLeaveWithSlug = async (slug: Slug) =>
