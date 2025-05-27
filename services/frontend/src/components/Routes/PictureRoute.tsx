@@ -74,8 +74,8 @@ const PictureItem: VoidComponent<{
 }
 
 const pictureWrapper = css({
-  height: "100vh",
-  width: "100%",
   display: "flex",
   justifyContent: "center",
+  maxHeight: "100vh",
+  width: "100%",
 })

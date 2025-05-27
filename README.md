@@ -41,7 +41,9 @@ bun run test
   - [ ] Delete category
 - [ ] Pictures
   - [ ] Improve single picture view
-  - [ ] View original
+  - [ ] Improve going back to list view (previous scroll)
+  - [ ] fix iOS picture list design
+  - [ ] View original image
   - [ ] Picture update
     - [ ] Picture rating update
   - [ ] Delete picture
