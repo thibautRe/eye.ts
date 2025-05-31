@@ -40,8 +40,6 @@ bun run test
   - [ ] Filter pictures by dates
   - [ ] Delete category
 - [ ] Pictures
-  - [ ] Improve single picture view
-  - [ ] Improve going back to list view (previous scroll)
   - [ ] fix iOS picture list design
   - [ ] View original image
   - [ ] Picture update
