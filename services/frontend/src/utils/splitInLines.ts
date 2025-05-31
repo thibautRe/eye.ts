@@ -12,7 +12,6 @@ export function splitInLines<T extends { width: number; height: number }>(
   let rest: T[] = pictures.slice()
   let aspectRatio = 0
   while (aspectRatio < options.targetAspectRatio && rest.length > 0) {
-    console.log(rest.length)
     const [pic] = rest.splice(0, 1)
     line.push(pic)
     aspectRatio += pic.width / pic.height
