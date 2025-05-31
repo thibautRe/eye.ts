@@ -11,14 +11,15 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@local/auth": "workspace:*",
     "@solidjs/router": "^0.15.3",
     "@zag-js/combobox": "^1.12.2",
     "@zag-js/menu": "^1.12.4",
     "@zag-js/solid": "^1.12.2",
-    "@local/auth": "workspace:*",
     "api-types": "workspace:*",
     "blurhash": "^2.0.5",
     "core": "workspace:*",
+    "fast-json-stable-stringify": "^2.1.0",
     "solid-js": "^1.9.6"
   },
   "devDependencies": {

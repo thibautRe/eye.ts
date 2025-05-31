@@ -42,6 +42,7 @@ export default () => {
   const loader = createPaginatedLoader({
     params: picturesParams,
     loader: apiGetPictures,
+    cacheKey: `category`,
   })
   return (
     <PageLayout>

@@ -6,7 +6,14 @@ import {
   routes,
 } from "api-types"
 import { makeCachedPaginatedApi } from "./pagination"
-import { delete_json, get_json, post_json, rootUrl, withParams } from "./utils"
+import {
+  delete_json,
+  get_json,
+  makeCachedGet,
+  post_json,
+  rootUrl,
+  withParams,
+} from "./utils"
 import { type PictureId, type Slug } from "core"
 
 export const apiUploadFile = async (file: File) => {
@@ -52,8 +59,9 @@ export const apiUpdateCategory = (data: {
     slug: data.newSlug,
   })
 
+const [get] = makeCachedGet<CategoryApi>()
 export const apiGetCategory = (slug: Slug) =>
-  get_json<CategoryApi>(routes.CATEGORY.stringify({ slug }))
+  get(routes.CATEGORY.stringify({ slug }))
 export const apiGetCategories = makeCachedPaginatedApi<
   CategoryApi,
   { orphan?: boolean; q?: string }

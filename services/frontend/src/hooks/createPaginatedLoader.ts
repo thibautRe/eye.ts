@@ -1,4 +1,5 @@
 import { type Accessor, createEffect, createSignal, on } from "solid-js"
+import stringify from "fast-json-stable-stringify"
 import type { PaginatedApiLoader } from "../api/pagination"
 
 interface PaginatedSignal<T> {
@@ -25,14 +26,19 @@ export interface PaginatedLoader<T> {
 interface CreatePaginatedLoaderParams<T, P extends {}> {
   loader: PaginatedApiLoader<T, P>
   params?: Accessor<P>
-  cacheKey?: Accessor<string>
+  cacheKey?: string
 }
 export const createPaginatedLoader = <T, P extends {}>(
   params: CreatePaginatedLoaderParams<T, P>,
 ): PaginatedLoader<T> => {
+  const cacheKey =
+    params.cacheKey &&
+    (() => {
+      return `${params.cacheKey}-${stringify(params.params?.() ?? "")}`
+    })
   const initSignal: Accessor<PaginatedSignal<T>> = () => ({
-    ...(params.cacheKey && cached.has(params.cacheKey())
-      ? { ...cached.get(params.cacheKey())!, shouldLoadNextPage: false }
+    ...(cacheKey && cached.has(cacheKey())
+      ? { ...cached.get(cacheKey())!, shouldLoadNextPage: false }
       : {
           items: [],
           nextPage: 0,
@@ -64,8 +70,8 @@ export const createPaginatedLoader = <T, P extends {}>(
     try {
       const res = await params.loader({ page: nextPage }, params.params?.())
       const items = [...oldItems, ...res.items]
-      if (params.cacheKey) {
-        cached.set(params.cacheKey(), { items, nextPage: res.nextPage })
+      if (cacheKey) {
+        cached.set(cacheKey(), { items, nextPage: res.nextPage })
       }
       setSignal((p) => ({
         ...p,

@@ -60,9 +60,9 @@ const PictureItem: VoidComponent<{
       />
       <div
         class={pictureWrapper}
-        ref={(e) =>
-          requestAnimationFrame(() => e.scrollIntoView({ behavior: "instant" }))
-        }
+        // ref={(e) =>
+        //   requestAnimationFrame(() => e.scrollIntoView({ behavior: "instant" }))
+        // }
       >
         <Picture picture={p.picture} sizes="100vw" />
       </div>
