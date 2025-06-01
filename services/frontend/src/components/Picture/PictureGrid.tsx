@@ -9,6 +9,7 @@ import type { SpacingToken } from "../../../styled-system/tokens"
 import { Checkbox } from "../Form/Checkbox"
 import { useMultiselectContext } from "../../contexts/MultiselectContext"
 import { windowAspectRatio } from "../../utils/windowAspectRatio"
+import { A } from "@solidjs/router"
 
 const gap: SpacingToken = "2"
 
@@ -46,9 +47,9 @@ const PictureItem: VoidComponent<{ picture: PictureApi }> = (p) => {
     <Show
       when={store.enabled}
       fallback={
-        <a class={pictureItemWrapper} href={routes.Picture(p.picture.id)}>
+        <A class={pictureItemWrapper} href={routes.Picture(p.picture.id)}>
           {pic()}
-        </a>
+        </A>
       }
     >
       <label class={css({ position: "relative" })}>
