@@ -21,6 +21,7 @@ export default () => {
       orphan: searchParams.orphan === "true",
     }),
     loader: apiGetPictures,
+    cacheKey: `pictures`,
   })
   return (
     <PageLayout>
