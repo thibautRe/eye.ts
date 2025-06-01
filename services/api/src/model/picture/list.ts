@@ -7,27 +7,13 @@ import db, {
   q,
   sql,
   SQLQuery,
-  type CategoryLeaves,
   type PaginateOptions,
   type Pictures,
   type WhereCondition,
 } from "db"
-import {
-  getCategoryLeaveWithSlug,
-  getDirectChildrenCategories,
-} from "../category"
 import { parseRatingFilter, Slug, slugify, type RatingFilter } from "core"
 import { SearchParams } from "../../utils/buildHandlers"
 import { PictureListSearchParams } from "api-types/src/routes/picture"
-
-const getPictureLeaves = async (
-  parent: string | null,
-): Promise<CategoryLeaves["id"][] | undefined> => {
-  if (!parent) return undefined
-  const parentCat = await getCategoryLeaveWithSlug(slugify(parent))
-  const childrenCats = await getDirectChildrenCategories(parentCat.id)
-  return childrenCats.map((c) => c.id)
-}
 
 /**
  * WITH RECURSIVE rec(id) AS (
@@ -35,7 +21,6 @@ const getPictureLeaves = async (
  *  UNION SELECT p.child_id FROM rec c, category_parents p WHERE c.child_id = p.parent_id
  * )
  * SELECT * from pictures WHERE category_leaf_id IN (SELECT child_id FROM rec);
- *
  */
 
 const getDeepPictureListQuery = async ({
@@ -68,8 +53,8 @@ const getDeepPictureListQuery = async ({
 const getPictureListQuery = async (
   params: SearchParams<PictureListSearchParams>,
 ): Promise<SQLQuery> => {
+  const parent = params.get("parent")
   if (params.has("deep")) {
-    const parent = params.get("parent")
     if (!parent) {
       throw new Error("Query with deep must specify parent")
     }
@@ -78,11 +63,18 @@ const getPictureListQuery = async (
       rating: params.get("rating"),
     })
   }
-  const leafIds = await getPictureLeaves(params.get("parent"))
   return pictures(db)
     .find(
       q.and(
-        leafIds ? { category_leaf_id: q.anyOf(leafIds) } : {},
+        parent
+          ? {
+              category_leaf_id: category_parents.key("child_id", {
+                parent_id: category_leaves.key("id", {
+                  slug: slugify(parent),
+                }),
+              }),
+            }
+          : {},
         params.has("orphan")
           ? { category_leaf_id: q.not(category_parents.key("child_id")) }
           : {},
