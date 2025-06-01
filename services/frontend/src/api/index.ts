@@ -64,7 +64,7 @@ export const apiGetCategory = (slug: Slug) =>
   get(routes.CATEGORY.stringify({ slug }))
 export const apiGetCategories = makeCachedPaginatedApi<
   CategoryApi,
-  { orphan?: boolean; q?: string }
+  { orphan?: boolean; q?: string; empty?: boolean }
 >(routes.CATEGORY_LIST.pathname)
 export const apiPictureParentAdd = (id: PictureId, slug: Slug) =>
   post_json<PictureApi>(routes.PICTURE_CATEGORY_ADD.stringify({ id }), { slug })

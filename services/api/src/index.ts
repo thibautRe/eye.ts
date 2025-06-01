@@ -74,6 +74,7 @@ const runHandlers = buildHandlers<RouterContext>({
     const { content, hasMore } = await listCategories(p, {
       orphan: searchParams.has("orphan"),
       q: searchParams.get("q"),
+      empty: searchParams.has("empty"),
     })
     return {
       nextPage: hasMore ? p.pageNumber + 1 : null,

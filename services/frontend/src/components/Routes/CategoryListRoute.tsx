@@ -9,19 +9,24 @@ import { For, Show, type VoidComponent } from "solid-js"
 import type { CategoryApi } from "api-types"
 import { OrphanFilter } from "../Filters/OrphanFilter"
 import { routes } from "."
-import { stack } from "../../../styled-system/patterns"
+import { hstack, stack } from "../../../styled-system/patterns"
 import { TextButton } from "../Form/Button"
-import { FormField } from "../Form"
+import { FormField, FormFieldInline } from "../Form"
 import { CategoryCombobox } from "../Category/CategoryCombobox"
+import { Checkbox } from "../Form/Checkbox"
 
 export default () => {
   const navigate = useNavigate()
   const [searchParams, setSearchParams] = useSearchParams<{
     orphan: "true"
+    empty: "true"
   }>()
   const loader = createPaginatedLoader({
     loader: apiGetCategories,
-    params: () => ({ orphan: searchParams.orphan === "true" }),
+    params: () => ({
+      orphan: searchParams.orphan === "true",
+      empty: searchParams.empty === "true",
+    }),
   })
   return (
     <PageLayout>
@@ -32,12 +37,22 @@ export default () => {
             onSelect={(cat) => navigate(routes.Category(cat.slug))}
           />
         </FormField>
-        <OrphanFilter
-          isOrphan={searchParams.orphan === "true"}
-          onIsOrphanChange={(o) =>
-            setSearchParams({ orphan: o ? "true" : null })
-          }
-        />
+        <div class={hstack()}>
+          <OrphanFilter
+            isOrphan={searchParams.orphan === "true"}
+            onIsOrphanChange={(o) =>
+              setSearchParams({ orphan: o ? "true" : null })
+            }
+          />
+          <FormFieldInline label="Empty">
+            <Checkbox
+              checked={searchParams.empty === "true"}
+              onCheckedChange={(c) =>
+                setSearchParams({ empty: c ? "true" : null })
+              }
+            />
+          </FormFieldInline>
+        </div>
         <PaginatedCategories loader={loader} />
       </div>
     </PageLayout>

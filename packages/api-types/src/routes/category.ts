@@ -31,7 +31,7 @@ export type CategoryRoutes =
   | PaginatedRoute<
       "CATEGORY_LIST",
       CategoryApi,
-      { searchParams: "orphan" | "q" }
+      { searchParams: "orphan" | "q" | "empty" }
     >
   | Route<
       "CATEGORY_PARENT_ADD",

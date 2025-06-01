@@ -161,9 +161,14 @@ export const getDirectChildrenCategories = batch<
   }
 })
 
+interface ListCategoriesOptions {
+  orphan: boolean
+  empty: boolean
+  q: string | null
+}
 export const listCategories = async (
   p: PaginateOptions,
-  { orphan, q: searchQuery }: { orphan: boolean; q: string | null },
+  { orphan, empty, q: searchQuery }: ListCategoriesOptions,
 ) => {
   const pattern = searchQuery && `%${searchQuery.toLowerCase().trim()}%`
   return await paginate<CategoryLeavesWithSlug>(
@@ -173,6 +178,7 @@ export const listCategories = async (
         q.and<CategoryLeaves>(
           { slug: q.not(null) },
           orphan ? { id: q.not(category_parents.key("child_id")) } : {},
+          empty ? { id: q.not(category_parents.key("parent_id")) } : {},
           pattern
             ? q.or<CategoryLeaves>(
                 sql`LOWER(slug) LIKE ${pattern}`,
